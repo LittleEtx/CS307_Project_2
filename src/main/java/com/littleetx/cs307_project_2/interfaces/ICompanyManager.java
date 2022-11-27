@@ -1,4 +1,4 @@
-package cs307.project2.interfaces;
+package com.littleetx.cs307_project_2.interfaces;
 
 public interface ICompanyManager {
 	double getImportTaxRate(LogInfo log, String city, String itemClass);

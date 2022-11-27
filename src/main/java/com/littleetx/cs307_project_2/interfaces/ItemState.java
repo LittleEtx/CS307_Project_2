@@ -1,10 +1,9 @@
-package cs307.project2.interfaces;
+package com.littleetx.cs307_project_2.interfaces;
 
-/*
+/**
  * <p>
  * Corresponding to column ItemState given in record.csv
  * <p>
- * @classname: ItemState
 */
 public enum ItemState {
 	PickingUp,
