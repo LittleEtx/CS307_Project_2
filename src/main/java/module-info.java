@@ -3,4 +3,5 @@ open module cs307_project {
     requires javafx.graphics;
     requires javafx.controls;
     requires cs307.project2.interfaces;
+    requires java.sql;
 }
