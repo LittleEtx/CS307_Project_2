@@ -33,6 +33,13 @@
             <artifactId>postgresql</artifactId>
             <version>${postgre.version}</version>
         </dependency>
+        <dependency>
+            <groupId>cs307.project2</groupId>
+            <artifactId>interfaces</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cs307.project2.interfaces.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
