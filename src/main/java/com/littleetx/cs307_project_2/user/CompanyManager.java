@@ -1,38 +1,84 @@
 package com.littleetx.cs307_project_2.user;
 
 import cs307.project2.interfaces.LogInfo;
+import cs307.project2.interfaces.StaffInfo;
+
 import java.sql.Connection;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, LogInfo info) {
+    CompanyManager(Connection conn, StaffInfo info) {
         super(conn, info);
     }
 
-    public double getImportTaxRate(String city, String itemClass) {
+    @Override
+    public LogInfo.StaffType getStaffType() {
+        return LogInfo.StaffType.CompanyManager;
+    }
+
+    public enum TaxType {
+        Import, Export
+    }
+
+    /**
+     * Look for the import/export tax rate of given city and item class. Return -1
+     * if any of the two names does not exist or city is not seaport city.
+     */
+    public double getTaxRate(String city, String itemClass, TaxType taxType) {
+        //TODO
         return 0;
     }
 
-    public double getExportTaxRate(String city, String itemClass) {
-        return 0;
-    }
-
+    /**
+     * Notify to the database that the given item is going to be packed into the
+     * given container. Returns false if the item cannot be loaded to the
+     * container (due to reasons like already loaded and illegal item state) or
+     * container is full or being shipped. For simplicity, one container can only
+     * pack one item. Note that only item that passed export checking (at “Packing
+     * to Container” state) can be loaded to container. Note that this method
+     * won’t change the item’s state.
+     */
     public boolean loadItemToContainer(String itemName, String containerCode) {
+        //TODO
         return false;
     }
 
+    /**
+     * Notify to the database that the given container is going to be loaded to
+     * the given ship. Returns false if the container cannot be loaded to the
+     * ship (due to reasons like already loaded) or ship is currently sailing. For
+     * simplicity, one ship can transport unlimited number of containers.
+     */
     public boolean loadContainerToShip(String shipName, String containerCode) {
+        //TODO
         return false;
     }
 
+    /**
+     * Notify to the database that the given ship is currently sailing with loaded
+     * containers. Returns false if the ship is already sailing.
+     */
     public boolean shipStartSailing(String shipName) {
+        //TODO
         return false;
     }
 
-    public boolean unloadItem(LogInfo logInfo, String s) {
+    /**
+     * Notify to the database that the given item is being unloaded from its
+     * container and ship. This API also implies that the corresponding container
+     * is being unloaded.
+     * @return false if the item is in illegal state.
+     */
+    public boolean unloadItem(String itemName) {
+        //TODO
         return false;
     }
 
-    public boolean itemWaitForChecking(LogInfo logInfo, String s) {
+    /**
+     * Notify to the database that the given item is waiting at its “Import City”
+     * for import checking. Returns false if the item is in illegal state.
+     */
+    public boolean itemWaitForChecking(String itemName) {
+        //TODO
         return false;
     }
 }
