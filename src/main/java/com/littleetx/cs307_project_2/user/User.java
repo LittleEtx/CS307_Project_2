@@ -19,4 +19,14 @@ abstract public class User {
         this.staffInfo = info;
     }
     abstract public LogInfo.StaffType getStaffType();
+
+    public boolean changePassword(String newPassword) {
+        //TODO: (optional) change password
+        return false;
+    }
+
+    public boolean changePhoneNumber(String newPhoneNumber) {
+        //TODO: (optional) change phone number
+        return false;
+    }
 }
