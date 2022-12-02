@@ -1,0 +1,16 @@
+drop table container_item;
+drop table ship_container;
+drop table item_state;
+drop table ship_state;
+drop table staff_city;
+drop table staff_company;
+drop table tax_info;
+drop table transportation_info;
+drop table verification;
+drop table staff;
+drop table city;
+drop table ship;
+drop table company;
+drop table item;
+drop table container;
+drop table item_type;

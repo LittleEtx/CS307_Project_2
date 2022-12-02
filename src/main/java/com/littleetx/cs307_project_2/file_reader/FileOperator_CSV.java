@@ -3,7 +3,6 @@ package com.littleetx.cs307_project_2.file_reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class FileOperator_CSV extends FileOperator {
@@ -97,22 +96,6 @@ public class FileOperator_CSV extends FileOperator {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static void main(String[] args) {
-        FileOperator fo = new FileOperator_CSV("data.csv");
-        try (FileOperatorReader reader = fo.getReader()) {
-            Iterator< String[]> iter = reader.iterator();
-            for (String str : iter.next()) {
-                System.out.print(str + ",");
-            }
-            System.out.println();
-            for (String str : iter.next()) {
-                System.out.print(str + ",");
-            }
-        } catch (IOException e) {
-            System.out.println("File not found");
         }
     }
 }

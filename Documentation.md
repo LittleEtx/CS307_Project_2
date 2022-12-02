@@ -1,7 +1,7 @@
 ### 1. write ddl based on ER graph
 
 #### 1.1 Entity
-* **Staff**: 
+* **Staff**: `gender` can be _'MALE'_ or _'FEMALE'_
 * **City**
 * **Company**
 * **Ship**
