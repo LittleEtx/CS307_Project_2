@@ -1,23 +1,26 @@
-create table Item(
-    name varchar primary key ,
-    price int
-);
 create table Item_Type(
-     id int primary key ,
-     item_name varchar references Item(name),
-  type varchar primary key
+    type varchar primary key
 );
+
+create table Item(
+    name varchar primary key,
+    price int,
+    class varchar references Item_Type(type)
+);
+
 create table Item_State(
-     id int primary key ,
-    item_name varchar references Item(name),
-    state varchar primary key
+    item_name varchar primary key references Item(name),
+    state varchar
 );
+
 create table Staff(
-  id int primary key ,
-  name varchar,
-  gender varchar,
-  phone_number varchar unique
+    id int primary key ,
+    name varchar not null,
+    gender varchar,
+    birth date,
+    phone_number varchar unique
 );
+
 create table Company
 (
     id int primary key ,
@@ -27,34 +30,32 @@ create table Company
 create table City
 (
     id int primary key ,
-    area_code varchar unique,
-    name varchar unique not null
+    name varchar not null
 );
 
 create table Staff_City(
-     id int primary key ,
     staff_id int references Staff(id),
-    city_id int references City (id)
+    city_id int references City (id),
+    primary key (staff_id, city_id)
 );
 
 create table Staff_Company
 (
-     id int primary key ,
-  staff_id int references Staff(id),
-  company_id int references Company(id)
+    staff_id int references Staff(id),
+    company_id int references Company(id),
+    primary key (staff_id, company_id)
 );
 
 create table Ship
 (
     id int primary key,
-    name varchar unique not null ,
+    name varchar not null ,
     company_id int references Company (id)
 );
 
 create table Ship_State(
-    id int primary key ,
-    ship_id int references Ship (id),
-  state varchar primary key
+    ship_id int primary key references Ship (id),
+    state varchar
 );
 
 create table Container(
@@ -63,16 +64,14 @@ create table Container(
 );
 
 create table Ship_Container(
-     id int primary key ,
-    container_code varchar references Container (code),
+    container_code varchar primary key references Container (code),
     ship_id int references Ship (id)
 );
 
 create table Container_Item
 (
-     id int primary key ,
     container_code varchar references Container (code),
-    item_name varchar references Item(name)
+    item_name varchar primary key references Item(name)
 );
 
 create table Tax_Info
@@ -85,11 +84,11 @@ create table Tax_Info
 );
 
 create table Transportation_Info(
-    id int primary key ,
     staff_id int references Staff(id),
-    city_id int references City(id),
+    city_id int not null references City(id),
     item_name varchar references Item(name),
-    stage varchar
+    stage varchar,
+    primary key (item_name,stage)
 );
 
 create table Verification(
