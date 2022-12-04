@@ -83,13 +83,18 @@ create table Tax_Info
     import_tax decimal(30,15)
 );
 
-create table Transportation_Info(
-    staff_id int references Staff(id),
-    city_id int not null references City(id),
-    item_name varchar references Item(name),
+create table Item_City(
+ item_name varchar  references Item(name),
+    city_id int references City(id),
     stage varchar,
     primary key (item_name,stage)
 );
+
+create table Item_Courier(
+     item_name varchar primary key references Item(name),
+      staff_id int references Staff(id)
+);
+
 
 create table Verification(
     staff_id int primary key references Staff(id),
