@@ -23,12 +23,5 @@ public class CSVMapping {
         };
     }
 
-    public static String getStaffAuthority(LogInfo.StaffType type) {
-        return switch (type) {
-            case CompanyManager -> "COMPANY_MANAGER";
-            case SeaportOfficer -> "SEAPORT_OFFICER";
-            case Courier -> "COURIER";
-            case SustcManager -> "SUSTC_MANAGER";
-        };
-    }
+
 }

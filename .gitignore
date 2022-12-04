@@ -1,3 +1,4 @@
 # Project exclude paths
 /target/
+/out/
 /database_login.json

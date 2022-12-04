@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 import static com.littleetx.cs307_project_2.CSVMapping.*;
+import static com.littleetx.cs307_project_2.DatabaseMapping.*;
 
 public class DatabaseManipulation implements IDatabaseManipulation {
     private final Connection rootConn;
@@ -183,12 +184,16 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Failed to open file", e);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert data", e);
         }
+
+
+        //TODO: read records
+
+
     }
 
     private <T> void insertData(PreparedStatement statement, Collection<T> data,
