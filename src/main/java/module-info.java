@@ -4,4 +4,5 @@ open module cs307_project {
     requires javafx.controls;
     requires cs307.project2.interfaces;
     requires java.sql;
+    requires java.rmi;
 }

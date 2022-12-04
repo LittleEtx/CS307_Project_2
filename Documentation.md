@@ -24,7 +24,8 @@ _'IMPORT_CHECKING'_, _'IMPORT_CHECK_FAILED'_, _'FROM_IMPORT_TRANSPORTING'_, _'DE
 * **Container_Item**: what `Item` is in `Container`
 * **Staff_City**: working `City` of `Staff`
 * **Staff_Company**: working `Company` of `Staff`
-* **Transportation_Info**: log the `City` and `Staff` of the transportation of a given `Item`.
+* **Courier_Item**: what `Item` is being transported by `Staff`
+* **Item_Route**: the `City` that `Item` will pass.
 `Stage` of the transportation can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
 
 
