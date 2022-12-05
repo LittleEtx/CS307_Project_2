@@ -73,4 +73,8 @@ public class CSVMapping {
             default -> throw new IllegalArgumentException("Unknown container type: " + type);
         };
     }
+
+    public static boolean getGender(String gender) {
+        return "female".equals(gender);
+    }
 }

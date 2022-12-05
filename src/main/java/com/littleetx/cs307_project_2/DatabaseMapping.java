@@ -2,15 +2,26 @@ package com.littleetx.cs307_project_2;
 
 import cs307.project2.interfaces.ContainerInfo;
 import cs307.project2.interfaces.ItemState;
-import cs307.project2.interfaces.LogInfo;
+
+import static cs307.project2.interfaces.LogInfo.StaffType;
 
 public class DatabaseMapping {
-    public static String getStaffAuthority(LogInfo.StaffType type) {
+    public static String getStaffAuthority(StaffType type) {
         return switch (type) {
             case CompanyManager -> "COMPANY_MANAGER";
             case SeaportOfficer -> "SEAPORT_OFFICER";
             case Courier -> "COURIER";
             case SustcManager -> "SUSTC_MANAGER";
+        };
+    }
+
+    public static StaffType getStaffAuthority(String type) {
+        return switch (type) {
+            case "COMPANY_MANAGER" -> StaffType.CompanyManager;
+            case "SEAPORT_OFFICER" -> StaffType.SeaportOfficer;
+            case "COURIER" -> StaffType.Courier;
+            case "SUSTC_MANAGER" -> StaffType.SustcManager;
+            default -> throw new IllegalArgumentException("Unknown type!");
         };
     }
 
@@ -43,5 +54,13 @@ public class DatabaseMapping {
             case OpenTop -> "OPEN_TOP";
             case Reefer -> "REEFER";
         };
+    }
+
+    public static boolean getGender(String gender) {
+        return "FEMALE".equals(gender);
+    }
+
+    public static String getGender(boolean isFemale) {
+        return isFemale ? "FEMALE" : "MALE";
     }
 }

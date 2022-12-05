@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2_test;
+package com.littleetx.cs307_project_2;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class GetLoginInfo {
+public class LoginInfoGetter {
     private static final String LOGIN_INFO_PATH = "database_login.json";
     public record LoginInfo(
             int port,

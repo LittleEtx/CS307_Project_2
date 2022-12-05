@@ -16,7 +16,10 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 import static com.littleetx.cs307_project_2.CSVMapping.*;
+import static com.littleetx.cs307_project_2.DatabaseMapping.getContainerType;
+import static com.littleetx.cs307_project_2.DatabaseMapping.getItemState;
 import static com.littleetx.cs307_project_2.DatabaseMapping.*;
+import static cs307.project2.interfaces.LogInfo.*;
 
 public class DatabaseManipulation implements IDatabaseManipulation {
     private final Connection rootConn;
@@ -78,17 +81,20 @@ public class DatabaseManipulation implements IDatabaseManipulation {
         }
         rootConn = conn;
 
-        //TODO: create new users and create verification factory
         //temporary use root users
         try {
             companyManagers = new Verification<>(DriverManager.getConnection(database,
-                    "company_manager", "company_manager"), CompanyManager.class);
+                    "company_manager", "company_manager"),
+                    CompanyManager.class, StaffType.CompanyManager);
             seaportOfficers = new Verification<>(DriverManager.getConnection(database,
-                    "seaport_officer", "seaport_officer"), SeaportOfficer.class);
+                    "seaport_officer", "seaport_officer"),
+                    SeaportOfficer.class, StaffType.SeaportOfficer);
             couriers = new Verification<>(DriverManager.getConnection(database,
-                    "courier", "courier"), Courier.class);
+                    "courier", "courier"),
+                    Courier.class, StaffType.Courier);
             sustcManagers = new Verification<>(DriverManager.getConnection(database,
-                    "sustc_manager", "sustc_manager"), SustcManager.class);
+                    "sustc_manager", "sustc_manager"),
+                    SustcManager.class, StaffType.SustcManager);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get users", e);
         }
@@ -141,7 +147,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         line[STAFF_NAME], getStaffType(line[STAFF_TYPE]), line[STAFF_PASSWORD]);
                 StaffInfo staffInfo = new StaffInfo(
                         logInfo, line[STAFF_COMPANY], line[STAFF_CITY],
-                        "female".equals(line[STAFF_GENDER]), Integer.parseInt(line[STAFF_AGE]),
+                        CSVMapping.getGender(line[STAFF_GENDER]), Integer.parseInt(line[STAFF_AGE]),
                         line[STAFF_PHONE]);
                 staffs.put(staffInfo, staffId);
                 staffMap.put(line[STAFF_NAME], staffId);
@@ -175,7 +181,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         try {
                             stmt.setInt(1, staffs.get(staff));
                             stmt.setString(2, staff.basicInfo().name());
-                            stmt.setString(3, staff.isFemale() ? "FEMALE" : "MALE");
+                            stmt.setString(3, getGender(staff.isFemale()));
                             stmt.setDate(4, Date.valueOf(LocalDate.ofYearDay(
                                     LocalDate.now().getYear() - staff.age(), 1)));
                             stmt.setString(5, staff.phoneNumber());

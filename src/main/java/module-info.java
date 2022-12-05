@@ -5,4 +5,6 @@ open module cs307_project {
     requires cs307.project2.interfaces;
     requires java.sql;
     requires java.rmi;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
 }
