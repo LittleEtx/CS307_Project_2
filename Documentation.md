@@ -6,13 +6,13 @@
 * **Company**
 * **Ship**
 * **Item**
-* **Container**
+* **Container**: `type` can be _'DRY'_, _'FLAT_RACK'_, _'REEFER'_, _'OPEN_TOP'_ or _'ISO_TANK'_
 
 #### 1.2 Weak Entity
 * **Tax_Info**: weak entity of `City`, contains import and export tax rate for each type of item
 * **Verification**: weak entity of `Staff`, containing their login password and authority level.
 The attribute `Authority` could be _'COMPANY_MANAGER'_, _'COURIER'_, _'SEAPORT_OFFICER'_ or _'SUSTC_MANAGER'_
-* **Ship_State**: weak entity of `Ship`. `State` can be _'SAILING'_ or _'DOCKING'_
+* **Ship_State**: weak entity of `Ship`. `State` can be _'SAILING'_ or _'DOCKED'_
 * **Item_Type**: the type of `Item`. Only contains one column: `Type`
 * **Item_State**: the current state of the `Item`. `State` can be 
 _'PICKING_UP'_, _'TO_EXPORT_TRANSPORTING'_, _'EXPORT_CHECKING'_, _'EXPORT_CHECK_FAILED'_,
@@ -20,13 +20,14 @@ _'PACKING_TO_CONTAINER'_, _'WAITING_FOR_SHIPPING'_, _'SHIPPING'_, _'UNPACKING_FR
 _'IMPORT_CHECKING'_, _'IMPORT_CHECK_FAILED'_, _'FROM_IMPORT_TRANSPORTING'_, _'DELIVERING'_, _'FINISH'_
 
 #### 1.3 Relationship
-* **Ship_Container**: what `Container` that `Ship` is transporting
-* **Container_Item**: what `Item` is in `Container`
+* **Container_Ship**: what `Container` that `Ship` is transporting
+* **Item_Container**: what `Item` is in `Container`
 * **Staff_City**: working `City` of `Staff`
 * **Staff_Company**: working `Company` of `Staff`
-* **Courier_Item**: what `Item` is being transported by `Staff`
+* **Staff_Handle_Item**: what `Item` is being handled by `Staff`
+`Stage` can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
 * **Item_Route**: the `City` that `Item` will pass.
-`Stage` of the transportation can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
+`Stage` can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
 
 
 ### 2. add functions and triggers to the tables
@@ -88,11 +89,11 @@ Query `City` to get the city id, then query `Tax_Info` for the export tax rate
   * Query the code in `Container_Item`, get the item name.
   * Query `Item_State` to see if is _'PACKING_TO_CONTAINER'_.
   * Query the code in `Ship_Container` to ensure the container is not loaded to another ship.
-  * Query the name in `Ship` get its id. Query `Ship_State` to see if state is _'DOCKING'_.
+  * Query the name in `Ship` get its id. Query `Ship_State` to see if state is _'DOCKED'_.
   * Add the relation to `Ship_Container`, then update `Item_State` to _'WAITING_FOR_SHIPPING'_
 * **shipStartSailing(String shipName)
   * Query the name in `Ship` get its id. 
-  * Query `Ship_State` to see if state is _'DOCKING'_.
+  * Query `Ship_State` to see if state is _'DOCKED'_.
   * Update `Ship_State` to _'SAILING'_
   * Query `Ship_Container` to get all the containers in the ship.
   * Query `Container_Item` to get all the items in the containers.
@@ -101,7 +102,7 @@ Query `City` to get the city id, then query `Tax_Info` for the export tax rate
   * Query the name in `Item_State` to see if is _'SHIPPING'_
   * Get the container code and delete the relation in `Container_Item`
   * Delete the relation in `Ship_Container`
-  * Update `Ship_State` to _'DOCKING'_
+  * Update `Ship_State` to _'DOCKED'_
   * Update `Item_State` to _'UNPACKING_FROM_CONTAINER'_
 * **itemWaitForChecking(LogInfo log, String item)**:
 `Item_State` from _'UNPACKING_FROM_CONTAINER'_ to _'IMPORT_CHECKING'_

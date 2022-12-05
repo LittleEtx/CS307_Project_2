@@ -1,6 +1,8 @@
 package com.littleetx.cs307_project_2.file_reader;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Iterator;
 
 public class SQLReader implements Iterable<String>, AutoCloseable {
@@ -47,5 +49,19 @@ public class SQLReader implements Iterable<String>, AutoCloseable {
     @Override
     public void close() throws Exception {
         reader.close();
+    }
+
+    public static void runSQL(String sqlFile, Connection con) {
+        File file = new File(sqlFile);
+        SQLReader reader = new SQLReader(file);
+        try {
+            Statement stmt = con.createStatement();
+            for (String sql : reader) {
+                stmt.execute(sql);
+            }
+            reader.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to run sql", e);
+        }
     }
 }

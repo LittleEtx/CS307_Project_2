@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2;
 
+import com.littleetx.cs307_project_2.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.file_reader.FileOperator;
 import com.littleetx.cs307_project_2.file_reader.FileOperator_CSV;
 import com.littleetx.cs307_project_2.file_reader.SQLReader;
@@ -8,8 +9,8 @@ import cs307.project2.interfaces.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -24,7 +25,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
     private final Verification<Courier> couriers;
     private final Verification<SustcManager> sustcManagers;
 
-    private static final String CREATE_DATABASE_AND_USERS_SQL = "scripts/CreateDatabaseAndUsers.sql";
+    private static final String CREATE_DATABASE_AND_USERS_SQL = "scripts/CreateUsers.sql";
     private static final String DDL_SQL = "scripts/DDl.sql";
     private static final int PACKET_SIZE = 1000;
 
@@ -33,49 +34,75 @@ public class DatabaseManipulation implements IDatabaseManipulation {
     }
 
     public DatabaseManipulation(String database, String root, String pass, boolean initDatabase) {
+        Connection conn;
         try {
-            rootConn = DriverManager.getConnection(database, root, pass);
+            conn = DriverManager.getConnection(database, root, pass);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to database", e);
         }
 
         if (initDatabase) {
-            // Create database and users
-            try (SQLReader reader = new SQLReader(new File(CREATE_DATABASE_AND_USERS_SQL))) {
-                for (String sql : reader) {
-                    rootConn.createStatement().execute(sql);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create database and users", e);
+            // Create database
+            try {
+                conn.prepareStatement("create database sustc").execute();
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to create database", e);
+            }
+
+            database =  database.substring(0, 18) +
+                    database.substring(18).split("/")[0] +
+                    "/sustc";
+            try {
+                conn = DriverManager.getConnection(database, root, pass);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to get new root user", e);
             }
 
             // Create tables
             try (SQLReader reader = new SQLReader(new File(DDL_SQL))) {
                 for (String sql : reader) {
-                    rootConn.createStatement().execute(sql);
+                    conn.createStatement().execute(sql);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to create tables", e);
             }
 
-            //TODO: move the rootConn to new database
+            // create users
+            try (SQLReader reader = new SQLReader(new File(CREATE_DATABASE_AND_USERS_SQL))) {
+                for (String sql : reader) {
+                    conn.createStatement().execute(sql);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create database and users", e);
+            }
         }
+        rootConn = conn;
 
         //TODO: create new users and create verification factory
         //temporary use root users
-        companyManagers = new Verification<>(rootConn, CompanyManager.class);
-        seaportOfficers = new Verification<>(rootConn, SeaportOfficer.class);
-        couriers = new Verification<>(rootConn, Courier.class);
-        sustcManagers = new Verification<>(rootConn, SustcManager.class);
+        try {
+            companyManagers = new Verification<>(DriverManager.getConnection(database,
+                    "company_manager", "company_manager"), CompanyManager.class);
+            seaportOfficers = new Verification<>(DriverManager.getConnection(database,
+                    "seaport_officer", "seaport_officer"), SeaportOfficer.class);
+            couriers = new Verification<>(DriverManager.getConnection(database,
+                    "courier", "courier"), Courier.class);
+            sustcManagers = new Verification<>(DriverManager.getConnection(database,
+                    "sustc_manager", "sustc_manager"), SustcManager.class);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get users", e);
+        }
     }
 
     @Override
     public void $import(String recordsCSV, String staffsCSV) {
         //read staffs
-        FileOperator fileOperator = new FileOperator_CSV(staffsCSV);
+        FileOperator staffFile = new FileOperator_CSV(staffsCSV);
+        FileOperator recordFile = new FileOperator_CSV(recordsCSV);
         try {
-            var reader = fileOperator.getReader();
+            var staffReader = staffFile.getReader();
             Map<StaffInfo, Integer> staffs = new HashMap<>();
+            Map<String, Integer> staffMap = new HashMap<>();
             int staffCount = 0;
             Map<String, Integer> companies = new HashMap<>();
             int companyCount = 0;
@@ -83,12 +110,11 @@ public class DatabaseManipulation implements IDatabaseManipulation {
             int cityCount = 0;
             List<int[]> staff_company = new ArrayList<>();
             List<int[]> staff_city = new ArrayList<>();
-            Iterator<String[]> iterator = reader.iterator();
+            Iterator<String[]> staffIterator = staffReader.iterator();
             //drop first line
-            iterator.next();
-            while (iterator.hasNext()) {
-                String[] line = iterator.next();
-
+            staffIterator.next();
+            while (staffIterator.hasNext()) {
+                String[] line = staffIterator.next();
 
                 Integer companyId = companies.get(line[STAFF_COMPANY]);
                 if (line[STAFF_COMPANY] != null && companyId == null) {
@@ -118,6 +144,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         "female".equals(line[STAFF_GENDER]), Integer.parseInt(line[STAFF_AGE]),
                         line[STAFF_PHONE]);
                 staffs.put(staffInfo, staffId);
+                staffMap.put(line[STAFF_NAME], staffId);
             }
 
             //insert to tables
@@ -130,6 +157,8 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into company");
+
             insertData(rootConn.prepareStatement("INSERT INTO City VALUES (?, ?)"),
                     cities.keySet(), (stmt, city) -> {
                         try {
@@ -139,6 +168,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into city");
 
             insertData(rootConn.prepareStatement("INSERT INTO Staff VALUES (?, ?, ?, ?, ?)"),
                     staffs.keySet(), (stmt, staff) -> {
@@ -153,6 +183,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into staff");
 
             insertData(rootConn.prepareStatement("INSERT INTO verification VALUES (?, ?, ?)"),
                     staffs.keySet(), (stmt, staff) -> {
@@ -164,6 +195,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into verification");
 
             insertData(rootConn.prepareStatement("INSERT INTO staff_company VALUES (?, ?)"),
                     staff_company, (stmt, pair) -> {
@@ -174,6 +206,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into staff_company");
 
             insertData(rootConn.prepareStatement("INSERT INTO staff_city VALUES (?, ?)"),
                     staff_city, (stmt, pair) -> {
@@ -184,16 +217,245 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
+            Debug.println("Loaded data into staff_city");
+
+            var recordReader = recordFile.getReader();
+            Iterator<String[]> recordIterator = recordReader.iterator();
+
+            Set<String> itemTypes = new HashSet<>();
+            List<ItemInfo> items = new ArrayList<>();
+            Map<TaxInfo.Key, TaxInfo.Value> taxes = new HashMap<>();
+            Map<String, ShipInfo> ships = new HashMap<>();
+            Set<ContainerInfo> containers = new HashSet<>();
+            Map<String, String> item_container = new HashMap<>();
+            Map<String, String> container_ship = new HashMap<>();
+
+            //drop first line
+            recordIterator.next();
+            while (recordIterator.hasNext()) {
+                String[] line = recordIterator.next();
+
+                itemTypes.add(line[ITEM_CLASS]);
+                ItemInfo itemInfo = new ItemInfo(
+                                line[ITEM_NAME], line[ITEM_CLASS],
+                                Integer.parseInt(line[ITEM_PRICE]),
+                                CSVMapping.getItemState(line[ITEM_STATE]),
+                                new ItemInfo.RetrievalDeliveryInfo(
+                                        line[RETRIEVAL_CITY], line[RETRIEVAL_COURIER]
+                                ),
+                                new ItemInfo.RetrievalDeliveryInfo(
+                                        line[DELIVERY_CITY], line[DELIVERY_COURIER]
+                                ),
+                                new ItemInfo.ImportExportInfo(
+                                        line[IMPORT_CITY], line[IMPORT_OFFICER],
+                                        Double.parseDouble(line[IMPORT_TAX])
+                                ),
+                                new ItemInfo.ImportExportInfo(
+                                        line[EXPORT_CITY], line[EXPORT_OFFICER],
+                                        Double.parseDouble(line[EXPORT_TAX])
+                                ));
+                items.add(itemInfo);
+                TaxInfo.Key exportKey = new TaxInfo.Key(cities.get(line[EXPORT_CITY]), line[ITEM_CLASS]);
+                if (!taxes.containsKey(exportKey)) {
+                    taxes.put(exportKey, new TaxInfo.Value(null, null));
+                    taxes.get(exportKey).export_rate =
+                            Double.parseDouble(line[EXPORT_TAX]) / itemInfo.price();
+                }
+                TaxInfo.Key importKey = new TaxInfo.Key(cities.get(line[IMPORT_CITY]), line[ITEM_CLASS]);
+                if (!taxes.containsKey(importKey)) {
+                    taxes.put(importKey, new TaxInfo.Value(null, null));
+                    taxes.get(importKey).import_rate =
+                            Double.parseDouble(line[IMPORT_TAX]) / itemInfo.price();
+                }
+
+
+                if (line[CONTAINER_CODE] != null) {
+                    ContainerInfo containerInfo = new ContainerInfo(
+                             CSVMapping.getContainerType(line[CONTAINER_TYPE]), line[CONTAINER_CODE],false);
+                    containers.add(containerInfo);
+                    item_container.put(line[ITEM_NAME], line[CONTAINER_CODE]);
+                }
+
+                if (line[SHIP_NAME] != null) {
+                    ShipInfo shipInfo = new ShipInfo(
+                            line[SHIP_NAME], line[COMPANY_NAME],
+                            itemInfo.state() == ItemState.Shipping);
+                    if (ships.get(line[SHIP_NAME]) == null || shipInfo.sailing()) {
+                        ships.put(line[SHIP_NAME], shipInfo);
+                    }
+                    ships.put(line[SHIP_NAME], shipInfo);
+                    container_ship.put(line[CONTAINER_CODE], line[SHIP_NAME]);
+                }
+            }
+
+            insertData(rootConn.prepareStatement("INSERT INTO item_type VALUES (?)"),
+                    itemTypes, (stmt, type) -> {
+                        try {
+                            stmt.setString(1, type);
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into item_type");
+
+            insertData(rootConn.prepareStatement("insert into item values (?, ?, ?)"),
+                    items, (stmt, item) -> {
+                        try {
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, (int) item.price());
+                            stmt.setString(3, item.$class());
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into item");
+
+            insertData(rootConn.prepareStatement("insert into item_state values (?, ?)"),
+                    items, (stmt, item) -> {
+                        try {
+                            stmt.setString(1, item.name());
+                            stmt.setString(2, getItemState(item.state()));
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into item_state");
+
+            insertData(rootConn.prepareStatement("insert into staff_handle_item values (?, ?, ?)"),
+                    items, (stmt, item) -> {
+                        try {
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, staffMap.get(item.retrieval().courier()));
+                            stmt.setString(3, "RETRIEVAL");
+                            if (item.export().officer() != null) {
+                                stmt.addBatch();
+                                stmt.setString(1, item.name());
+                                stmt.setInt(2, staffMap.get(item.export().officer()));
+                                stmt.setString(3, "EXPORT");
+                            }
+                            if (item.$import().officer() != null) {
+                                stmt.addBatch();
+                                stmt.setString(1, item.name());
+                                stmt.setInt(2, staffMap.get(item.$import().officer()));
+                                stmt.setString(3, "IMPORT");
+                            }
+                            if (item.delivery().courier() != null) {
+                                stmt.addBatch();
+                                stmt.setString(1, item.name());
+                                stmt.setInt(2, staffMap.get(item.delivery().courier()));
+                                stmt.setString(3, "DELIVERY");
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into staff_handle_item");
+
+            insertData(rootConn.prepareStatement("insert into item_route values (?, ?, ?)"),
+                    items, (stmt, item) -> {
+                        try {
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, cities.get(item.retrieval().city()));
+                            stmt.setString(3, "RETRIEVAL");
+                            stmt.addBatch();
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, cities.get(item.export().city()));
+                            stmt.setString(3, "EXPORT");
+                            stmt.addBatch();
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, cities.get(item.$import().city()));
+                            stmt.setString(3, "IMPORT");
+                            stmt.addBatch();
+                            stmt.setString(1, item.name());
+                            stmt.setInt(2, cities.get(item.delivery().city()));
+                            stmt.setString(3, "DELIVERY");
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data to item_route");
+
+            insertData(rootConn.prepareStatement("insert into tax_info values (?, ?, ?, ?)"),
+                    taxes.entrySet(), (stmt, entry) -> {
+                        try {
+                            stmt.setString(1, entry.getKey().item_type());
+                            stmt.setInt(2, entry.getKey().cityId());
+                            if (entry.getValue().import_rate != null) {
+                                stmt.setDouble(3, entry.getValue().import_rate);
+                            } else {
+                                stmt.setNull(3, Types.DOUBLE);
+                            }
+                            if (entry.getValue().export_rate != null) {
+                                stmt.setDouble(4, entry.getValue().export_rate);
+                            } else {
+                                stmt.setNull(4, Types.DOUBLE);
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into tax_info");
+
+            insertData(rootConn.prepareStatement("insert into ship values (?, ?)"),
+                    ships.values(), (stmt, ship) -> {
+                        try {
+                            stmt.setString(1, ship.name());
+                            stmt.setInt(2, companies.get(ship.owner()));
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into ship");
+
+            insertData(rootConn.prepareStatement("insert into ship_state values (?, ?)"),
+                    ships.values(), (stmt, ship) -> {
+                        try {
+                            stmt.setString(1, ship.name());
+                            stmt.setString(2, getShipState(ship.sailing()));
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into ship_state");
+
+            insertData(rootConn.prepareStatement("insert into container values (?, ?)"),
+                    containers, (stmt, container) -> {
+                        try {
+                            stmt.setString(1, container.code());
+                            stmt.setString(2, getContainerType(container.type()));
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into container");
+
+            insertData(rootConn.prepareStatement("insert into item_container values (?, ?)"),
+                    item_container.entrySet(), (stmt, relation) -> {
+                        try {
+                            stmt.setString(1, relation.getKey());
+                            stmt.setString(2, relation.getValue());
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into item_container");
+
+            insertData(rootConn.prepareStatement("insert into container_ship values (?, ?)"),
+                    container_ship.entrySet(), (stmt, relation) -> {
+                        try {
+                            stmt.setString(1, relation.getKey());
+                            stmt.setString(2, relation.getValue());
+                        } catch (SQLException e) {
+                            throw new RuntimeException("Wrong parameter!", e);
+                        }
+                    });
+            Debug.println("Loaded data into container_ship");
+
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Failed to open file", e);
+            throw new RuntimeException("Failed to open file: staffs.csv", e);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert data", e);
         }
-
-
-        //TODO: read records
-
-
     }
 
     private <T> void insertData(PreparedStatement statement, Collection<T> data,

@@ -30,7 +30,8 @@ public class GetLoginInfo {
         return info;
     }
 
-    public static String getUrl(LoginInfo info) {
-        return "jdbc:postgresql://" + info.host() + ":" + info.port() + "/" + info.databaseName();
+    public static String getUrl(LoginInfo info, boolean useSUSTC) {
+        return "jdbc:postgresql://" + info.host() + ":" + info.port() +
+                "/" + (useSUSTC ? "sustc" : info.databaseName());
     }
 }

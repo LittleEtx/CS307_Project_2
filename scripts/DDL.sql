@@ -34,27 +34,24 @@ create table City
 );
 
 create table Staff_City(
-    staff_id int references Staff(id),
-    city_id int references City (id),
-    primary key (staff_id, city_id)
+    staff_id int primary key references Staff(id),
+    city_id int references City (id)
 );
 
 create table Staff_Company
 (
-    staff_id int references Staff(id),
-    company_id int references Company(id),
-    primary key (staff_id, company_id)
+    staff_id int primary key references Staff(id),
+    company_id int references Company(id)
 );
 
 create table Ship
 (
-    id int primary key,
-    name varchar not null ,
+    name varchar primary key ,
     company_id int references Company (id)
 );
 
 create table Ship_State(
-    ship_id int primary key references Ship (id),
+    ship_name varchar primary key references Ship (name),
     state varchar
 );
 
@@ -63,17 +60,15 @@ create table Container(
     type varchar
 );
 
-create table Ship_Container(
+create table Container_Ship(
     container_code varchar primary key references Container (code),
-    ship_id int references Ship (id),
-    is_finished boolean
+    ship_name varchar references Ship (name)
 );
 
-create table Container_Item
+create table Item_Container
 (
-    container_code varchar references Container (code),
     item_name varchar primary key references Item(name),
-    is_finished boolean
+    container_code varchar references Container (code)
 );
 
 create table Tax_Info
@@ -92,10 +87,12 @@ create table Item_Route(
     primary key (item_name,stage)
 );
 
-create table Item_Courier(
-    item_name varchar primary key references Item(name),
+create table Staff_Handle_Item
+(
+    item_name varchar references Item(name),
     staff_id int references Staff(id),
-    is_finished boolean
+    stage varchar,
+    primary key (item_name,stage)
 );
 
 
