@@ -6,7 +6,7 @@ public class testDataImport {
     public static void main(String[] args) {
         GetLoginInfo.LoginInfo info = GetLoginInfo.getLoginInfo();
         DatabaseManipulation db = new DatabaseManipulation(
-            GetLoginInfo.getUrl(info),info.username(),info.password(), false
+            GetLoginInfo.getUrl(info),info.username(),info.password(), true
         );
 
         db.$import("records.csv", "staffs.csv");

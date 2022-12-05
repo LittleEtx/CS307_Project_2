@@ -65,13 +65,15 @@ create table Container(
 
 create table Ship_Container(
     container_code varchar primary key references Container (code),
-    ship_id int references Ship (id)
+    ship_id int references Ship (id),
+    is_finished boolean
 );
 
 create table Container_Item
 (
     container_code varchar references Container (code),
-    item_name varchar primary key references Item(name)
+    item_name varchar primary key references Item(name),
+    is_finished boolean
 );
 
 create table Tax_Info
@@ -83,16 +85,17 @@ create table Tax_Info
     import_tax decimal(30,15)
 );
 
-create table Item_City(
- item_name varchar  references Item(name),
+create table Item_Route(
+    item_name varchar  references Item(name),
     city_id int references City(id),
     stage varchar,
     primary key (item_name,stage)
 );
 
 create table Item_Courier(
-     item_name varchar primary key references Item(name),
-      staff_id int references Staff(id)
+    item_name varchar primary key references Item(name),
+    staff_id int references Staff(id),
+    is_finished boolean
 );
 
 
