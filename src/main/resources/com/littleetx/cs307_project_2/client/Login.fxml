@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="5.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.littleetx.cs307_project_2.client.LoginController">
    <children>
       <VBox prefHeight="50.0" prefWidth="100.0" />
@@ -75,13 +69,15 @@
       <HBox alignment="CENTER" spacing="20.0" />
       <VBox fx:id="loginVBox" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="100.0" spacing="10.0">
          <children>
-            <Text fx:id="loginFailedText" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="Invalid user name/ID or password!" />
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="30.0" prefWidth="158.0" text="Login">
+            <Text fx:id="loginMessage" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0"
+                  text="Invalid user name/ID or password!"/>
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="30.0"
+                    prefWidth="158.0" text="Login">
                <VBox.margin>
-                  <Insets />
+                  <Insets/>
                </VBox.margin>
             </Button>
-            <ProgressIndicator fx:id="loginProgress" />
+            <ProgressIndicator fx:id="loginProgress"/>
          </children>
          <opaqueInsets>
             <Insets />

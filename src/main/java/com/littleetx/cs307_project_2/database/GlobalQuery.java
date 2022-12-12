@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2;
+package com.littleetx.cs307_project_2.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,10 +11,10 @@ public class GlobalQuery {
     private static class RootConnectionGetter {
         private static final Connection instance;
         static  {
-            var info = LoginInfoGetter.getLoginInfo();
+            var info = DatabaseLoginInfo.getLoginInfo();
             try {
                 instance = DriverManager.getConnection(
-                LoginInfoGetter.getUrl(info,true),info.username(),info.password());
+                        info.getUrl(true), info.username(), info.password());
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to connect to database", e);
             }

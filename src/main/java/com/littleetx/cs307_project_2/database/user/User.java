@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.user;
+package com.littleetx.cs307_project_2.database.user;
 
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
@@ -14,10 +14,15 @@ abstract public class User {
      * information of the current staff
      */
     protected StaffInfo staffInfo;
-    protected User(Connection conn, StaffInfo info) {
+
+    protected User(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
         this.conn = conn;
         this.staffInfo = info;
+        if (this.getStaffType() != info.basicInfo().type()) {
+            throw new IllegalArgumentException("User type does not match");
+        }
     }
+
     abstract public LogInfo.StaffType getStaffType();
 
     public boolean changePassword(String newPassword) {

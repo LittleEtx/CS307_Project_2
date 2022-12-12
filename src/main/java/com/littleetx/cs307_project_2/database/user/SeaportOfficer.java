@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.user;
+package com.littleetx.cs307_project_2.database.user;
 
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
@@ -7,7 +7,7 @@ import java.sql.Connection;
 
 public class SeaportOfficer extends User {
 
-    public SeaportOfficer(Connection conn, StaffInfo info) {
+    public SeaportOfficer(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
         super(conn, info);
     }
 

@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.user;
+package com.littleetx.cs307_project_2.database.user;
 
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
@@ -6,7 +6,7 @@ import cs307.project2.interfaces.StaffInfo;
 import java.sql.Connection;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, StaffInfo info) {
+    CompanyManager(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
         super(conn, info);
     }
 

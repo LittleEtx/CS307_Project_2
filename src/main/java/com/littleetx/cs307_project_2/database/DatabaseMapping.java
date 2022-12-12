@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2;
+package com.littleetx.cs307_project_2.database;
 
 import cs307.project2.interfaces.ContainerInfo;
 import cs307.project2.interfaces.ItemState;

@@ -1,11 +1,11 @@
-package com.littleetx.cs307_project_2.user;
+package com.littleetx.cs307_project_2.database.user;
 
 import cs307.project2.interfaces.*;
 
 import java.sql.Connection;
 
 public class SustcManager extends User {
-    public SustcManager(Connection conn, StaffInfo info) {
+    public SustcManager(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
         super(conn, info);
     }
 

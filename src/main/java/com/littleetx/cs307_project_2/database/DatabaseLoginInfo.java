@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2;
+package com.littleetx.cs307_project_2.database;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -7,31 +7,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class LoginInfoGetter {
-    private static final String LOGIN_INFO_PATH = "database_login.json";
-    public record LoginInfo(
-            int port,
-            String host,
-            String databaseName,
-            String username,
-            String password) {
-    }
 
-    public static LoginInfo getLoginInfo() {
+public record DatabaseLoginInfo(
+        int port,
+        String host,
+        String databaseName,
+        String username,
+        String password
+) {
+    private static final String LOGIN_INFO_PATH = "database_login.json";
+
+    public static DatabaseLoginInfo getLoginInfo() {
         File file = new File(LOGIN_INFO_PATH);
-        LoginInfo info ;
+        DatabaseLoginInfo info;
         JsonFactory jf = new JsonFactory();
         try (JsonParser jp = jf.createParser(file)) {
             ObjectMapper mapper = new ObjectMapper();
-            info = mapper.readValue(jp, LoginInfo.class);
+            info = mapper.readValue(jp, DatabaseLoginInfo.class);
         } catch (IOException e) {
             throw new RuntimeException("Can not read database_login.json", e);
         }
         return info;
     }
 
-    public static String getUrl(LoginInfo info, boolean useSUSTC) {
-        return "jdbc:postgresql://" + info.host() + ":" + info.port() +
-                "/" + (useSUSTC ? "sustc" : info.databaseName());
+    public String getUrl(boolean useSUSTC) {
+        return "jdbc:postgresql://" + host + ":" + port +
+                "/" + (useSUSTC ? "sustc" : databaseName);
     }
 }
+

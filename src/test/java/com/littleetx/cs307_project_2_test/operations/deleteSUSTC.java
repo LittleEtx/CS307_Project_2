@@ -1,6 +1,6 @@
 package com.littleetx.cs307_project_2_test.operations;
 
-import com.littleetx.cs307_project_2.GlobalQuery;
+import com.littleetx.cs307_project_2.database.GlobalQuery;
 import com.littleetx.cs307_project_2.file_reader.SQLReader;
 
 import java.sql.Connection;

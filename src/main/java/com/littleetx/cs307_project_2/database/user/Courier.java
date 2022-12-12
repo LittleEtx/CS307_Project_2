@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.user;
+package com.littleetx.cs307_project_2.database.user;
 
 import cs307.project2.interfaces.ItemInfo;
 import cs307.project2.interfaces.ItemState;
@@ -8,7 +8,7 @@ import cs307.project2.interfaces.StaffInfo;
 import java.sql.Connection;
 
 public class Courier extends User {
-    public Courier(Connection conn, StaffInfo info) {
+    public Courier(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
         super(conn, info);
     }
 
