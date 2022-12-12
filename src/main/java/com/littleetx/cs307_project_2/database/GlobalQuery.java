@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.database;
 
+import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
 
@@ -125,5 +126,30 @@ public class GlobalQuery {
         return -1;
     }
 
+    public static TaxInfo.Value getCityTaxRate(TaxInfo.Key key) {
+        return TaxRateGetter.taxRates.get(key);
+    }
 
+    private static class TaxRateGetter {
+        private static final Map<TaxInfo.Key, TaxInfo.Value> taxRates;
+
+        static {
+            try (PreparedStatement stmt = getRootConnection()
+                    .prepareStatement("SELECT * FROM tax_info")) {
+                taxRates = new HashMap<>();
+                var result = stmt.executeQuery();
+                while (result.next()) {
+                    taxRates.put(new TaxInfo.Key(
+                                    result.getInt("city_id"),
+                                    result.getString("item_type")),
+                            new TaxInfo.Value(
+                                    result.getDouble("exempt_rate"),
+                                    result.getDouble("import_rate")
+                            ));
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

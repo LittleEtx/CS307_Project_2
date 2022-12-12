@@ -73,11 +73,11 @@ create table Item_Container
 
 create table Tax_Info
 (
-    item_type varchar references Item_Type(type),
-    city_id int references City (id),
-    primary key (item_type,city_id),
-    export_tax decimal(30,15),
-    import_tax decimal(30,15)
+    item_type   varchar references Item_Type (type),
+    city_id     int references City (id),
+    primary key (item_type, city_id),
+    export_rate decimal(30, 15),
+    import_rate decimal(30, 15)
 );
 
 create table Item_Route(

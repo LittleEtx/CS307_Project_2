@@ -238,28 +238,27 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                                         line[IMPORT_CITY], line[IMPORT_OFFICER],
                                         Double.parseDouble(line[IMPORT_TAX])
                                 ),
-                                new ItemInfo.ImportExportInfo(
-                                        line[EXPORT_CITY], line[EXPORT_OFFICER],
-                                        Double.parseDouble(line[EXPORT_TAX])
-                                ));
+                        new ItemInfo.ImportExportInfo(
+                                line[EXPORT_CITY], line[EXPORT_OFFICER],
+                                Double.parseDouble(line[EXPORT_TAX])
+                        ));
                 items.add(itemInfo);
                 TaxInfo.Key exportKey = new TaxInfo.Key(cities.get(line[EXPORT_CITY]), line[ITEM_CLASS]);
                 if (!taxes.containsKey(exportKey)) {
                     taxes.put(exportKey, new TaxInfo.Value(null, null));
-                    taxes.get(exportKey).export_rate =
-                            Double.parseDouble(line[EXPORT_TAX]) / itemInfo.price();
                 }
+                taxes.get(exportKey).export_rate = Math.max(Objects.requireNonNullElse(
+                        taxes.get(exportKey).export_rate, -1.0), itemInfo.export().tax() / itemInfo.price());
                 TaxInfo.Key importKey = new TaxInfo.Key(cities.get(line[IMPORT_CITY]), line[ITEM_CLASS]);
                 if (!taxes.containsKey(importKey)) {
                     taxes.put(importKey, new TaxInfo.Value(null, null));
-                    taxes.get(importKey).import_rate =
-                            Double.parseDouble(line[IMPORT_TAX]) / itemInfo.price();
                 }
-
+                taxes.get(importKey).import_rate = Math.max(Objects.requireNonNullElse(
+                        taxes.get(importKey).import_rate, -1.0), itemInfo.$import().tax() / itemInfo.price());
 
                 if (line[CONTAINER_CODE] != null) {
                     ContainerInfo containerInfo = new ContainerInfo(
-                             CSVMapping.getContainerType(line[CONTAINER_TYPE]), line[CONTAINER_CODE],false);
+                            CSVMapping.getContainerType(line[CONTAINER_TYPE]), line[CONTAINER_CODE], false);
                     containers.add(containerInfo);
                     item_container.put(line[ITEM_NAME], line[CONTAINER_CODE]);
                 }
@@ -368,12 +367,12 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         try {
                             stmt.setString(1, entry.getKey().item_type());
                             stmt.setInt(2, entry.getKey().cityId());
-                            if (entry.getValue().import_rate != null) {
+                            if (entry.getValue().import_rate >= 0) {
                                 stmt.setDouble(3, entry.getValue().import_rate);
                             } else {
                                 stmt.setNull(3, Types.DOUBLE);
                             }
-                            if (entry.getValue().export_rate != null) {
+                            if (entry.getValue().export_rate >= 0) {
                                 stmt.setDouble(4, entry.getValue().export_rate);
                             } else {
                                 stmt.setNull(4, Types.DOUBLE);

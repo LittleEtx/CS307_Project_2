@@ -2,6 +2,7 @@ open module cs307_project {
     exports com.littleetx.cs307_project_2;
     exports com.littleetx.cs307_project_2.client;
     exports com.littleetx.cs307_project_2.database;
+    exports com.littleetx.cs307_project_2.database.database_type;
     exports com.littleetx.cs307_project_2.file_reader;
     exports com.littleetx.cs307_project_2.client.tables;
     requires javafx.base;

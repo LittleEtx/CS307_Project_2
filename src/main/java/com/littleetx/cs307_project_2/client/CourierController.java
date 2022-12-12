@@ -13,10 +13,13 @@ public class CourierController {
     @FXML
     private VBox rootVBox;
     @FXML
+    private HBox newItemHBox;
+    @FXML
     private HBox onGoingItemHBox;
     @FXML
     private HBox finishedItemHBox;
 
+    private ItemTableView newItemTable;
     private ItemTableView onGoingItemTable;
     private ItemTableView finishedItemTable;
 
@@ -24,6 +27,9 @@ public class CourierController {
     protected void initialize() {
         rootVBox.getChildren().add(
                 0, GlobalManager_Client.getStaffInfoPanel());
+        newItemTable = new ItemTableView();
+        newItemHBox.getChildren().add(0, newItemTable);
+        initialTable(newItemTable);
         onGoingItemTable = new ItemTableView();
         onGoingItemHBox.getChildren().add(0, onGoingItemTable);
         initialTable(onGoingItemTable);

@@ -9,3 +9,8 @@ WHERE name = 'Zang Cong'
 SELECT *
 FROM staff
          join verification on staff.id = verification.staff_id;
+
+
+
+SELECT *
+FROM tax_info;

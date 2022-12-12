@@ -12,6 +12,26 @@
     <children>
         <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
             <tabs>
+                <Tab text="New">
+                    <content>
+                        <HBox fx:id="newItemHBox">
+                            <children>
+                                <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
+                                      spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
+                                                text="Add Item" textAlignment="CENTER"/>
+                                        <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
+                                                text="Take Item" textAlignment="CENTER"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
                 <Tab text="On going">
                     <content>
                         <HBox fx:id="onGoingItemHBox">
@@ -19,8 +39,6 @@
                                 <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
                                       spacing="10.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
-                                                text="Add Item" textAlignment="CENTER"/>
                                         <Button mnemonicParsing="false" prefWidth="80.0" text="Update Item State"
                                                 textAlignment="CENTER" wrapText="true"/>
                                     </children>
