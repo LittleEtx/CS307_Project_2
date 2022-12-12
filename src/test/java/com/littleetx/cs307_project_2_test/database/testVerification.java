@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2_test;
+package com.littleetx.cs307_project_2_test.database;
 
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.Verification;

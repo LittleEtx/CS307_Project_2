@@ -61,12 +61,16 @@ public class Verification {
                 //using id
                 int id = Integer.parseInt(user);
                 stmt = conn.prepareStatement(
-                        "SELECT * FROM staff natural join verification WHERE id = ? AND password = ?");
+                        "SELECT * FROM staff join verification on " +
+                                "staff.id = verification.staff_id " +
+                                "WHERE staff.id = ? AND verification.password = ?");
                 stmt.setInt(1, id);
             } catch (NumberFormatException e) {
                 //using name
                 stmt = conn.prepareStatement(
-                        "SELECT * FROM staff natural join verification WHERE name = ? AND password = ?");
+                        "SELECT * FROM staff join verification " +
+                                "on staff.id = verification.staff_id " +
+                                "WHERE name = ? AND password = ?");
                 stmt.setString(1, user);
             }
             stmt.setString(2, password);

@@ -7,8 +7,8 @@ public class SUSTC_ClientApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        ClientGlobalManager.setStage(stage);
-        ClientGlobalManager.enterLoginInterface();
+        GlobalManager_Client.setStage(stage);
+        GlobalManager_Client.enterLoginInterface();
     }
 
     public static void main(String[] args) {

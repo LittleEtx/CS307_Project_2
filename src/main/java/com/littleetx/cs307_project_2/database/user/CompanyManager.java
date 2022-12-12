@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
+    CompanyManager(Connection conn, StaffInfo info) {
         super(conn, info);
     }
 

@@ -8,7 +8,7 @@ import cs307.project2.interfaces.StaffInfo;
 import java.sql.Connection;
 
 public class Courier extends User {
-    public Courier(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
+    public Courier(Connection conn, StaffInfo info) {
         super(conn, info);
     }
 

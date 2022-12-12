@@ -15,7 +15,7 @@ abstract public class User {
      */
     protected StaffInfo staffInfo;
 
-    protected User(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
+    protected User(Connection conn, StaffInfo info) {
         this.conn = conn;
         this.staffInfo = info;
         if (this.getStaffType() != info.basicInfo().type()) {

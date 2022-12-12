@@ -5,7 +5,7 @@ import cs307.project2.interfaces.*;
 import java.sql.Connection;
 
 public class SustcManager extends User {
-    public SustcManager(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
+    public SustcManager(Connection conn, StaffInfo info) {
         super(conn, info);
     }
 

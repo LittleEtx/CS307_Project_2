@@ -1,9 +1,4 @@
-open module cs307_project {
-    exports com.littleetx.cs307_project_2;
-    exports com.littleetx.cs307_project_2.client;
-    exports com.littleetx.cs307_project_2.database;
-    exports com.littleetx.cs307_project_2.file_reader;
-    exports com.littleetx.cs307_project_2.client.tables;
+open module cs307_project_test {
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -13,4 +8,5 @@ open module cs307_project {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires javafx.fxml;
+    requires cs307_project;
 }

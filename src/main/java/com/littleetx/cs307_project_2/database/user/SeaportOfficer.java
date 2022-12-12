@@ -7,7 +7,7 @@ import java.sql.Connection;
 
 public class SeaportOfficer extends User {
 
-    public SeaportOfficer(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
+    public SeaportOfficer(Connection conn, StaffInfo info) {
         super(conn, info);
     }
 

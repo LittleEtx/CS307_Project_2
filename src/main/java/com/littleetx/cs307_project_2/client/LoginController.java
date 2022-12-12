@@ -30,7 +30,7 @@ public class LoginController {
     private ProgressIndicator loginProgress;
 
     @FXML
-    public void initialize() {
+    protected void initialize() {
         loginVBox.getChildren().clear();
         loginButton.setDisable(true);
         loginVBox.getChildren().addAll(loginButton);
@@ -44,21 +44,21 @@ public class LoginController {
     @FXML
     protected void onLoginButtonClick() {
         try {
-            IServerProtocol connection = ClientHelper.getConnection();
+            IServerProtocol server = ClientHelper.getConnection();
 
             showWaiting();
             PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
             pause.setOnFinished(event -> {
                 System.out.println("Login: " + loginUserTextField.getText() + " " + loginPasswordField.getText());
                 try {
-                    if (!connection.verify(loginUserTextField.getText(),
+                    if (!server.verify(loginUserTextField.getText(),
                             loginPasswordField.getText())) {
                         loginUserTextField.setDisable(false);
                         loginPasswordField.setDisable(false);
                         loginPasswordField.clear();
                         showMessage("Invalid username/ID or password!");
                     } else {
-                        ClientGlobalManager.enterUserInterface(connection.getStaffInfo(), connection.getStaffID());
+                        GlobalManager_Client.enterUserInterface(server.getStaffID(), server.getStaffInfo());
                     }
                 } catch (RemoteException e) {
                     System.out.println("Lost connection to the server!");

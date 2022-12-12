@@ -2,6 +2,7 @@ package com.littleetx.cs307_project_2.client;
 
 import cs307.project2.interfaces.StaffInfo;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
@@ -22,14 +23,21 @@ public class StaffInfoController {
     protected Text city;
     @FXML
     protected Text company;
+    @FXML
+    protected Node infoButton;
+
+    @FXML
+    protected Node logoutButton;
+    @FXML
+    protected Node changePasswordButton;
 
 
     @FXML
     private void initialize() {
-        StaffInfo staffInfo = ClientGlobalManager.getStaffInfo();
+        StaffInfo staffInfo = GlobalManager_Client.getStaffInfo();
         authorization.setText(staffInfo.basicInfo().type().toString());
         name.setText(staffInfo.basicInfo().name());
-        ID.setText(Integer.toString(ClientGlobalManager.getStaffID()));
+        ID.setText(Integer.toString(GlobalManager_Client.getStaffID()));
         if (staffInfo.city() != null) {
             city.setText(staffInfo.city());
             cityBox.setVisible(true);
@@ -42,7 +50,12 @@ public class StaffInfoController {
         } else {
             companyBox.setVisible(false);
         }
+
+        logoutButton.setOnMouseEntered(event -> logoutButton.setOpacity(0.2));
+        logoutButton.setOnMouseExited(event -> logoutButton.setOpacity(1));
+        changePasswordButton.setOnMouseEntered(event -> changePasswordButton.setOpacity(0.2));
+        changePasswordButton.setOnMouseExited(event -> changePasswordButton.setOpacity(1));
+        infoButton.setOnMouseEntered(event -> infoButton.setOpacity(0.2));
+        infoButton.setOnMouseExited(event -> infoButton.setOpacity(1));
     }
-
-
 }
