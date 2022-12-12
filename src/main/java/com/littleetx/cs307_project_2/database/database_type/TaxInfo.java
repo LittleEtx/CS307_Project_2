@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.database_type;
+package com.littleetx.cs307_project_2.database.database_type;
 
 public class TaxInfo{
     public record Key(

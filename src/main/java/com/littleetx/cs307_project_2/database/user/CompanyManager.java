@@ -1,9 +1,13 @@
 package com.littleetx.cs307_project_2.database.user;
 
+import com.littleetx.cs307_project_2.database.GlobalQuery;
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CompanyManager extends User {
     CompanyManager(Connection conn, StaffInfo info) throws StaffTypeNotMatchException {
@@ -19,13 +23,34 @@ public class CompanyManager extends User {
         Import, Export
     }
 
+    public double getTaxRate(String cityName, String itemClass, TaxType type) {
+        return getTaxRate(GlobalQuery.getCompanyID(cityName), itemClass, type);
+    }
+
     /**
      * Look for the import/export tax rate of given city and item class. Return -1
      * if any of the two names does not exist or city is not seaport city.
      */
-    public double getTaxRate(String city, String itemClass, TaxType taxType) {
-        //TODO
-        return 0;
+    public double getTaxRate(int cityID, String itemClass, TaxType taxType) {
+        try {
+            String type;
+            if (taxType == TaxType.Import) {
+                type = "export_tax";
+            } else {
+                type = "import_tax";
+            }
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT " + type + " FROM tax_info WHERE city_id = ? AND item_type = ?");
+            stmt.setInt(1, cityID);
+            stmt.setString(2, itemClass);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
     }
 
     /**

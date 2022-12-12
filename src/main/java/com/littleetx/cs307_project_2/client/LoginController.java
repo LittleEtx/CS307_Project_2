@@ -49,6 +49,7 @@ public class LoginController {
             showWaiting();
             PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
             pause.setOnFinished(event -> {
+                System.out.println("Login: " + loginUserTextField.getText() + " " + loginPasswordField.getText());
                 try {
                     if (!connection.verify(loginUserTextField.getText(),
                             loginPasswordField.getText())) {
@@ -57,17 +58,20 @@ public class LoginController {
                         loginPasswordField.clear();
                         showMessage("Invalid username/ID or password!");
                     } else {
-                        System.out.printf("Login success!%n");
+                        ClientGlobalManager.enterUserInterface(connection.getStaffInfo(), connection.getStaffID());
                     }
                 } catch (RemoteException e) {
-                    throw new RuntimeException("Lost connection to the server!", e);
+                    System.out.println("Lost connection to the server!");
+                    e.printStackTrace();
                 }
             });
+            pause.play();
 
         } catch (MalformedURLException | NotBoundException e) {
             showMessage("Unable to connect to the server!");
         } catch (RemoteException e) {
-            throw new RuntimeException("Lost connection to the server!", e);
+            System.out.println("Lost connection to the server!");
+            e.printStackTrace();
         }
     }
 

@@ -10,4 +10,6 @@ public interface IServerProtocol extends Remote {
 
     StaffInfo getStaffInfo() throws RemoteException;
 
+    int getStaffID() throws RemoteException;
+
 }

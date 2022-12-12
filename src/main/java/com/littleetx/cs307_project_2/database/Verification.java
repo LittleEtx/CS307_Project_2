@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
 public class Verification {
     private final UserGetter<CompanyManager> companyManagers;
@@ -54,42 +53,42 @@ public class Verification {
         }
     }
 
-    public StaffInfo checkAuthority(String username, String password) {
+    public int checkAuthority(String user, String password) {
         Connection conn = GlobalQuery.getRootConnection();
         try {
-            PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT * FROM staff join verification on staff.id = verification.staff_id " +
-                            "left join staff_company on staff.id = staff_company.staff_id " +
-                            "left join staff_city on staff.id = staff_city.staff_id " +
-                            "WHERE name = ? AND password = ?");
-            stmt.setString(1, username);
+            PreparedStatement stmt;
+            try {
+                //using id
+                int id = Integer.parseInt(user);
+                stmt = conn.prepareStatement(
+                        "SELECT * FROM staff natural join verification WHERE id = ? AND password = ?");
+                stmt.setInt(1, id);
+            } catch (NumberFormatException e) {
+                //using name
+                stmt = conn.prepareStatement(
+                        "SELECT * FROM staff natural join verification WHERE name = ? AND password = ?");
+                stmt.setString(1, user);
+            }
             stmt.setString(2, password);
             var result = stmt.executeQuery();
-            if (!result.next()) {
-                return null;
+            if (result.next()) {
+                return result.getInt("id");
+            } else {
+                return -1;
             }
-            return new StaffInfo(
-                    new LogInfo(
-                            username,
-                            DatabaseMapping.getStaffAuthority(
-                                    result.getString("authority")),
-                            password
-                    ),
-                    GlobalQuery.getCompanyName(result.getInt("company_id")),
-                    GlobalQuery.getCityName(result.getInt("city_id")),
-                    DatabaseMapping.getGender(result.getString("gender")),
-                    result.getDate("birth").toLocalDate()
-                            .until(LocalDate.now()).getYears(),
-                    result.getString("phone_number")
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to verify", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to check authority", e);
         }
     }
 
     public StaffInfo checkAuthority(LogInfo logInfo) {
-        StaffInfo info = checkAuthority(logInfo.name(), logInfo.password());
-        if (info == null || info.basicInfo().type() != logInfo.type()) {
+        int id = checkAuthority(logInfo.name(), logInfo.password());
+        if (id < 0) {
+            return null;
+        }
+        StaffInfo info = GlobalQuery.getStaffInfo(id);
+        assert info != null;
+        if (info.basicInfo().type() != logInfo.type()) {
             return null;
         }
         return info;

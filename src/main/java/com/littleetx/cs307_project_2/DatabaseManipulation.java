@@ -1,9 +1,9 @@
 package com.littleetx.cs307_project_2;
 
 import com.littleetx.cs307_project_2.database.Verification;
+import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.CompanyManager;
 import com.littleetx.cs307_project_2.database.user.SustcManager;
-import com.littleetx.cs307_project_2.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.file_reader.FileOperator;
 import com.littleetx.cs307_project_2.file_reader.FileOperator_CSV;
 import com.littleetx.cs307_project_2.file_reader.SQLReader;

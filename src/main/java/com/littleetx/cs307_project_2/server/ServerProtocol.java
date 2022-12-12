@@ -15,16 +15,17 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
 
     private final Verification verification = new Verification(DatabaseLoginInfo.getLoginInfo());
     private StaffInfo staffInfo = null;
+    private int staffID = -1;
 
     @Override
     public boolean verify(String user, String password) {
-        try {
-            //convert to name if is id
-            user = GlobalQuery.getStaffName(Integer.parseInt(user));
-        } catch (NumberFormatException ignore) {
+        int id = verification.checkAuthority(user, password);
+        if (id < 0) {
+            return false;
         }
-        staffInfo = verification.checkAuthority(user, password);
-        return staffInfo != null;
+        staffID = id;
+        staffInfo = GlobalQuery.getStaffInfo(id);
+        return true;
     }
 
     @Override
@@ -33,5 +34,13 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
             throw new IllegalStateException("You must verify first!");
         }
         return staffInfo;
+    }
+
+    @Override
+    public int getStaffID() {
+        if (staffID < 0) {
+            throw new IllegalStateException("You must verify first!");
+        }
+        return staffID;
     }
 }
