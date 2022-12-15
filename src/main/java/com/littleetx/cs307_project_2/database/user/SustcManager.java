@@ -5,8 +5,8 @@ import cs307.project2.interfaces.*;
 import java.sql.Connection;
 
 public class SustcManager extends User {
-    public SustcManager(Connection conn, StaffInfo info) {
-        super(conn, info);
+    public SustcManager(Connection conn, Integer id, StaffInfo info) {
+        super(conn, id, info);
     }
 
     @Override

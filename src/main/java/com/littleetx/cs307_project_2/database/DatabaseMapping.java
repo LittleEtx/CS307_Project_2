@@ -43,9 +43,29 @@ public class DatabaseMapping {
         };
     }
 
+    public static ItemState getItemState(String state) {
+        return switch (state) {
+            case "PICKING_UP" -> ItemState.PickingUp;
+            case "TO_EXPORT_TRANSPORTING" -> ItemState.ToExportTransporting;
+            case "EXPORT_CHECKING" -> ItemState.ExportChecking;
+            case "EXPORT_CHECK_FAILED" -> ItemState.ExportCheckFailed;
+            case "PACKING_TO_CONTAINER" -> ItemState.PackingToContainer;
+            case "WAITING_FOR_SHIPPING" -> ItemState.WaitingForShipping;
+            case "SHIPPING" -> ItemState.Shipping;
+            case "UNPACKING_FROM_CONTAINER" -> ItemState.UnpackingFromContainer;
+            case "IMPORT_CHECKING" -> ItemState.ImportChecking;
+            case "IMPORT_CHECK_FAILED" -> ItemState.ImportCheckFailed;
+            case "FROM_IMPORT_TRANSPORTING" -> ItemState.FromImportTransporting;
+            case "DELIVERING" -> ItemState.Delivering;
+            case "FINISH" -> ItemState.Finish;
+            default -> throw new IllegalArgumentException("Unknown state!");
+        };
+    }
+
     public static String getShipState(boolean sailing) {
         return sailing ? "SAILING" : "DOCKED";
     }
+
     public static String getContainerType(ContainerInfo.Type type) {
         return switch (type) {
             case Dry -> "DRY";

@@ -10,8 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, StaffInfo info) {
-        super(conn, info);
+    CompanyManager(Connection conn, Integer id, StaffInfo info) {
+        super(conn, id, info);
     }
 
     @Override

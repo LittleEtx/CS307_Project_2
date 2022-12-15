@@ -1,7 +1,6 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import com.littleetx.cs307_project_2.file_reader.SQLReader;
 import cs307.project2.interfaces.ItemInfo;
 import cs307.project2.interfaces.ItemState;
 import cs307.project2.interfaces.LogInfo;
@@ -34,8 +33,8 @@ public class Courier extends User {
         return sb.toString();
     }
 
-    public Courier(Connection conn, StaffInfo info) {
-        super(conn, info);
+    public Courier(Connection conn, Integer id, StaffInfo info) {
+        super(conn, id, info);
     }
 
     @Override
@@ -68,10 +67,30 @@ public class Courier extends User {
     }
 
     public Map<String, ItemInfo> getAllItems(GetItemType type) {
-        Map<String, ItemInfo> result = null;
-        SQLReader.runQuery("", conn);
-
-
-        return result;
+        switch (type) {
+            case New -> {
+                return getItems("""
+                        where name in (
+                        select item_name from item_state where state = 'FROM_IMPORT_TRANSPORTING' except
+                        select item_name from staff_handle_item where stage = 'DELIVERY')""");
+            }
+            case OnGoing -> {
+                return getItems("where name in (\n" +
+                        "(select item_name from item_state where state in (" + getList(retrievalStates) + ")\n" +
+                        "intersect select item_name from staff_handle_item where stage = 'RETRIEVAL' and staff_id = " + id + ")\n" +
+                        "union\n" +
+                        "(select item_name from item_state where state in (" + getList(deliveryStates) + ")\n" +
+                        "intersect select item_name from staff_handle_item where stage = 'DELIVERY' and staff_id = " + id + "))");
+            }
+            case Finished -> {
+                return getItems("where name in (\n" +
+                        "(select item_name from item_state where state not in (" + getList(retrievalStates) + ")\n" +
+                        "intersect select item_name from staff_handle_item where stage = 'RETRIEVAL' and staff_id = " + id + ")\n" +
+                        "union\n" +
+                        "(select item_name from item_state where state not in (" + getList(deliveryStates) + ")\n" +
+                        "intersect select item_name from staff_handle_item where stage = 'DELIVERY' and staff_id = " + id + "))");
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
     }
 }

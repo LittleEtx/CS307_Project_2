@@ -7,8 +7,8 @@ import java.sql.Connection;
 
 public class SeaportOfficer extends User {
 
-    public SeaportOfficer(Connection conn, StaffInfo info) {
-        super(conn, info);
+    public SeaportOfficer(Connection conn, Integer id, StaffInfo info) {
+        super(conn, id, info);
     }
 
     @Override

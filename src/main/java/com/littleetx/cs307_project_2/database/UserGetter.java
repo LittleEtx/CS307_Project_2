@@ -15,14 +15,14 @@ public class UserGetter<T extends User> {
         this.userClass = userClass;
     }
 
-    public T getUser(StaffInfo info) {
-        if (info == null) {
+    public T getUser(int id) {
+        if (id < 0) {
             return null;
         }
-
+        StaffInfo info = GlobalQuery.getStaffInfo(id);
         T user;
         try {
-            user = userClass.getConstructor(Connection.class, StaffInfo.class).newInstance(conn, info);
+            user = userClass.getConstructor(Connection.class, Integer.class, StaffInfo.class).newInstance(conn, id, info);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Failed to create user", e);
         } catch (InvocationTargetException e) {

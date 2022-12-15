@@ -85,16 +85,16 @@ public class Verification {
         }
     }
 
-    public StaffInfo checkAuthority(LogInfo logInfo) {
+    public int checkAuthority(LogInfo logInfo) {
         int id = checkAuthority(logInfo.name(), logInfo.password());
         if (id < 0) {
-            return null;
+            return id;
         }
         StaffInfo info = GlobalQuery.getStaffInfo(id);
         assert info != null;
         if (info.basicInfo().type() != logInfo.type()) {
-            return null;
+            return -1;
         }
-        return info;
+        return id;
     }
 }

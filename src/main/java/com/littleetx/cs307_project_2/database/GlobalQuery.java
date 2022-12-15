@@ -31,6 +31,9 @@ public class GlobalQuery {
     }
 
 
+    /**
+     * Note: this method will query the database, do not use too frequently
+     */
     public static StaffInfo getStaffInfo(int id) {
         Connection conn = getRootConnection();
         try {
@@ -124,6 +127,10 @@ public class GlobalQuery {
             }
         }
         return -1;
+    }
+
+    public static TaxInfo.Value getCityTaxRate(int cityID, String item_type) {
+        return getCityTaxRate(new TaxInfo.Key(cityID, item_type));
     }
 
     public static TaxInfo.Value getCityTaxRate(TaxInfo.Key key) {
