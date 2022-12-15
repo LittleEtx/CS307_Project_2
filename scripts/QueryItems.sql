@@ -11,15 +11,16 @@ from (select name, price, class from item) as item
                    on item.name = delivery_city.item_name
          left join (select item_name, staff_id from staff_handle_item where stage = 'RETRIEVAL') as retrieval
                    on item.name = retrieval.item_name
-         left join (select id, name from staff) as retrieval_staff on retrieval.staff_id = retrieval_staff.id
+         left join (select id, name retrieval_staff from staff) as retrieval_staff
+                   on retrieval.staff_id = retrieval_staff.id
          left join (select item_name, staff_id from staff_handle_item where stage = 'IMPORT') as import
-                   on retrieval.item_name = import.item_name
+                   on item.name = import.item_name
          left join (select id, name from staff) as import_staff on import.staff_id = import_staff.id
          left join (select item_name, staff_id from staff_handle_item where stage = 'EXPORT') as export
-                   on retrieval.item_name = export.item_name
+                   on item.name = export.item_name
          left join (select id, name from staff) as export_staff on export.staff_id = export_staff.id
          left join (select item_name, staff_id from staff_handle_item where stage = 'DELIVERY') as delivery
-                   on delivery.item_name = retrieval.item_name
+                   on item.name = delivery.item_name
          left join (select id, name from staff) as delivery_staff on delivery.staff_id = delivery_staff.id;
 
 select *

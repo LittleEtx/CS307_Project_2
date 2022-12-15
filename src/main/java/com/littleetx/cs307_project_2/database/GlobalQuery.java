@@ -150,7 +150,7 @@ public class GlobalQuery {
                                     result.getInt("city_id"),
                                     result.getString("item_type")),
                             new TaxInfo.Value(
-                                    result.getDouble("exempt_rate"),
+                                    result.getDouble("export_rate"),
                                     result.getDouble("import_rate")
                             ));
                 }
