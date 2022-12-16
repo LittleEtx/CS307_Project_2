@@ -1,9 +1,11 @@
 package com.littleetx.cs307_project_2_test.database;
 
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
+import main.interfaces.ItemState;
 import main.interfaces.LogInfo;
 
 public class TestVerification {
@@ -21,5 +23,8 @@ public class TestVerification {
                 LogInfo.StaffType.Courier, "4378861802694094505"), Courier.class));
         System.out.println(verification.getUser(new LogInfo("Jing Xian",
                 LogInfo.StaffType.SeaportOfficer, "4378861802694094505"), Courier.class));
+
+        DatabaseMapping.getStateDatabaseString(ItemState.Shipping); // 返回 "SHIPPING"
+        DatabaseMapping.getItemState("SHIPPING"); //返回 ItemState.Shipping
     }
 }

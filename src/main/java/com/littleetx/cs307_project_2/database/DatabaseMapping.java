@@ -92,6 +92,14 @@ public class DatabaseMapping {
         return sailing ? "SAILING" : "DOCKED";
     }
 
+    public static boolean getShipState(String state) {
+        return switch (state) {
+            case "SAILING" -> true;
+            case "DOCKED" -> false;
+            default -> throw new IllegalArgumentException("Unknown state!");
+        };
+    }
+
     public static String getContainerType(ContainerInfo.Type type) {
         return switch (type) {
             case Dry -> "DRY";
@@ -99,6 +107,17 @@ public class DatabaseMapping {
             case ISOTank -> "ISO_TANK";
             case OpenTop -> "OPEN_TOP";
             case Reefer -> "REEFER";
+        };
+    }
+
+    public static ContainerInfo.Type getContainer(String type) {
+        return switch (type) {
+            case "DRY" -> ContainerInfo.Type.Dry;
+            case "FLAT_ROCK" -> ContainerInfo.Type.FlatRack;
+            case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
+            case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
+            case "REEFER" -> ContainerInfo.Type.Reefer;
+            default -> throw new IllegalArgumentException("Unknown type!");
         };
     }
 
