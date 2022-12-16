@@ -1,5 +1,6 @@
 package test;
 
+import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import main.interfaces.*;
 import org.junit.jupiter.api.*;
 import test.answers.CompanyManagerUserTest;
@@ -17,11 +18,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LocalJudgeTest {
 
-    private static String database = "localhost:5432/sustc";
+    private static String database;
 
-    private static String root = "postgres";
+    private static String root;
 
-    private static String pass = "xx1108";
+    private static String pass;
+
+    static {
+        DatabaseLoginInfo info = DatabaseLoginInfo.getLoginInfo();
+        database = info.getDatabase();
+        root = info.username();
+        pass = info.password();
+    }
 
     private static String recordsCSV = "records.csv";
 
@@ -51,6 +59,7 @@ public class LocalJudgeTest {
             System.err.println("Cannot find the Postgres driver. Check CLASSPATH.");
             System.exit(1);
         }
+        DatabaseLoginInfo info = DatabaseLoginInfo.getLoginInfo();
         String url = "jdbc:postgresql://" + database;
         Properties props = new Properties();
         props.setProperty("user", root);

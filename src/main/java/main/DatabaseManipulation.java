@@ -201,7 +201,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
             Map<String, ShipInfo> ships = new HashMap<>();
             Set<ContainerInfo> containers = new HashSet<>();
             Map<String, String> item_container = new HashMap<>();
-            Map<String, String> container_ship = new HashMap<>();
+            Map<String, String> item_ship = new HashMap<>();
 
             //drop first line
             recordIterator.next();
@@ -256,7 +256,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         ships.put(line[SHIP_NAME], shipInfo);
                     }
                     ships.put(line[SHIP_NAME], shipInfo);
-                    container_ship.put(line[CONTAINER_CODE], line[SHIP_NAME]);
+                    item_ship.put(line[ITEM_NAME], line[SHIP_NAME]);
                 }
             }
 
@@ -412,8 +412,8 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     });
             Debug.println("Loaded data into item_container");
 
-            insertData(rootConn.prepareStatement("insert into container_ship values (?, ?)"),
-                    container_ship.entrySet(), (stmt, relation) -> {
+            insertData(rootConn.prepareStatement("insert into item_ship values (?, ?)"),
+                    item_ship.entrySet(), (stmt, relation) -> {
                         try {
                             stmt.setString(1, relation.getKey());
                             stmt.setString(2, relation.getValue());
@@ -421,7 +421,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
-            Debug.println("Loaded data into container_ship");
+            Debug.println("Loaded data into item_ship");
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert data", e);
