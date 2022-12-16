@@ -79,7 +79,6 @@ public class CompanyManager extends User {
             System.out.println("Error in method loadItemToContainer()");
             throw new RuntimeException(e);
         }
-
         return false;
     }
 
@@ -90,20 +89,27 @@ public class CompanyManager extends User {
      * simplicity, one ship can transport unlimited number of containers.
      */
     public boolean loadContainerToShip(String shipName, String containerCode) {
-        //TODO
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "select * from item_container a join item_state b on a.item_name = b.item_name"
-                            + " and a.container_code= ? and b.state='Packing to Container' "
+                    "select a.item_name from item_container a join item_state b on a.item_name=b.item_name"
+                            + "where a.container_code= ? and b.state='Packing to Container' "
             );
             stmt.setString(1, containerCode);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-//                stmt=conn.prepareStatement(
-//                        "insert into item_ship values(?,?)"
-//                );
+                if (rs.next()) {
 
-            }
+                    stmt = conn.prepareStatement(
+                            "insert into item_ship values(?,?)"
+                    );
+                    stmt.setString(1, rs.getString(1));
+                    stmt.setString(2, shipName);
+                    stmt.execute();//插入进item_ship的记录
+                    stmt = conn.prepareStatement("update item_state set state='Waiting for Shipping' where item_name= ?");
+                    stmt.setString(1, rs.getString(1));//更新item状态
+                    stmt.execute();
+                    return true;
+                }
+
         } catch (SQLException e) {
             System.out.println("Error in method loadContainerToShip()");
             throw new RuntimeException(e);
@@ -116,7 +122,32 @@ public class CompanyManager extends User {
      * containers. Returns false if the ship is already sailing.
      */
     public boolean shipStartSailing(String shipName) {
-        //TODO
+        try{
+            PreparedStatement stmt=conn.prepareStatement(
+                    "select state from ship_state where ship_name= ? "
+            );
+            stmt.setString(1,shipName);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()&&rs.getString(1).equals("DOCKED")){
+                stmt=conn.prepareStatement(
+                        "update ship_state set state='SAILING' where ship_name= ? "
+                );
+                stmt.setString(1,shipName);
+                stmt.execute();//更新ship状态
+
+                stmt=conn.prepareStatement("select a.item_name from item_ship a join item_state b on a.item_name=b.item_name " +
+                        "where a.ship_name= ? and b.state='Waiting for Shipping' ");
+                rs=stmt.executeQuery();//查询item_name
+
+                stmt=conn.prepareStatement("update item_state set state='Shipping' where item_name= ?");
+                stmt.setString(1,rs.getString(1));//更新item状态
+                stmt.execute();
+                return true;
+            }
+        }catch (SQLException e){
+            System.out.println("Error in method shipStartSailing()");
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
