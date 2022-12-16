@@ -1,8 +1,6 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.GlobalQuery;
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,13 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, Integer id, StaffInfo info) {
-        super(conn, id, info);
-    }
-
-    @Override
-    public LogInfo.StaffType getStaffType() {
-        return LogInfo.StaffType.CompanyManager;
+    CompanyManager(Connection conn, Integer id) {
+        super(conn, id);
     }
 
     public enum TaxType {

@@ -3,6 +3,8 @@ package com.littleetx.cs307_project_2;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.CompanyManager;
+import com.littleetx.cs307_project_2.database.user.Courier;
+import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
 import com.littleetx.cs307_project_2.database.user.SustcManager;
 import com.littleetx.cs307_project_2.file_reader.FileOperator;
 import com.littleetx.cs307_project_2.file_reader.FileOperator_CSV;
@@ -470,115 +472,115 @@ public class DatabaseManipulation implements IDatabaseManipulation {
 
     @Override
     public double getImportTaxRate(LogInfo log, String city, String itemClass) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null ? user.getTaxRate(city, itemClass, CompanyManager.TaxType.Import) : -1;
     }
 
     @Override
     public double getExportTaxRate(LogInfo log, String city, String itemClass) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null ? user.getTaxRate(city, itemClass, CompanyManager.TaxType.Export) : -1;
     }
 
     @Override
     public boolean loadItemToContainer(LogInfo log, String itemName, String containerCode) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null && user.loadItemToContainer(itemName, containerCode);
     }
 
     @Override
     public boolean loadContainerToShip(LogInfo log, String shipName, String containerCode) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null && user.loadContainerToShip(shipName, containerCode);
     }
 
     @Override
     public boolean shipStartSailing(LogInfo log, String shipName) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null && user.shipStartSailing(shipName);
     }
 
     @Override
     public boolean unloadItem(LogInfo log, String itemName) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null && user.unloadItem(itemName);
     }
 
     @Override
     public boolean itemWaitForChecking(LogInfo log, String item) {
-        var user = verification.getCompanyManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, CompanyManager.class);
         return user != null && user.itemWaitForChecking(item);
     }
 
     @Override
     public boolean newItem(LogInfo log, ItemInfo item) {
-        var user = verification.getCouriers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, Courier.class);
         return user != null && user.newItem(item);
     }
 
     @Override
     public boolean setItemState(LogInfo log, String itemName, ItemState state) {
-        var user = verification.getCouriers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, Courier.class);
         return user != null && user.setItemState(itemName, state);
     }
 
     @Override
     public String[] getAllItemsAtPort(LogInfo log) {
-        var user = verification.getSeaportOfficers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SeaportOfficer.class);
         return user != null ? user.getAllItemsAtPort() : null;
     }
 
     @Override
     public boolean setItemCheckState(LogInfo log, String itemName, boolean success) {
-        var user = verification.getSeaportOfficers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SeaportOfficer.class);
         return user != null && user.setItemCheckState(itemName, success);
     }
 
     @Override
     public int getCompanyCount(LogInfo log) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getCount(SustcManager.CountType.Company) : -1;
     }
 
     @Override
     public int getCityCount(LogInfo log) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getCount(SustcManager.CountType.City) : -1;
     }
 
     @Override
     public int getCourierCount(LogInfo log) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getCount(SustcManager.CountType.Courier) : -1;
     }
 
     @Override
     public int getShipCount(LogInfo log) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getCount(SustcManager.CountType.Ship) : -1;
     }
 
     @Override
     public ItemInfo getItemInfo(LogInfo log, String name) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getItemInfo(name) : null;
     }
 
     @Override
     public ShipInfo getShipInfo(LogInfo log, String name) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getShipInfo(name) : null;
     }
 
     @Override
     public ContainerInfo getContainerInfo(LogInfo log, String code) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getContainerInfo(code) : null;
     }
 
     @Override
     public StaffInfo getStaffInfo(LogInfo log, String name) {
-        var user = verification.getSUSTCManagers().getUser(verification.checkAuthority(log));
+        var user = verification.getUser(log, SustcManager.class);
         return user != null ? user.getStaffInfo(name) : null;
     }
 }

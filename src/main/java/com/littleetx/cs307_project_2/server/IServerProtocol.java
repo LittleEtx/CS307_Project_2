@@ -6,10 +6,11 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface IServerProtocol extends Remote {
-    boolean verify(String username, String password) throws RemoteException;
+    int verify(String username, String password) throws RemoteException;
 
-    StaffInfo getStaffInfo() throws RemoteException;
+    StaffInfo getStaffInfo(int id) throws RemoteException;
 
-    int getStaffID() throws RemoteException;
+    //courier methods
+
 
 }

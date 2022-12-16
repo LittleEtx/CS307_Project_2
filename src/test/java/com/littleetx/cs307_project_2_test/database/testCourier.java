@@ -11,8 +11,8 @@ import java.util.Map;
 public class testCourier {
     public static void main(String[] args) {
         Verification verification = new Verification(DatabaseLoginInfo.getLoginInfo());
-        Courier courier = verification.getCouriers().getUser(
-                verification.checkAuthority("11202206", "3621471600376504500"));
+        Courier courier = verification.getUser(
+                verification.checkAuthority("11202206", "3621471600376504500"), Courier.class);
         Map<String, ItemInfo> items = courier.getAllItems(Courier.GetItemType.OnGoing);
         for (var entry : items.entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());

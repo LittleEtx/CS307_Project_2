@@ -3,8 +3,6 @@ package com.littleetx.cs307_project_2.database.user;
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import cs307.project2.interfaces.ItemInfo;
 import cs307.project2.interfaces.ItemState;
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -33,13 +31,8 @@ public class Courier extends User {
         return sb.toString();
     }
 
-    public Courier(Connection conn, Integer id, StaffInfo info) {
-        super(conn, id, info);
-    }
-
-    @Override
-    public LogInfo.StaffType getStaffType() {
-        return LogInfo.StaffType.Courier;
+    public Courier(Connection conn, Integer id) {
+        super(conn, id);
     }
 
     /**

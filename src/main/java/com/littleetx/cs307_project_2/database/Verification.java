@@ -1,9 +1,6 @@
 package com.littleetx.cs307_project_2.database;
 
-import com.littleetx.cs307_project_2.database.user.CompanyManager;
-import com.littleetx.cs307_project_2.database.user.Courier;
-import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
-import com.littleetx.cs307_project_2.database.user.SustcManager;
+import com.littleetx.cs307_project_2.database.user.*;
 import cs307.project2.interfaces.LogInfo;
 import cs307.project2.interfaces.StaffInfo;
 
@@ -17,22 +14,6 @@ public class Verification {
     private final UserGetter<SeaportOfficer> seaportOfficers;
     private final UserGetter<Courier> couriers;
     private final UserGetter<SustcManager> sustcManagers;
-
-    public UserGetter<CompanyManager> getCompanyManagers() {
-        return companyManagers;
-    }
-
-    public UserGetter<SeaportOfficer> getSeaportOfficers() {
-        return seaportOfficers;
-    }
-
-    public UserGetter<Courier> getCouriers() {
-        return couriers;
-    }
-
-    public UserGetter<SustcManager> getSUSTCManagers() {
-        return sustcManagers;
-    }
 
     public Verification(DatabaseLoginInfo loginInfo) {
         this(loginInfo.getUrl(true));
@@ -96,5 +77,34 @@ public class Verification {
             return -1;
         }
         return id;
+    }
+
+    public <T extends User> T getUser(LogInfo logInfo, Class<T> userClass) {
+        return getUser(checkAuthority(logInfo), userClass);
+    }
+
+    public <T extends User> T getUser(int id, Class<T> userClass) {
+        if (id < 0) {
+            return null;
+        }
+        StaffInfo info = GlobalQuery.getStaffInfo(id);
+        assert info != null;
+        switch (info.basicInfo().type()) {
+            case SustcManager -> {
+                return (T) sustcManagers.getUser(id, userClass);
+            }
+            case CompanyManager -> {
+                return (T) companyManagers.getUser(id, userClass);
+            }
+            case SeaportOfficer -> {
+                return (T) seaportOfficers.getUser(id, userClass);
+            }
+            case Courier -> {
+                return (T) couriers.getUser(id, userClass);
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 }

@@ -1,24 +1,17 @@
 package com.littleetx.cs307_project_2.database.user;
 
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
-
 import java.sql.Connection;
 
 public class SeaportOfficer extends User {
 
-    public SeaportOfficer(Connection conn, Integer id, StaffInfo info) {
-        super(conn, id, info);
-    }
-
-    @Override
-    public LogInfo.StaffType getStaffType() {
-        return LogInfo.StaffType.SeaportOfficer;
+    public SeaportOfficer(Connection conn, Integer id) {
+        super(conn, id);
     }
 
     /**
      * Look for all the items that is currently waiting at this officer’s working
      * seaport.
+     *
      * @return an array of String containing the item names.
      */
     public String[] getAllItemsAtPort() {

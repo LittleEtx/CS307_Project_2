@@ -51,14 +51,14 @@ public class LoginController {
             pause.setOnFinished(event -> {
                 System.out.println("Login: " + loginUserTextField.getText() + " " + loginPasswordField.getText());
                 try {
-                    if (!server.verify(loginUserTextField.getText(),
-                            loginPasswordField.getText())) {
+                    int id = server.verify(loginUserTextField.getText(), loginPasswordField.getText());
+                    if (id < 0) {
                         loginUserTextField.setDisable(false);
                         loginPasswordField.setDisable(false);
                         loginPasswordField.clear();
                         showMessage("Invalid username/ID or password!");
                     } else {
-                        GlobalManager_Client.enterUserInterface(server.getStaffID(), server.getStaffInfo());
+                        GlobalManager_Client.enterUserInterface(id, server.getStaffInfo(id));
                     }
                 } catch (RemoteException e) {
                     System.out.println("Lost connection to the server!");

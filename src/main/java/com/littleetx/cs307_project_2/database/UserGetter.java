@@ -1,7 +1,6 @@
 package com.littleetx.cs307_project_2.database;
 
 import com.littleetx.cs307_project_2.database.user.User;
-import cs307.project2.interfaces.StaffInfo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -15,14 +14,16 @@ public class UserGetter<T extends User> {
         this.userClass = userClass;
     }
 
-    public T getUser(int id) {
-        if (id < 0) {
+    /**
+     * @param id must be a valid id for the type
+     */
+    public <E extends User> T getUser(int id, Class<E> userClass) {
+        if (id < 0 || !this.userClass.equals(userClass)) {
             return null;
         }
-        StaffInfo info = GlobalQuery.getStaffInfo(id);
         T user;
         try {
-            user = userClass.getConstructor(Connection.class, Integer.class, StaffInfo.class).newInstance(conn, id, info);
+            user = this.userClass.getConstructor(Connection.class, Integer.class).newInstance(conn, id);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Failed to create user", e);
         } catch (InvocationTargetException e) {

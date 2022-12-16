@@ -1,22 +1,21 @@
 package com.littleetx.cs307_project_2.database.user;
 
-import cs307.project2.interfaces.*;
+import cs307.project2.interfaces.ContainerInfo;
+import cs307.project2.interfaces.ItemInfo;
+import cs307.project2.interfaces.ShipInfo;
+import cs307.project2.interfaces.StaffInfo;
 
 import java.sql.Connection;
 
 public class SustcManager extends User {
-    public SustcManager(Connection conn, Integer id, StaffInfo info) {
-        super(conn, id, info);
-    }
-
-    @Override
-    public LogInfo.StaffType getStaffType() {
-        return LogInfo.StaffType.SustcManager;
+    public SustcManager(Connection conn, Integer id) {
+        super(conn, id);
     }
 
     public enum CountType {
         City, Courier, Ship, Company
     }
+
     /**
      * Look for the number of companies/cities/couriers/ships that logged SUSTC
      */

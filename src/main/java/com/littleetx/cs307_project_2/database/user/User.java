@@ -3,8 +3,6 @@ package com.littleetx.cs307_project_2.database.user;
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import cs307.project2.interfaces.ItemInfo;
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,21 +16,14 @@ abstract public class User {
      */
     protected Connection conn;
     /**
-     * information of the current staff
+     * id of the current staff
      */
-    protected StaffInfo staffInfo;
     protected int id;
 
-    protected User(Connection conn, int id, StaffInfo info) {
+    protected User(Connection conn, int id) {
         this.id = id;
         this.conn = conn;
-        this.staffInfo = info;
-        if (this.getStaffType() != info.basicInfo().type()) {
-            throw new IllegalArgumentException("User type does not match");
-        }
     }
-
-    abstract public LogInfo.StaffType getStaffType();
 
     public boolean changePassword(String newPassword) {
         //TODO: (optional) change password
@@ -90,13 +81,13 @@ abstract public class User {
                         new ItemInfo.ImportExportInfo(
                                 GlobalQuery.getCityName(rs.getInt("import_city_id")),
                                 rs.getString("import_staff"),
-                                GlobalQuery.getCityTaxRate(rs.getInt("import_city_id"),
+                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city_id"),
                                         rs.getString("class")).import_rate
                         ),
                         new ItemInfo.ImportExportInfo(
                                 GlobalQuery.getCityName(rs.getInt("export_city_id")),
                                 rs.getString("export_staff"),
-                                GlobalQuery.getCityTaxRate(rs.getInt("export_city_id"),
+                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city_id"),
                                         rs.getString("class")).export_rate
                         )
                 ));
