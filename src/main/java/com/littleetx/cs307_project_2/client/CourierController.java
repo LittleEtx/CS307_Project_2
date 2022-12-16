@@ -4,8 +4,6 @@ import com.littleetx.cs307_project_2.client.tables.CourierItemTableView;
 import com.littleetx.cs307_project_2.client.tables.ItemTableView;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.server.IServerProtocol;
-import cs307.project2.interfaces.ItemInfo;
-import cs307.project2.interfaces.ItemState;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
@@ -13,6 +11,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import main.interfaces.ItemInfo;
+import main.interfaces.ItemState;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;

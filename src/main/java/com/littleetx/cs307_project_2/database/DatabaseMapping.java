@@ -1,9 +1,8 @@
 package com.littleetx.cs307_project_2.database;
 
-import cs307.project2.interfaces.ContainerInfo;
-import cs307.project2.interfaces.ItemState;
-
-import static cs307.project2.interfaces.LogInfo.StaffType;
+import main.interfaces.ContainerInfo;
+import main.interfaces.ItemState;
+import main.interfaces.LogInfo.StaffType;
 
 public class DatabaseMapping {
     public static String getStaffAuthorityDatabaseStr(StaffType type) {

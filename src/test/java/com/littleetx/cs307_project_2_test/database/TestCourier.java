@@ -3,7 +3,7 @@ package com.littleetx.cs307_project_2_test.database;
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.user.Courier;
-import cs307.project2.interfaces.ItemInfo;
+import main.interfaces.ItemInfo;
 
 import java.util.Map;
 

@@ -30,9 +30,16 @@ public record DatabaseLoginInfo(
         return info;
     }
 
-    public String getUrl(boolean useSUSTC) {
-        return "jdbc:postgresql://" + host + ":" + port +
-                "/" + (useSUSTC ? "sustc" : databaseName);
+    public String getUrl() {
+        return getUrl(getDatabase());
+    }
+
+    public String getDatabase() {
+        return host + ":" + port + "/" + databaseName;
+    }
+
+    public static String getUrl(String database) {
+        return "jdbc:postgresql://" + database;
     }
 }
 

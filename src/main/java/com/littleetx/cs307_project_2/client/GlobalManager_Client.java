@@ -1,12 +1,12 @@
 package com.littleetx.cs307_project_2.client;
 
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import main.interfaces.LogInfo;
+import main.interfaces.StaffInfo;
 
 import java.io.IOException;
 import java.util.Objects;

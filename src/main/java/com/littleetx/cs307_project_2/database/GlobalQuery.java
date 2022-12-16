@@ -1,8 +1,8 @@
 package com.littleetx.cs307_project_2.database;
 
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
+import main.interfaces.LogInfo;
+import main.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +19,7 @@ public class GlobalQuery {
             var info = DatabaseLoginInfo.getLoginInfo();
             try {
                 instance = DriverManager.getConnection(
-                        info.getUrl(true), info.username(), info.password());
+                        info.getUrl(), info.username(), info.password());
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to connect to database", e);
             }

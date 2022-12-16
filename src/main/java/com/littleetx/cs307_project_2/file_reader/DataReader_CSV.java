@@ -2,16 +2,17 @@ package com.littleetx.cs307_project_2.file_reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileOperator_CSV extends FileOperator {
+public class DataReader_CSV extends DataReader {
 
-
-    public FileOperator_CSV(String fileName) {
-        super(fileName);
-    }
     private final List<String> results = new ArrayList<>();
+
+    public DataReader_CSV(Reader reader) {
+        super(reader);
+    }
 
     @Override
     protected boolean hasNextRow(BufferedReader reader) {
@@ -45,6 +46,10 @@ public class FileOperator_CSV extends FileOperator {
         StringBuilder value = new StringBuilder();
         try {
             String line = reader.readLine();
+            if (line == null) {
+                return;
+            }
+
             for (int i = 0; i < line.length(); i++) {
                 char c = line.charAt(i);
                 if (isInQuote) {

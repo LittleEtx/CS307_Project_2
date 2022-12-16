@@ -1,5 +1,5 @@
 drop table item_container;
-drop table container_ship;
+drop table item_container;
 drop table item_state;
 drop table ship_state;
 drop table staff_city;

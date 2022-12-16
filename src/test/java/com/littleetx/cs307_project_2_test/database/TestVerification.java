@@ -4,7 +4,7 @@ import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
-import cs307.project2.interfaces.LogInfo;
+import main.interfaces.LogInfo;
 
 public class TestVerification {
     public static void main(String[] args) {

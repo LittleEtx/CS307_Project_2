@@ -1,8 +1,8 @@
 package com.littleetx.cs307_project_2.database;
 
 import com.littleetx.cs307_project_2.database.user.*;
-import cs307.project2.interfaces.LogInfo;
-import cs307.project2.interfaces.StaffInfo;
+import main.interfaces.LogInfo;
+import main.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,10 +13,10 @@ public class Verification {
     private final UserGetter<CompanyManager> companyManagers;
     private final UserGetter<SeaportOfficer> seaportOfficers;
     private final UserGetter<Courier> couriers;
-    private final UserGetter<SustcManager> sustcManagers;
+    private final UserGetter<SUSTCManager> sustcManagers;
 
     public Verification(DatabaseLoginInfo loginInfo) {
-        this(loginInfo.getUrl(true));
+        this(loginInfo.getUrl());
     }
 
     public Verification(String url) {
@@ -28,7 +28,7 @@ public class Verification {
             couriers = new UserGetter<>(DriverManager.getConnection(url,
                     "courier", "courier"), Courier.class);
             sustcManagers = new UserGetter<>(DriverManager.getConnection(url,
-                    "sustc_manager", "sustc_manager"), SustcManager.class);
+                    "sustc_manager", "sustc_manager"), SUSTCManager.class);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get users", e);
         }

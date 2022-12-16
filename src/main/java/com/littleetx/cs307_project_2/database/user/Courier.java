@@ -1,8 +1,8 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import cs307.project2.interfaces.ItemInfo;
-import cs307.project2.interfaces.ItemState;
+import main.interfaces.ItemInfo;
+import main.interfaces.ItemState;
 
 import java.sql.Connection;
 import java.util.Map;

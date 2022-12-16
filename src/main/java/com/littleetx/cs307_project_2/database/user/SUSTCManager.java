@@ -1,14 +1,14 @@
 package com.littleetx.cs307_project_2.database.user;
 
-import cs307.project2.interfaces.ContainerInfo;
-import cs307.project2.interfaces.ItemInfo;
-import cs307.project2.interfaces.ShipInfo;
-import cs307.project2.interfaces.StaffInfo;
+import main.interfaces.ContainerInfo;
+import main.interfaces.ItemInfo;
+import main.interfaces.ShipInfo;
+import main.interfaces.StaffInfo;
 
 import java.sql.Connection;
 
-public class SustcManager extends User {
-    public SustcManager(Connection conn, Integer id) {
+public class SUSTCManager extends User {
+    public SUSTCManager(Connection conn, Integer id) {
         super(conn, id);
     }
 
