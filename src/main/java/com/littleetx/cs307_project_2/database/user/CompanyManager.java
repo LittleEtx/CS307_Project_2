@@ -142,11 +142,14 @@ public class CompanyManager extends User {
 
                 stmt=conn.prepareStatement("select a.item_name from item_ship a join item_state b on a.item_name=b.item_name " +
                         "where a.ship_name= ? and b.state='Waiting for Shipping' ");
+                stmt.setString(1,shipName);
                 rs=stmt.executeQuery();//查询item_name
 
+                if (rs.next()){
                 stmt=conn.prepareStatement("update item_state set state='SHIPPING' where item_name= ?");
                 stmt.setString(1,rs.getString(1));//更新item状态
                 stmt.execute();
+                }
                 return true;
             }
         }catch (SQLException e){
