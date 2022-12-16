@@ -1,10 +1,10 @@
 package com.littleetx.cs307_project_2.client.tables;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import cs307.project2.interfaces.ItemInfo;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import main.interfaces.ItemInfo;
 
 import java.util.function.Function;
 

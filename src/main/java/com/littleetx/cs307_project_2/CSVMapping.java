@@ -1,8 +1,8 @@
 package com.littleetx.cs307_project_2;
 
-import cs307.project2.interfaces.ContainerInfo;
-import cs307.project2.interfaces.ItemState;
-import cs307.project2.interfaces.LogInfo;
+import main.interfaces.ContainerInfo;
+import main.interfaces.ItemState;
+import main.interfaces.LogInfo;
 
 public class CSVMapping {
     public static final int STAFF_NAME = 0;

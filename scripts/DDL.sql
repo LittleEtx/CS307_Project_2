@@ -60,8 +60,9 @@ create table Container(
     type varchar
 );
 
-create table Item_Ship(
-    item_name varchar primary key references Item(name),
+create table Item_Ship
+(
+    item_name varchar primary key references Item (name),
     ship_name varchar references Ship (name)
 );
 

@@ -1,19 +1,21 @@
-package com.littleetx.cs307_project_2;
+package main;
 
+import com.littleetx.cs307_project_2.CSVMapping;
+import com.littleetx.cs307_project_2.Debug;
+import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.CompanyManager;
 import com.littleetx.cs307_project_2.database.user.Courier;
+import com.littleetx.cs307_project_2.database.user.SUSTCManager;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
-import com.littleetx.cs307_project_2.database.user.SustcManager;
-import com.littleetx.cs307_project_2.file_reader.FileOperator;
-import com.littleetx.cs307_project_2.file_reader.FileOperator_CSV;
+import com.littleetx.cs307_project_2.file_reader.DataReader;
+import com.littleetx.cs307_project_2.file_reader.DataReader_CSV;
 import com.littleetx.cs307_project_2.file_reader.SQLReader;
-import cs307.project2.interfaces.*;
+import main.interfaces.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.sql.Date;
 import java.sql.*;
 import java.time.LocalDate;
@@ -28,9 +30,8 @@ import static com.littleetx.cs307_project_2.database.DatabaseMapping.*;
 public class DatabaseManipulation implements IDatabaseManipulation {
     private final Connection rootConn;
     private final Verification verification;
-
-    private static final String CREATE_DATABASE_AND_USERS_SQL = "scripts/CreateUsers.sql";
     private static final String DDL_SQL = "scripts/DDl.sql";
+    private static final String GRANT_SQL = "scripts/GrantUserRights.sql";
     private static final int PACKET_SIZE = 1000;
 
     public DatabaseManipulation(String database, String root, String pass) {
@@ -38,59 +39,42 @@ public class DatabaseManipulation implements IDatabaseManipulation {
     }
 
     public DatabaseManipulation(String database, String root, String pass, boolean initDatabase) {
+        String url = DatabaseLoginInfo.getUrl(database);
         Connection conn;
         try {
-            conn = DriverManager.getConnection(database, root, pass);
+            conn = DriverManager.getConnection(url, root, pass);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to database", e);
         }
-
         if (initDatabase) {
-            // Create database
-            try {
-                conn.prepareStatement("create database sustc").execute();
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to create database", e);
-            }
-
-            database =  database.substring(0, 18) +
-                    database.substring(18).split("/")[0] +
-                    "/sustc";
-            try {
-                conn = DriverManager.getConnection(database, root, pass);
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to get new root user", e);
-            }
-
             // Create tables
-            try (SQLReader reader = new SQLReader(new File(DDL_SQL))) {
-                for (String sql : reader) {
-                    conn.createStatement().execute(sql);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create tables", e);
-            }
+            SQLReader.runSQL(DDL_SQL, conn);
 
-            // create users
-            try (SQLReader reader = new SQLReader(new File(CREATE_DATABASE_AND_USERS_SQL))) {
-                for (String sql : reader) {
-                    conn.createStatement().execute(sql);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create database and users", e);
-            }
+            //grant user rights
+            SQLReader.runSQL(GRANT_SQL, conn);
         }
         rootConn = conn;
-        verification = new Verification(database);
+        verification = new Verification(url);
     }
 
     @Override
     public void $import(String recordsCSV, String staffsCSV) {
-        //read staffs
-        FileOperator staffFile = new FileOperator_CSV(staffsCSV);
-        FileOperator recordFile = new FileOperator_CSV(recordsCSV);
+        $import(new StringReader(recordsCSV), new StringReader(staffsCSV));
+    }
+
+    public void $import(File recordsCSV, File staffsCSV) {
         try {
-            var staffReader = staffFile.getReader();
+            $import(new FileReader(recordsCSV), new FileReader(staffsCSV));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("cannot find file!", e);
+        }
+    }
+
+    public void $import(Reader recordsReader, Reader staffsReader) {
+        DataReader staffReader = new DataReader_CSV(staffsReader);
+        DataReader recordData = new DataReader_CSV(recordsReader);
+        //read staffs
+        try {
             Map<StaffInfo, Integer> staffs = new HashMap<>();
             Map<String, Integer> staffMap = new HashMap<>();
             int staffCount = 0;
@@ -209,8 +193,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     });
             Debug.println("Loaded data into staff_city");
 
-            var recordReader = recordFile.getReader();
-            Iterator<String[]> recordIterator = recordReader.iterator();
+            Iterator<String[]> recordIterator = recordData.iterator();
 
             Set<String> itemTypes = new HashSet<>();
             List<ItemInfo> items = new ArrayList<>();
@@ -218,7 +201,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
             Map<String, ShipInfo> ships = new HashMap<>();
             Set<ContainerInfo> containers = new HashSet<>();
             Map<String, String> item_container = new HashMap<>();
-            Map<String, String> container_ship = new HashMap<>();
+            Map<String, String> item_ship = new HashMap<>();
 
             //drop first line
             recordIterator.next();
@@ -227,19 +210,19 @@ public class DatabaseManipulation implements IDatabaseManipulation {
 
                 itemTypes.add(line[ITEM_CLASS]);
                 ItemInfo itemInfo = new ItemInfo(
-                                line[ITEM_NAME], line[ITEM_CLASS],
-                                Integer.parseInt(line[ITEM_PRICE]),
-                                CSVMapping.getItemState(line[ITEM_STATE]),
-                                new ItemInfo.RetrievalDeliveryInfo(
-                                        line[RETRIEVAL_CITY], line[RETRIEVAL_COURIER]
-                                ),
-                                new ItemInfo.RetrievalDeliveryInfo(
-                                        line[DELIVERY_CITY], line[DELIVERY_COURIER]
-                                ),
-                                new ItemInfo.ImportExportInfo(
-                                        line[IMPORT_CITY], line[IMPORT_OFFICER],
-                                        Double.parseDouble(line[IMPORT_TAX])
-                                ),
+                        line[ITEM_NAME], line[ITEM_CLASS],
+                        Integer.parseInt(line[ITEM_PRICE]),
+                        CSVMapping.getItemState(line[ITEM_STATE]),
+                        new ItemInfo.RetrievalDeliveryInfo(
+                                line[RETRIEVAL_CITY], line[RETRIEVAL_COURIER]
+                        ),
+                        new ItemInfo.RetrievalDeliveryInfo(
+                                line[DELIVERY_CITY], line[DELIVERY_COURIER]
+                        ),
+                        new ItemInfo.ImportExportInfo(
+                                line[IMPORT_CITY], line[IMPORT_OFFICER],
+                                Double.parseDouble(line[IMPORT_TAX])
+                        ),
                         new ItemInfo.ImportExportInfo(
                                 line[EXPORT_CITY], line[EXPORT_OFFICER],
                                 Double.parseDouble(line[EXPORT_TAX])
@@ -273,7 +256,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         ships.put(line[SHIP_NAME], shipInfo);
                     }
                     ships.put(line[SHIP_NAME], shipInfo);
-                    container_ship.put(line[CONTAINER_CODE], line[SHIP_NAME]);
+                    item_ship.put(line[ITEM_NAME], line[SHIP_NAME]);
                 }
             }
 
@@ -429,8 +412,8 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     });
             Debug.println("Loaded data into item_container");
 
-            insertData(rootConn.prepareStatement("insert into container_ship values (?, ?)"),
-                    container_ship.entrySet(), (stmt, relation) -> {
+            insertData(rootConn.prepareStatement("insert into item_ship values (?, ?)"),
+                    item_ship.entrySet(), (stmt, relation) -> {
                         try {
                             stmt.setString(1, relation.getKey());
                             stmt.setString(2, relation.getValue());
@@ -438,10 +421,8 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
-            Debug.println("Loaded data into container_ship");
+            Debug.println("Loaded data into item_ship");
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Failed to open file: staffs.csv", e);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert data", e);
         }
@@ -538,49 +519,49 @@ public class DatabaseManipulation implements IDatabaseManipulation {
 
     @Override
     public int getCompanyCount(LogInfo log) {
-        var user = verification.getUser(log, SustcManager.class);
-        return user != null ? user.getCount(SustcManager.CountType.Company) : -1;
+        var user = verification.getUser(log, SUSTCManager.class);
+        return user != null ? user.getCount(SUSTCManager.CountType.Company) : -1;
     }
 
     @Override
     public int getCityCount(LogInfo log) {
-        var user = verification.getUser(log, SustcManager.class);
-        return user != null ? user.getCount(SustcManager.CountType.City) : -1;
+        var user = verification.getUser(log, SUSTCManager.class);
+        return user != null ? user.getCount(SUSTCManager.CountType.City) : -1;
     }
 
     @Override
     public int getCourierCount(LogInfo log) {
-        var user = verification.getUser(log, SustcManager.class);
-        return user != null ? user.getCount(SustcManager.CountType.Courier) : -1;
+        var user = verification.getUser(log, SUSTCManager.class);
+        return user != null ? user.getCount(SUSTCManager.CountType.Courier) : -1;
     }
 
     @Override
     public int getShipCount(LogInfo log) {
-        var user = verification.getUser(log, SustcManager.class);
-        return user != null ? user.getCount(SustcManager.CountType.Ship) : -1;
+        var user = verification.getUser(log, SUSTCManager.class);
+        return user != null ? user.getCount(SUSTCManager.CountType.Ship) : -1;
     }
 
     @Override
     public ItemInfo getItemInfo(LogInfo log, String name) {
-        var user = verification.getUser(log, SustcManager.class);
+        var user = verification.getUser(log, SUSTCManager.class);
         return user != null ? user.getItemInfo(name) : null;
     }
 
     @Override
     public ShipInfo getShipInfo(LogInfo log, String name) {
-        var user = verification.getUser(log, SustcManager.class);
+        var user = verification.getUser(log, SUSTCManager.class);
         return user != null ? user.getShipInfo(name) : null;
     }
 
     @Override
     public ContainerInfo getContainerInfo(LogInfo log, String code) {
-        var user = verification.getUser(log, SustcManager.class);
+        var user = verification.getUser(log, SUSTCManager.class);
         return user != null ? user.getContainerInfo(code) : null;
     }
 
     @Override
     public StaffInfo getStaffInfo(LogInfo log, String name) {
-        var user = verification.getUser(log, SustcManager.class);
+        var user = verification.getUser(log, SUSTCManager.class);
         return user != null ? user.getStaffInfo(name) : null;
     }
 }

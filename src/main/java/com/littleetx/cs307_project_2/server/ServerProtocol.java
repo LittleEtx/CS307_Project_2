@@ -5,8 +5,8 @@ import com.littleetx.cs307_project_2.database.GlobalQuery;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.Courier;
-import cs307.project2.interfaces.ItemInfo;
-import cs307.project2.interfaces.StaffInfo;
+import main.interfaces.ItemInfo;
+import main.interfaces.StaffInfo;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

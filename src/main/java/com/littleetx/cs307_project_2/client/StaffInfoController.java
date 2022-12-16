@@ -1,11 +1,11 @@
 package com.littleetx.cs307_project_2.client;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import cs307.project2.interfaces.StaffInfo;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import main.interfaces.StaffInfo;
 
 public class StaffInfoController {
     @FXML

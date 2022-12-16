@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyManager extends User {
-    CompanyManager(Connection conn, Integer id) {
+    public CompanyManager(Connection conn, Integer id) {
         super(conn, id);
     }
 
@@ -28,9 +28,9 @@ public class CompanyManager extends User {
         try {
             String type;
             if (taxType == TaxType.Import) {
-                type = "export_tax";
+                type = "export_rate";
             } else {
-                type = "import_tax";
+                type = "import_rate";
             }
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT " + type + " FROM tax_info WHERE city_id = ? AND item_type = ?");
@@ -41,7 +41,6 @@ public class CompanyManager extends User {
                 return rs.getDouble(1);
             }
         } catch (SQLException e) {
-            System.out.println("Error in method getTaxRate()");
             throw new RuntimeException(e);
         }
         return -1;
@@ -56,28 +55,27 @@ public class CompanyManager extends User {
      * to Container” state) can be loaded to container. Note that this method
      * won’t change the item’s state.
      */
-
     public boolean loadItemToContainer(String itemName, String containerCode) {
         String code;
-        try{
-            PreparedStatement stmt=conn.prepareStatement(
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
                     "select * from item_container a join item_state b on a.item_name=b.item_name"
-                    + "where a.container_code= ? and b.state in ('Packing to Container','Shipping','Waiting for Shipping') ");
-            stmt.setString(1,containerCode);
-            ResultSet rs=stmt.executeQuery();
-            if (!rs.next()){//说明集装箱是空闲的
-                stmt=conn.prepareStatement("select state from item_state where item_name= ?");
-                stmt.setString(1,itemName);
-                rs=stmt.executeQuery();
-                if (rs.next()&&rs.getString(1).equals("Packing to Container")){//说明物品状态是正确的
-                    stmt=conn.prepareStatement("insert into item_container values(?,?)");
-                    stmt.setString(1,itemName);
-                    stmt.setString(2,containerCode);
+                            + " and a.container_code= ? and b.state in ('Packing to Container','Shipping','Waiting for Shipping') ");
+            stmt.setString(1, containerCode);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {//说明集装箱是空闲的
+                stmt = conn.prepareStatement("select state from item_state where item_name= ?");
+                stmt.setString(1, itemName);
+                rs = stmt.executeQuery();
+                if (rs.next() && rs.getString(1).equals("Packing to Container")) {//说明物品状态是正确的
+                    stmt = conn.prepareStatement("insert into item_container values(?,?)");
+                    stmt.setString(1, itemName);
+                    stmt.setString(2, containerCode);
                     stmt.execute();
                     return true;
                 }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error in method loadItemToContainer()");
             throw new RuntimeException(e);
         }
@@ -92,27 +90,21 @@ public class CompanyManager extends User {
      * simplicity, one ship can transport unlimited number of containers.
      */
     public boolean loadContainerToShip(String shipName, String containerCode) {
+        //TODO
         try {
-            PreparedStatement stmt=conn.prepareStatement(
-                    "select a.item_name from item_container a join item_state b on a.item_name=b.item_name"
-                            + "where a.container_code= ? and b.state='Packing to Container' "
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from item_container a join item_state b on a.item_name = b.item_name"
+                            + " and a.container_code= ? and b.state='Packing to Container' "
             );
-            stmt.setString(1,containerCode);
-            ResultSet rs=stmt.executeQuery();
-            if (rs.next()){
+            stmt.setString(1, containerCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+//                stmt=conn.prepareStatement(
+//                        "insert into item_ship values(?,?)"
+//                );
 
-                stmt=conn.prepareStatement(
-                        "insert into item_ship values(?,?)"
-                );
-                stmt.setString(1,rs.getString(1));
-                stmt.setString(2,shipName);
-                stmt.execute();//插入进item_ship的记录
-                stmt=conn.prepareStatement("update item_state set state='Waiting for Shipping' where item_name= ?");
-                stmt.setString(1,rs.getString(1));//更新item状态
-                stmt.execute();
-                return true;
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println("Error in method loadContainerToShip()");
             throw new RuntimeException(e);
         }
@@ -124,32 +116,7 @@ public class CompanyManager extends User {
      * containers. Returns false if the ship is already sailing.
      */
     public boolean shipStartSailing(String shipName) {
-        try{
-            PreparedStatement stmt=conn.prepareStatement(
-                    "select state from ship_state where ship_name= ? "
-            );
-            stmt.setString(1,shipName);
-            ResultSet rs=stmt.executeQuery();
-            if (rs.next()&&rs.getString(1).equals("DOCKED")){
-                stmt=conn.prepareStatement(
-                        "update ship_state set state='SAILING' where ship_name= ? "
-                );
-                stmt.setString(1,shipName);
-                stmt.execute();//更新ship状态
-
-                stmt=conn.prepareStatement("select a.item_name from item_ship a join item_state b on a.item_name=b.item_name " +
-                        "where a.ship_name= ? and b.state='Waiting for Shipping' ");
-                rs=stmt.executeQuery();//查询item_name
-
-                stmt=conn.prepareStatement("update item_state set state='Shipping' where item_name= ?");
-                stmt.setString(1,rs.getString(1));//更新item状态
-                stmt.execute();
-                return true;
-            }
-        }catch (SQLException e){
-            System.out.println("Error in method shipStartSailing()");
-            throw new RuntimeException(e);
-        }
+        //TODO
         return false;
     }
 

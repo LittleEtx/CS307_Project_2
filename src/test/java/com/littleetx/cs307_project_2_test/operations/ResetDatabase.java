@@ -10,6 +10,7 @@ public class ResetDatabase {
         Connection con = GlobalQuery.getRootConnection();
         SQLReader.runSQL("scripts\\DropTables.sql", con);
         SQLReader.runSQL("scripts\\DDL.sql", con);
+        SQLReader.runSQL("scripts\\GrantUserRights.sql", con);
         System.out.println("Database reset successfully");
     }
 }
