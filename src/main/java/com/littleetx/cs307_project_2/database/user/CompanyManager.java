@@ -17,7 +17,7 @@ public class CompanyManager extends User {
     }
 
     public double getTaxRate(String cityName, String itemClass, TaxType type) {
-        return getTaxRate(GlobalQuery.getCompanyID(cityName), itemClass, type);
+        return getTaxRate(GlobalQuery.getCityID(cityName), itemClass, type);
     }
 
     /**
@@ -41,6 +41,7 @@ public class CompanyManager extends User {
                 return rs.getDouble(1);
             }
         } catch (SQLException e) {
+            System.out.println("Error in method getTaxRate()");
             throw new RuntimeException(e);
         }
         return -1;
@@ -55,8 +56,32 @@ public class CompanyManager extends User {
      * to Container” state) can be loaded to container. Note that this method
      * won’t change the item’s state.
      */
+
     public boolean loadItemToContainer(String itemName, String containerCode) {
-        //TODO
+        String code;
+        try{
+            PreparedStatement stmt=conn.prepareStatement(
+                    "select * from item_container a join item_state b on a.item_name=b.item_name"
+                    + "where a.container_code= ? and b.state in ('Packing to Container','Shipping','Waiting for Shipping') ");
+            stmt.setString(1,containerCode);
+            ResultSet rs=stmt.executeQuery();
+            if (!rs.next()){//说明集装箱是空闲的
+                stmt=conn.prepareStatement("select state from item_state where item_name= ?");
+                stmt.setString(1,itemName);
+                rs=stmt.executeQuery();
+                if (rs.next()&&rs.getString(1).equals("Packing to Container")){//说明物品状态是正确的
+                    stmt=conn.prepareStatement("insert into item_container values(?,?)");
+                    stmt.setString(1,itemName);
+                    stmt.setString(2,containerCode);
+                    stmt.execute();
+                    return true;
+                }
+            }
+        }catch (SQLException e) {
+            System.out.println("Error in method loadItemToContainer()");
+            throw new RuntimeException(e);
+        }
+
         return false;
     }
 
@@ -68,6 +93,23 @@ public class CompanyManager extends User {
      */
     public boolean loadContainerToShip(String shipName, String containerCode) {
         //TODO
+        try {
+            PreparedStatement stmt=conn.prepareStatement(
+                    "select * from item_container a join item_state b on a.item_name=b.item_name"
+                            + "where a.container_code= ? and b.state='Packing to Container' "
+            );
+            stmt.setString(1,containerCode);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()){
+//                stmt=conn.prepareStatement(
+//                        "insert into item_ship values(?,?)"
+//                );
+
+            }
+        }catch (SQLException e){
+            System.out.println("Error in method loadContainerToShip()");
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
