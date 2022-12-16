@@ -6,8 +6,9 @@ import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 
 import static com.littleetx.cs307_project_2.database.DatabaseLoginInfo.getLoginInfo;
 
-public class testDataImport {
+public class TestDataImport {
     private static final boolean initDatabase = false;
+
     public static void main(String[] args) {
         Debug.isOn = true;
         DatabaseLoginInfo info = getLoginInfo();

@@ -25,16 +25,30 @@ from (select name, price, class from item) as item
 
 select *
 from item
-where name in (select item_name
-               from item_state
-               where state = 'FROM_IMPORT_TRANSPORTING'
+         left join item_route on item.name = item_route.item_name and item_route.stage = 'DELIVERY'
+         left join item_state on item.name = item_state.item_name
+where name in ((select item_name
+                from item_route
+                where stage = 'DELIVERY'
+                  and city_id in (select city_id from staff_city where staff_id = 11203255))
+               intersect
+               (select item_name
+                from item_state
+                where state = 'FROM_IMPORT_TRANSPORTING')
                except
-               select item_name
-               from staff_handle_item
-               where stage = 'DELIVERY');
+               (select item_name
+                from staff_handle_item
+                where stage = 'DELIVERY'));
 
 select *
 from item
+         left join item_state on item.name = item_state.item_name
+         left join (select staff_id, item_name
+                    from staff_handle_item
+                    where stage = 'RETRIEVAL') as retrieval on item.name = retrieval.item_name
+         left join (select staff_id, item_name
+                    from staff_handle_item
+                    where stage = 'IMPORT') as import on item.name = import.item_name
 where name in ((select item_name
                 from item_state
                 where state in ('PICKING_UP', 'TO_EXPORT_TRANSPORTING')
@@ -42,7 +56,7 @@ where name in ((select item_name
                 select item_name
                 from staff_handle_item
                 where stage = 'RETRIEVAL'
-                  and staff_id = 11002988)
+                  and staff_id = 11203255)
                union
                (select item_name
                 from item_state
@@ -51,5 +65,5 @@ where name in ((select item_name
                 select item_name
                 from staff_handle_item
                 where stage = 'DELIVERY'
-                  and staff_id = 11002988));
+                  and staff_id = 11203255));
 

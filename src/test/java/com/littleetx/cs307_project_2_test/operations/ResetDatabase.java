@@ -5,7 +5,7 @@ import com.littleetx.cs307_project_2.file_reader.SQLReader;
 
 import java.sql.Connection;
 
-public class resetDatabase {
+public class ResetDatabase {
     public static void main(String[] args) {
         Connection con = GlobalQuery.getRootConnection();
         SQLReader.runSQL("scripts\\DropTables.sql", con);

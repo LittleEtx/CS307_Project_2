@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.client.tables;
 
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import cs307.project2.interfaces.ItemInfo;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
@@ -29,20 +30,27 @@ public class ItemTableView extends TableView<ItemInfo> {
         setPrefWidth(600);
         setTableMenuButtonVisible(true);
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+    }
+
+    protected void addItemBasicInfo() {
         addColumn(NAME, ItemInfo::name);
         addColumn(TYPE, ItemInfo::$class);
-        addColumn(PRICE, info -> String.valueOf(info.price()));
-        addColumn(STATE, info -> info.state().toString());
-        addColumn(RETRIEVAL_CITY, info -> info.retrieval().city());
-        addColumn(RETRIEVAL_COURIER, info -> info.retrieval().courier());
-        addColumn(EXPORT_CITY, info -> info.export().city());
-        addColumn(EXPORT_TAX, info -> String.valueOf(info.export().tax()));
-        addColumn(EXPORT_OFFICER, info -> info.export().officer());
-        addColumn(IMPORT_CITY, info -> info.$import().city());
-        addColumn(IMPORT_TAX, info -> String.valueOf(info.$import().tax()));
-        addColumn(IMPORT_OFFICER, info -> info.$import().officer());
-        addColumn(DELIVERY_CITY, info -> info.delivery().city());
-        addColumn(DELIVERY_COURIER, info -> info.delivery().courier());
+        addColumn(PRICE, itemInfo -> String.valueOf(itemInfo.price()));
+        addColumn(STATE, itemInfo -> DatabaseMapping.getStateVisualString(itemInfo.state()));
+    }
+
+    protected void addRouteInfo() {
+        addColumn(RETRIEVAL_CITY, itemInfo -> itemInfo.retrieval().city());
+        addColumn(EXPORT_CITY, itemInfo -> itemInfo.export().city());
+        addColumn(IMPORT_CITY, itemInfo -> itemInfo.$import().city());
+        addColumn(DELIVERY_CITY, itemInfo -> itemInfo.delivery().city());
+    }
+
+    protected void addStaffInfo() {
+        addColumn(RETRIEVAL_COURIER, itemInfo -> itemInfo.retrieval().courier());
+        addColumn(EXPORT_OFFICER, itemInfo -> itemInfo.export().officer());
+        addColumn(IMPORT_OFFICER, itemInfo -> itemInfo.$import().officer());
+        addColumn(DELIVERY_COURIER, itemInfo -> itemInfo.delivery().courier());
     }
 
     public void showColumns(String... columns) {
@@ -55,7 +63,7 @@ public class ItemTableView extends TableView<ItemInfo> {
         }
     }
 
-    private void addColumn(String name, Function<ItemInfo, String> extractor) {
+    protected void addColumn(String name, Function<ItemInfo, String> extractor) {
         TableColumn<ItemInfo, String> column = new TableColumn<>();
         column.setText(name);
         column.setCellValueFactory(data -> new SimpleStringProperty(extractor.apply(data.getValue())));

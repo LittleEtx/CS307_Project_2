@@ -8,7 +8,7 @@ import cs307.project2.interfaces.ItemInfo;
 import java.util.Map;
 
 
-public class testCourier {
+public class TestCourier {
     public static void main(String[] args) {
         Verification verification = new Verification(DatabaseLoginInfo.getLoginInfo());
         Courier courier = verification.getUser(

@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2;
 
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.CompanyManager;
@@ -22,7 +23,6 @@ import java.util.function.BiConsumer;
 import static com.littleetx.cs307_project_2.CSVMapping.*;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getContainerType;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getGender;
-import static com.littleetx.cs307_project_2.database.DatabaseMapping.getItemState;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.*;
 
 public class DatabaseManipulation implements IDatabaseManipulation {
@@ -179,7 +179,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     staffs.keySet(), (stmt, staff) -> {
                         try {
                             stmt.setInt(1, staffs.get(staff));
-                            stmt.setString(2, getStaffAuthority(staff.basicInfo().type()));
+                            stmt.setString(2, getStaffAuthorityDatabaseStr(staff.basicInfo().type()));
                             stmt.setString(3, staff.basicInfo().password());
                         } catch (SQLException e) {
                             throw new RuntimeException("Wrong parameter!", e);
@@ -303,7 +303,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     items, (stmt, item) -> {
                         try {
                             stmt.setString(1, item.name());
-                            stmt.setString(2, getItemState(item.state()));
+                            stmt.setString(2, DatabaseMapping.getStateDatabaseString(item.state()));
                         } catch (SQLException e) {
                             throw new RuntimeException("Wrong parameter!", e);
                         }

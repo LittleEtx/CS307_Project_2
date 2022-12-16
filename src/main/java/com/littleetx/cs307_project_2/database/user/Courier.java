@@ -21,11 +21,11 @@ public class Courier extends User {
     private static String getList(ItemState[] states) {
         StringBuilder sb = new StringBuilder();
         sb.append("'");
-        sb.append(states[0].toString());
+        sb.append(DatabaseMapping.getStateDatabaseString(states[0]));
         sb.append("'");
         for (int i = 1; i < states.length; i++) {
             sb.append(", '");
-            sb.append(DatabaseMapping.getItemState(states[i]));
+            sb.append(DatabaseMapping.getStateDatabaseString(states[i]));
             sb.append("'");
         }
         return sb.toString();
@@ -62,10 +62,11 @@ public class Courier extends User {
     public Map<String, ItemInfo> getAllItems(GetItemType type) {
         switch (type) {
             case New -> {
-                return getItems("""
-                        where name in (
-                        select item_name from item_state where state = 'FROM_IMPORT_TRANSPORTING' except
-                        select item_name from staff_handle_item where stage = 'DELIVERY')""");
+                return getItems("where name in (\n" +
+                        "select item_name from item_route where stage = 'DELIVERY' and city_id in \n" +
+                        "(select city_id from staff_city where staff_id = " + id + ") intersect\n" +
+                        "select item_name from item_state where state = 'FROM_IMPORT_TRANSPORTING' except\n" +
+                        "select item_name from staff_handle_item where stage = 'DELIVERY')");
             }
             case OnGoing -> {
                 return getItems("where name in (\n" +

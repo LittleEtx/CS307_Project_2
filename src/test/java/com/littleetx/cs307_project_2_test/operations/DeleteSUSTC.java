@@ -6,7 +6,7 @@ import com.littleetx.cs307_project_2.file_reader.SQLReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class deleteSUSTC {
+public class DeleteSUSTC {
     public static void main(String[] args) {
         Connection conn = GlobalQuery.getRootConnection();
         try {

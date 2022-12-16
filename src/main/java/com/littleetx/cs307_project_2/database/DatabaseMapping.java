@@ -6,12 +6,21 @@ import cs307.project2.interfaces.ItemState;
 import static cs307.project2.interfaces.LogInfo.StaffType;
 
 public class DatabaseMapping {
-    public static String getStaffAuthority(StaffType type) {
+    public static String getStaffAuthorityDatabaseStr(StaffType type) {
         return switch (type) {
             case CompanyManager -> "COMPANY_MANAGER";
             case SeaportOfficer -> "SEAPORT_OFFICER";
             case Courier -> "COURIER";
             case SustcManager -> "SUSTC_MANAGER";
+        };
+    }
+
+    public static String getStaffAuthorityVisualStr(StaffType type) {
+        return switch (type) {
+            case CompanyManager -> "Company Manager";
+            case SeaportOfficer -> "Seaport Officer";
+            case Courier -> "Courier";
+            case SustcManager -> "SUSTC Manager";
         };
     }
 
@@ -25,7 +34,7 @@ public class DatabaseMapping {
         };
     }
 
-    public static String getItemState(ItemState state) {
+    public static String getStateDatabaseString(ItemState state) {
         return switch (state) {
             case PickingUp -> "PICKING_UP";
             case ToExportTransporting -> "TO_EXPORT_TRANSPORTING";
@@ -40,6 +49,24 @@ public class DatabaseMapping {
             case FromImportTransporting -> "FROM_IMPORT_TRANSPORTING";
             case Delivering -> "DELIVERING";
             case Finish -> "FINISH";
+        };
+    }
+
+    public static String getStateVisualString(ItemState state) {
+        return switch (state) {
+            case PickingUp -> "Picking Up";
+            case ToExportTransporting -> "To-Export Transporting";
+            case ExportChecking -> "Export Checking";
+            case ExportCheckFailed -> "Export Check Fail";
+            case PackingToContainer -> "Packing to Container";
+            case WaitingForShipping -> "Waiting for Shipping";
+            case Shipping -> "Shipping";
+            case UnpackingFromContainer -> "Unpacking from Container";
+            case ImportChecking -> "Import Checking";
+            case ImportCheckFailed -> "Import Check Fail";
+            case FromImportTransporting -> "From-Import Transporting";
+            case Delivering -> "Delivering";
+            case Finish -> "Finish";
         };
     }
 

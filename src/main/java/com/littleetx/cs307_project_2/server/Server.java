@@ -10,9 +10,9 @@ public class Server {
             LocateRegistry.createRegistry(info.port());
             IServerProtocol server = new ServerProtocol();
             Naming.rebind(info.getUrl(), server);
-            System.out.println("Server opened at " + info.host() + ":" + info.port());
+            ServerMessage.print("Server opened at " + info.host() + ":" + info.port());
         } catch (Exception e) {
-            System.out.println("Server: " + e.getMessage());
+            ServerMessage.print("Server: " + e.getMessage());
             e.printStackTrace();
         }
     }

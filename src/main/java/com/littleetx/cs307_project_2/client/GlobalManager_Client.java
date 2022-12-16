@@ -63,11 +63,17 @@ public class GlobalManager_Client {
     }
 
     public static void enterLoginInterface() {
+        stage.close();
         Parent root = readXML(LOGIN_FXML);
         stage.setScene(new Scene(root, 600, 400));
         stage.setTitle("SUSTC Database Management System");
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.show();
+    }
+
+    public static void lostConnection() {
+        System.out.println("lostConnection!");
+        enterLoginInterface();
     }
 }

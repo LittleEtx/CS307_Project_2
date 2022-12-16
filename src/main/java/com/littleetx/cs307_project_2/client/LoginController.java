@@ -61,8 +61,7 @@ public class LoginController {
                         GlobalManager_Client.enterUserInterface(id, server.getStaffInfo(id));
                     }
                 } catch (RemoteException e) {
-                    System.out.println("Lost connection to the server!");
-                    e.printStackTrace();
+                    GlobalManager_Client.lostConnection();
                 }
             });
             pause.play();
@@ -70,8 +69,7 @@ public class LoginController {
         } catch (MalformedURLException | NotBoundException e) {
             showMessage("Unable to connect to the server!");
         } catch (RemoteException e) {
-            System.out.println("Lost connection to the server!");
-            e.printStackTrace();
+            GlobalManager_Client.lostConnection();
         }
     }
 

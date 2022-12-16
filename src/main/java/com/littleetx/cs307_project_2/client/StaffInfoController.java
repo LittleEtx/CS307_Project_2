@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.client;
 
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import cs307.project2.interfaces.StaffInfo;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -35,7 +36,7 @@ public class StaffInfoController {
     @FXML
     private void initialize() {
         StaffInfo staffInfo = GlobalManager_Client.getStaffInfo();
-        authorization.setText(staffInfo.basicInfo().type().toString());
+        authorization.setText(DatabaseMapping.getStaffAuthorityVisualStr(staffInfo.basicInfo().type()));
         name.setText(staffInfo.basicInfo().name());
         ID.setText(Integer.toString(GlobalManager_Client.getStaffID()));
         if (staffInfo.city() != null) {
