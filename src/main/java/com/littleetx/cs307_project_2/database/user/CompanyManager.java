@@ -1,6 +1,9 @@
 package com.littleetx.cs307_project_2.database.user;
 
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
+import javafx.scene.chart.PieChart;
+import main.interfaces.ItemState;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,7 +79,6 @@ public class CompanyManager extends User {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error in method loadItemToContainer()");
             throw new RuntimeException(e);
         }
         return false;
@@ -88,13 +90,14 @@ public class CompanyManager extends User {
      * ship (due to reasons like already loaded) or ship is currently sailing. For
      * simplicity, one ship can transport unlimited number of containers.
      */
-    public boolean loadContainerToShip(String shipName, String containerCode) {
+    public boolean loadContainerToShip(String shipName, String containerCode) {////
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "select a.item_name from item_container a join item_state b on a.item_name=b.item_name"
-                            + "where a.container_code= ? and b.state='Packing to Container' "
+                    "select a.item_name from item_container a join item_state b on a.item_name=b.item_name "
+                            + "where a.container_code= ? and b.state= ? "
             );
             stmt.setString(1, containerCode);
+            stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
             ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
 
@@ -104,14 +107,16 @@ public class CompanyManager extends User {
                     stmt.setString(1, rs.getString(1));
                     stmt.setString(2, shipName);
                     stmt.execute();//插入进item_ship的记录
-                    stmt = conn.prepareStatement("update item_state set state='Waiting for Shipping' where item_name= ?");
-                    stmt.setString(1, rs.getString(1));//更新item状态
+                    stmt = conn.prepareStatement("update item_state set state=?  where item_name= ?");
+
+                    stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
+
+                    stmt.setString(2, rs.getString(1));//更新item状态
                     stmt.execute();
                     return true;
                 }
 
         } catch (SQLException e) {
-            System.out.println("Error in method loadContainerToShip()");
             throw new RuntimeException(e);
         }
         return false;
@@ -139,13 +144,12 @@ public class CompanyManager extends User {
                         "where a.ship_name= ? and b.state='Waiting for Shipping' ");
                 rs=stmt.executeQuery();//查询item_name
 
-                stmt=conn.prepareStatement("update item_state set state='Shipping' where item_name= ?");
+                stmt=conn.prepareStatement("update item_state set state='SHIPPING' where item_name= ?");
                 stmt.setString(1,rs.getString(1));//更新item状态
                 stmt.execute();
                 return true;
             }
         }catch (SQLException e){
-            System.out.println("Error in method shipStartSailing()");
             throw new RuntimeException(e);
         }
         return false;
