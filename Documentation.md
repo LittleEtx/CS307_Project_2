@@ -25,7 +25,7 @@ _'IMPORT_CHECKING'_, _'IMPORT_CHECK_FAILED'_, _'FROM_IMPORT_TRANSPORTING'_, _'DE
 * **Staff_City**: working `City` of `Staff`
 * **Staff_Company**: working `Company` of `Staff`
 * **Staff_Handle_Item**: what `Item` is being handled by `Staff`
-  `Stage` can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_ or _'FINISH'_.
+`Stage` can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
 * **Item_Route**: the `City` that `Item` will pass.
 `Stage` can be _'IMPORT'_, _'EXPORT'_, _'DELIVERY'_ or _'RETRIEVAL'_.
 
