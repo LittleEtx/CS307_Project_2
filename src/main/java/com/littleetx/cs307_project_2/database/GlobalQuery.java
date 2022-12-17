@@ -4,10 +4,7 @@ import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import main.interfaces.LogInfo;
 import main.interfaces.StaffInfo;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +63,21 @@ public class GlobalQuery {
             throw new RuntimeException(e);
         }
     }
+    public static int getStaffId(String name){
+        Connection conn = getRootConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");
+            stmt.setString(1,name);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()){
+             return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
 
     private static class CompaniesGetter {
         private static final Map<Integer, String> companies;
