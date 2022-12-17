@@ -1,10 +1,14 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
+import com.littleetx.cs307_project_2.database.GlobalQuery;
 import main.interfaces.ItemInfo;
 import main.interfaces.ItemState;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class Courier extends User {
@@ -42,6 +46,46 @@ public class Courier extends User {
      */
     public boolean newItem(ItemInfo item) {
         //TODO
+        try {
+            PreparedStatement stmt=conn.prepareStatement("select * from item where name= ? ");
+            stmt.setString(1,item.name());
+            ResultSet rs=stmt.executeQuery();
+            if (!rs.next()){
+                stmt=conn.prepareStatement("insert into item values(?,?,?)");
+                stmt.setString(1,item.name());
+                stmt.setInt(2, (int) item.price());
+                stmt.setString(3,item.$class());
+                stmt.execute();
+
+                stmt=conn.prepareStatement("insert into item_route values(?,?,?),(?,?,?),(?,?,?),(?,?,?)");
+                stmt.setString(1,item.name());
+                stmt.setInt(2, GlobalQuery.getCityID(item.retrieval().city()));
+                stmt.setString(3,"RETRIEVAL");
+                stmt.setString(4,item.name());
+                stmt.setInt(5, GlobalQuery.getCityID(item.export().city()));
+                stmt.setString(6,"EXPORT");
+                stmt.setString(7,item.name());
+                stmt.setInt(8, GlobalQuery.getCityID(item.$import().city()));
+                stmt.setString(9,"IMPORT");
+                stmt.setString(10,item.name());
+                stmt.setInt(11, GlobalQuery.getCityID(item.delivery().city()));
+                stmt.setString(12,"DELIVERY");
+                stmt.execute();
+
+                stmt= conn.prepareStatement("insert into item_state values(?,?)");
+                stmt.setString(1,item.name());
+                stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.PickingUp));
+                stmt.execute();
+
+                stmt= conn.prepareStatement("insert into staff_handle_item values(?,?,?)");
+                stmt.setString(1,item.name());
+                stmt.setInt(2,GlobalQuery.getStaffId(item.retrieval().courier()));
+                stmt.setString(3,"RETRIEVAL");
+                stmt.execute();
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
