@@ -1,11 +1,14 @@
 package com.littleetx.cs307_project_2.database.user;
 
-import main.interfaces.ContainerInfo;
-import main.interfaces.ItemInfo;
-import main.interfaces.ShipInfo;
-import main.interfaces.StaffInfo;
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
+import com.littleetx.cs307_project_2.database.GlobalQuery;
+import main.interfaces.*;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 public class SUSTCManager extends User {
     public SUSTCManager(Connection conn, Integer id) {
@@ -20,8 +23,32 @@ public class SUSTCManager extends User {
      * Look for the number of companies/cities/couriers/ships that logged SUSTC
      */
     public int getCount(CountType type) {
-        //TODO
-        return 0;
+        try {
+            ResultSet rs;
+            PreparedStatement stmt;
+            if (type.equals(CountType.City)) {
+                stmt = conn.prepareStatement("select count(*) from city");
+                rs = stmt.executeQuery();
+                return rs.getInt(1);
+            } else if (type.equals(CountType.Courier)) {
+                stmt = conn.prepareStatement("select count(*) from staff a join verification b on a.id = b.staff_id " +
+                        "where b.authority= ? ");
+                stmt.setString(1, DatabaseMapping.getStaffAuthorityDatabaseStr(LogInfo.StaffType.Courier));
+                rs = stmt.executeQuery();
+                return rs.getInt(1);
+            } else if (type.equals(CountType.Ship)) {
+                stmt = conn.prepareStatement("select count(*) from ship");
+                rs = stmt.executeQuery();
+                return rs.getInt(1);
+            } else if (type.equals(CountType.Company)) {
+                stmt = conn.prepareStatement("select count(*) from company");
+                rs = stmt.executeQuery();
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
     }
 
     /**
@@ -29,8 +56,12 @@ public class SUSTCManager extends User {
      * not exist, returns null.
      */
     public ItemInfo getItemInfo(String itemName) {
-        //TODO
-        return null;
+        Map<String, ItemInfo> ans = getItems(String.format("where name= %s ", itemName));
+        if (ans.size() == 0) {
+            return null;
+        } else {
+            return ans.get(itemName);
+        }
     }
 
     /**
@@ -38,7 +69,22 @@ public class SUSTCManager extends User {
      * exist, returns null.
      */
     public ShipInfo getShipInfo(String shipName) {
-        //TODO
+        try{
+            PreparedStatement stmt= conn.prepareStatement("select state from ship_state where ship_name= ? ");
+            stmt.setString(1,shipName);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()){
+                boolean isSailing= rs.getString(1).equals(DatabaseMapping.getShipState(true));
+                stmt=conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");
+                stmt.setString(1,shipName);
+                rs=stmt.executeQuery();
+                if (rs.next()){
+                    return new ShipInfo(rs.getString(1),rs.getString(2),isSailing);
+                }
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -47,7 +93,26 @@ public class SUSTCManager extends User {
      * does not exist, returns null.
      */
     public ContainerInfo getContainerInfo(String code) {
-        //TODO
+        try{
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from item_container a join item_state b on a.item_name=b.item_name"
+                            + " and a.container_code= ? and b.state in (?,?,?) ");
+            stmt.setString(1, code);
+            stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
+            stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
+            stmt.setString(4, DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
+            ResultSet rs = stmt.executeQuery();
+            boolean isUsing=rs.next();
+
+            stmt=conn.prepareStatement("select * from container where code= ? ");
+            stmt.setString(1,code);
+            rs=stmt.executeQuery();
+            if (rs.next()){
+            return new ContainerInfo(DatabaseMapping.getContainerInfoType(rs.getString(2)),rs.getString(1),isUsing);
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -55,8 +120,21 @@ public class SUSTCManager extends User {
      * Look for the staff’s full information according to his/her name. If name
      * does not exist, returns null.
      */
+
+
     public StaffInfo getStaffInfo(String staffName) {
-        //TODO
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");
+            stmt.setString(1,staffName);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()){
+                int id=rs.getInt(1);
+                return GlobalQuery.getStaffInfo(conn,id);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 }

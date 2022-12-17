@@ -105,7 +105,7 @@ public class CompanyManager extends User {
      * ship (due to reasons like already loaded) or ship is currently sailing. For
      * simplicity, one ship can transport unlimited number of containers.
      */
-    public boolean loadContainerToShip(String shipName, String containerCode) {
+    public boolean loadContainerToShip(String shipName, String containerCode) {////
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "select a.item_name from item_container a join item_state b on a.item_name=b.item_name "

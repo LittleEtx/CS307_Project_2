@@ -120,6 +120,15 @@ public class DatabaseMapping {
             default -> throw new IllegalArgumentException("Unknown type!");
         };
     }
+    public static ContainerInfo.Type getContainerInfoType(String type) {
+        return switch (type) {
+            case "DRY" -> ContainerInfo.Type.Dry;
+            case "FLAT_ROCK" -> ContainerInfo.Type.FlatRack ;
+            case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
+            case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
+            case "REEFER" -> ContainerInfo.Type.Reefer;
+        };
+    }
 
     public static boolean getGender(String gender) {
         return "FEMALE".equals(gender);
