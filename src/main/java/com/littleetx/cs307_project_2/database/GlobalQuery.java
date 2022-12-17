@@ -31,8 +31,7 @@ public class GlobalQuery {
     /**
      * Note: this method will query the database, do not use too frequently
      */
-    public static StaffInfo getStaffInfo(int id) {
-        Connection conn = getRootConnection();
+    public static StaffInfo getStaffInfo(Connection conn, int id) {
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT * FROM staff join verification on staff.id = verification.staff_id " +
@@ -63,14 +62,20 @@ public class GlobalQuery {
             throw new RuntimeException(e);
         }
     }
-    public static int getStaffId(String name){
+
+    public static StaffInfo getStaffInfo(int id) {
+        return getStaffInfo(getRootConnection(), id);
+    }
+
+
+    public static int getStaffId(String name) {
         Connection conn = getRootConnection();
         try {
             PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");
-            stmt.setString(1,name);
-            ResultSet rs=stmt.executeQuery();
-            if (rs.next()){
-             return rs.getInt(1);
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

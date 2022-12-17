@@ -85,8 +85,8 @@ public class CompanyManager extends User {
                     return true;
                     }
                     else{
-                        stmt=conn.prepareStatement("update item_container set container= ? where item_name = ?");
-                        stmt.setString(1,containerCode);
+                        stmt = conn.prepareStatement("update item_container set container_code = ? where item_name = ?");
+                        stmt.setString(1, containerCode);
                         stmt.setString(2,itemName);
                         stmt.execute();
                         return true;
