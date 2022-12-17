@@ -63,19 +63,35 @@ public class CompanyManager extends User {
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "select * from item_container a join item_state b on a.item_name=b.item_name"
-                            + " and a.container_code= ? and b.state in ('Packing to Container','Shipping','Waiting for Shipping') ");
+                            + " and a.container_code= ? and b.state in (?,?,?) ");
             stmt.setString(1, containerCode);
+            stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
+            stmt.setString(3,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
+            stmt.setString(4,DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {//说明集装箱是空闲的
                 stmt = conn.prepareStatement("select state from item_state where item_name= ?");
                 stmt.setString(1, itemName);
                 rs = stmt.executeQuery();
                 if (rs.next() && rs.getString(1).equals("Packing to Container")) {//说明物品状态是正确的
+                    stmt=conn.prepareStatement("select * from item_container where item_name = ?");
+                    stmt.setString(1,itemName);
+                    rs=stmt.executeQuery();
+
+                    if (!rs.next()){
                     stmt = conn.prepareStatement("insert into item_container values(?,?)");
                     stmt.setString(1, itemName);
                     stmt.setString(2, containerCode);
                     stmt.execute();
                     return true;
+                    }
+                    else{
+                        stmt=conn.prepareStatement("update item_container set container= ? where item_name = ?");
+                        stmt.setString(1,containerCode);
+                        stmt.setString(2,itemName);
+                        stmt.execute();
+                        return true;
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -99,19 +115,27 @@ public class CompanyManager extends User {
             stmt.setString(1, containerCode);
             stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
             ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
+                if (rs.next()) {//true代表container状态合法
+                    String item_name=rs.getString(1);
+                    stmt=conn.prepareStatement("select * from item_ship where item_name = ?");
+                    stmt.setString(1,item_name);
+                    rs=stmt.executeQuery();
 
-                    stmt = conn.prepareStatement(
-                            "insert into item_ship values(?,?)"
-                    );
-                    stmt.setString(1, rs.getString(1));
-                    stmt.setString(2, shipName);
-                    stmt.execute();//插入进item_ship的记录
+                    if (!rs.next()) {
+                        stmt = conn.prepareStatement("insert into item_ship values(?,?)");
+                        stmt.setString(1, item_name);
+                        stmt.setString(2, shipName);
+                        stmt.execute();//插入进item_ship的记录
+                    }
+                    else{
+                        stmt=conn.prepareStatement("update item_ship set ship_name= ? where item_name= ? ");
+                        stmt.setString(1,shipName);
+                        stmt.setString(2,item_name);
+                        stmt.execute();
+                    }
                     stmt = conn.prepareStatement("update item_state set state=?  where item_name= ?");
-
                     stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
-
-                    stmt.setString(2, rs.getString(1));//更新item状态
+                    stmt.setString(2, item_name);//更新item状态
                     stmt.execute();
                     return true;
                 }
@@ -128,26 +152,25 @@ public class CompanyManager extends User {
      */
     public boolean shipStartSailing(String shipName) {
         try{
-            PreparedStatement stmt=conn.prepareStatement(
-                    "select state from ship_state where ship_name= ? "
-            );
+            PreparedStatement stmt=conn.prepareStatement("select state from ship_state where ship_name= ? ");
             stmt.setString(1,shipName);
             ResultSet rs=stmt.executeQuery();
-            if (rs.next()&&rs.getString(1).equals("DOCKED")){
-                stmt=conn.prepareStatement(
-                        "update ship_state set state='SAILING' where ship_name= ? "
-                );
-                stmt.setString(1,shipName);
+            if (rs.next()&&rs.getString(1).equals(DatabaseMapping.getShipState(false))){
+                stmt=conn.prepareStatement("update ship_state set state=? where ship_name= ? ");
+                stmt.setString(1,DatabaseMapping.getShipState(true));
+                stmt.setString(2,shipName);
                 stmt.execute();//更新ship状态
 
                 stmt=conn.prepareStatement("select a.item_name from item_ship a join item_state b on a.item_name=b.item_name " +
-                        "where a.ship_name= ? and b.state='Waiting for Shipping' ");
+                        "where a.ship_name= ? and b.state= ? ");
                 stmt.setString(1,shipName);
+                stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
                 rs=stmt.executeQuery();//查询item_name
 
-                if (rs.next()){
-                stmt=conn.prepareStatement("update item_state set state='SHIPPING' where item_name= ?");
-                stmt.setString(1,rs.getString(1));//更新item状态
+                while(rs.next()){
+                stmt=conn.prepareStatement("update item_state set state= ? where item_name= ?");
+                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
+                stmt.setString(2,rs.getString(1));//更新item状态
                 stmt.execute();
                 }
                 return true;
@@ -165,7 +188,21 @@ public class CompanyManager extends User {
      * @return false if the item is in illegal state.
      */
     public boolean unloadItem(String itemName) {
-        //TODO
+        try{
+            PreparedStatement stmt=conn.prepareStatement("select state from item_state where item_name = ? ");
+            stmt.setString(1,itemName);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next() &&
+                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.Shipping))){
+                stmt=conn.prepareStatement("update item_state set state= ? where item_name = ? ");
+                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer));
+                stmt.setString(2,itemName);
+                stmt.execute();
+                return true;
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
@@ -174,7 +211,21 @@ public class CompanyManager extends User {
      * for import checking. Returns false if the item is in illegal state.
      */
     public boolean itemWaitForChecking(String itemName) {
-        //TODO
+        try{
+            PreparedStatement stmt=conn.prepareStatement("select state from item_state where item_name = ? ");
+            stmt.setString(1,itemName);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next() &&
+                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer))){
+                stmt=conn.prepareStatement("update item_state set state= ? where item_name = ? ");
+                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
+                stmt.setString(2,itemName);
+                stmt.execute();
+                return true;
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
         return false;
     }
 }
