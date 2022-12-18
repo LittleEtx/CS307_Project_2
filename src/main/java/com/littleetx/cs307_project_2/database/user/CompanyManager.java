@@ -62,7 +62,7 @@ public class CompanyManager extends User {
         try {
             PreparedStatement stmt = conn.prepareStatement(
                     "select * from item_container a join item_state b on a.item_name=b.item_name"
-                            + " and a.container_code= ? and b.state in (?,?,?) ");
+                            + " and a.container_code= ? and b.state in (?,?,?) ");//查询是否该集装箱处于有物品装载的状态
             stmt.setString(1, containerCode);
             stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
             stmt.setString(3,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
@@ -77,14 +77,14 @@ public class CompanyManager extends User {
                     stmt.setString(1,itemName);
                     rs=stmt.executeQuery();
 
-                    if (!rs.next()){
+                    if (!rs.next()){//如果该物品目前未被装入别的集装箱
                     stmt = conn.prepareStatement("insert into item_container values(?,?)");
                     stmt.setString(1, itemName);
                     stmt.setString(2, containerCode);
                     stmt.execute();
                     return true;
                     }
-                    else{
+                    else{//如果该物品目前正装在别的集装箱
                         stmt = conn.prepareStatement("update item_container set container_code = ? where item_name = ?");
                         stmt.setString(1, containerCode);
                         stmt.setString(2,itemName);
@@ -110,23 +110,23 @@ public class CompanyManager extends User {
             PreparedStatement stmt = conn.prepareStatement(
                     "select a.item_name from item_container a join item_state b on a.item_name=b.item_name "
                             + "where a.container_code= ? and b.state= ? "
-            );
+            );//查询是否该集装箱处于正确状态
             stmt.setString(1, containerCode);
             stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
             ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {//true代表container状态合法
-                    String item_name=rs.getString(1);
+                    String item_name=rs.getString(1);//得到该集装箱装的物品
                     stmt=conn.prepareStatement("select * from item_ship where item_name = ?");
                     stmt.setString(1,item_name);
-                    rs=stmt.executeQuery();
+                    rs=stmt.executeQuery();//查询是否该物品曾到过船上
 
-                    if (!rs.next()) {
+                    if (!rs.next()) {//若没有，则装船，新增记录
                         stmt = conn.prepareStatement("insert into item_ship values(?,?)");
                         stmt.setString(1, item_name);
                         stmt.setString(2, shipName);
                         stmt.execute();//插入进item_ship的记录
                     }
-                    else{
+                    else{//若item曾到过船上，则update记录，更改为当前船（虽然理论上不会出现这种情况）
                         stmt=conn.prepareStatement("update item_ship set ship_name= ? where item_name= ? ");
                         stmt.setString(1,shipName);
                         stmt.setString(2,item_name);
@@ -154,7 +154,7 @@ public class CompanyManager extends User {
             PreparedStatement stmt=conn.prepareStatement("select state from ship_state where ship_name= ? ");
             stmt.setString(1,shipName);
             ResultSet rs=stmt.executeQuery();
-            if (rs.next()&&rs.getString(1).equals(DatabaseMapping.getShipState(false))){
+            if (rs.next()&&rs.getString(1).equals(DatabaseMapping.getShipState(false))){//确认当前船只为dock状态
                 stmt=conn.prepareStatement("update ship_state set state=? where ship_name= ? ");
                 stmt.setString(1,DatabaseMapping.getShipState(true));
                 stmt.setString(2,shipName);
@@ -164,12 +164,12 @@ public class CompanyManager extends User {
                         "where a.ship_name= ? and b.state= ? ");
                 stmt.setString(1,shipName);
                 stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
-                rs=stmt.executeQuery();//查询item_name
+                rs=stmt.executeQuery();//查询当前船上的所有item_name
 
                 while(rs.next()){
                 stmt=conn.prepareStatement("update item_state set state= ? where item_name= ?");
                 stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
-                stmt.setString(2,rs.getString(1));//更新item状态
+                stmt.setString(2,rs.getString(1));//更新当前船上所有item状态
                 stmt.execute();
                 }
                 return true;
@@ -192,12 +192,25 @@ public class CompanyManager extends User {
             stmt.setString(1,itemName);
             ResultSet rs=stmt.executeQuery();
             if (rs.next() &&
-                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.Shipping))){
-                stmt=conn.prepareStatement("update item_state set state= ? where item_name = ? ");
-                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer));
-                stmt.setString(2,itemName);
-                stmt.execute();
-                return true;
+                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.Shipping))){//确认该物品状态合法
+                stmt= conn.prepareStatement("select a.ship_name from item_ship a join item_state b on a.item_name=b.item_name " +
+                        " where a.item_name = ? and b.item_state= ? ");//查询物品所在船
+                stmt.setString(1,itemName);
+                stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
+                rs=stmt.executeQuery();
+                if (rs.next()) {//如果查询到该船
+                    String shipname =rs.getString(1);
+                    stmt= conn.prepareStatement("update ship_state set state= ? where ship_name = ? ");//更新该船状态
+                    stmt.setString(1,DatabaseMapping.getShipState(false));
+                    stmt.setString(2,shipname);
+                    stmt.execute();
+
+                    stmt = conn.prepareStatement("update item_state set state= ? where item_name = ? ");//更新物品状态
+                    stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer));
+                    stmt.setString(2, itemName);
+                    stmt.execute();
+                    return true;
+                }
             }
         }catch (SQLException e){
             throw new RuntimeException(e);
@@ -211,13 +224,13 @@ public class CompanyManager extends User {
      */
     public boolean itemWaitForChecking(String itemName) {
         try{
-            PreparedStatement stmt=conn.prepareStatement("select state from item_state where item_name = ? ");
+            PreparedStatement stmt=conn.prepareStatement("select state from item_state where item_name = ? ");//查询该物品状态
             stmt.setString(1,itemName);
             ResultSet rs=stmt.executeQuery();
             if (rs.next() &&
-                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer))){
+                    rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.UnpackingFromContainer))){//如果存在该物品且状态合法
                 stmt=conn.prepareStatement("update item_state set state= ? where item_name = ? ");
-                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
+                stmt.setString(1,DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));//更新物品状态
                 stmt.setString(2,itemName);
                 stmt.execute();
                 return true;

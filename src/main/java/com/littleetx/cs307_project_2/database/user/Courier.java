@@ -52,10 +52,10 @@ public class Courier extends User {
             ResultSet rs=stmt.executeQuery();
             if (rs.next()&&rs.getInt(1) == this.id){//如果负责该item的retrieval courier存在且是当前用户的话
 
-            stmt = conn.prepareStatement("select * from item where name= ? ");
+            stmt = conn.prepareStatement("select * from item where name= ? ");//看是否能查到该item
             stmt.setString(1, item.name());
              rs = stmt.executeQuery();
-            if (!rs.next()) {
+            if (!rs.next()) {//表中查不到该item说明item之前不存在，状态合法，开始插入
                 stmt = conn.prepareStatement("insert into item values(?,?,?)");
                 stmt.setString(1, item.name());
                 stmt.setInt(2, (int) item.price());
@@ -103,7 +103,7 @@ public class Courier extends User {
      */
     public boolean setItemState(String itemName, ItemState itemState) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select state from item_state where item_name= ? ");
+            PreparedStatement stmt = conn.prepareStatement("select state from item_state where item_name= ? ");//查询原本item state
             stmt.setString(1, itemName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -113,7 +113,7 @@ public class Courier extends User {
                 stmt.setString(1, itemName);
                 stmt.setInt(2, this.id);
                 if (itemState.equals(ItemState.ToExportTransporting) &&
-                        item_Fstate.equals(DatabaseMapping.getStateDatabaseString(ItemState.PickingUp))) {
+                        item_Fstate.equals(DatabaseMapping.getStateDatabaseString(ItemState.PickingUp))) {//判断itemstate属于哪个，是否合法
                     stmt.setString(3, "RETRIEVAL");
                 } else if (itemState.equals(ItemState.ExportChecking) &&
                         item_Fstate.equals(DatabaseMapping.getStateDatabaseString(ItemState.ToExportTransporting))) {
@@ -132,34 +132,34 @@ public class Courier extends User {
                 } else {
                     return false;
                 }
-                rs = stmt.executeQuery();
-                if (itemState.equals(ItemState.FromImportTransporting)) {
-                    if (rs.next()) {
+                rs = stmt.executeQuery();//查询当前用户是否负责该item
+                if (itemState.equals(ItemState.FromImportTransporting)) {//如果是此状态，且物品未被人负责，则任何当前城市快递员都可以调用此api
+                    if (rs.next()) {//如果已被人负责，状态非法
                         return false;
                     } else {
                         stmt = conn.prepareStatement("select city_id from item_route where item_name= ? and stage= 'DELIVERY' ");
                         stmt.setString(1, itemName);
-                        rs = stmt.executeQuery();
+                        rs = stmt.executeQuery();//查询物品所在城市
                         rs.next();
                         int itemCity = rs.getInt(1);
                         stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ? ");
                         stmt.setInt(1, this.id);
-                        rs = stmt.executeQuery();
+                        rs = stmt.executeQuery();//查询当前用户所在城市
                         rs.next();
                         int staffCity = rs.getInt(1);
-                        if (itemCity == staffCity) {
-                            stmt = conn.prepareStatement("insert into staff_handle_item values(?,?,?)");
+                        if (itemCity == staffCity) {//城市相同则合法
+                            stmt = conn.prepareStatement("insert into staff_handle_item values(?,?,?)");//新增员工负责物品信息
                             stmt.setString(1, itemName);
                             stmt.setInt(2, this.id);
                             stmt.setString(3, "DELIVERY");
                             stmt.execute();
-                            return true;
+                            return true;//此情况无需更新物品状态，维持原状态
                         } else {
                             return false;
                         }
                     }
-                } else if (rs.next()) {
-                    stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
+                } else if (rs.next()) {//如果item状态合法，且当前用户确实负责当前物品
+                    stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");//更新物品状态
                     stmt.setString(1, DatabaseMapping.getStateDatabaseString(itemState));
                     stmt.setString(2, itemName);
                     stmt.execute();

@@ -29,20 +29,24 @@ public class SUSTCManager extends User {
             if (type.equals(CountType.City)) {
                 stmt = conn.prepareStatement("select count(*) from city");
                 rs = stmt.executeQuery();
+                if (rs.next())
                 return rs.getInt(1);
             } else if (type.equals(CountType.Courier)) {
                 stmt = conn.prepareStatement("select count(*) from staff a join verification b on a.id = b.staff_id " +
                         "where b.authority= ? ");
                 stmt.setString(1, DatabaseMapping.getStaffAuthorityDatabaseStr(LogInfo.StaffType.Courier));
                 rs = stmt.executeQuery();
+                if (rs.next())
                 return rs.getInt(1);
             } else if (type.equals(CountType.Ship)) {
                 stmt = conn.prepareStatement("select count(*) from ship");
                 rs = stmt.executeQuery();
+                if (rs.next())
                 return rs.getInt(1);
             } else if (type.equals(CountType.Company)) {
                 stmt = conn.prepareStatement("select count(*) from company");
                 rs = stmt.executeQuery();
+                if (rs.next())
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
@@ -70,12 +74,12 @@ public class SUSTCManager extends User {
      */
     public ShipInfo getShipInfo(String shipName) {
         try{
-            PreparedStatement stmt= conn.prepareStatement("select state from ship_state where ship_name= ? ");
+            PreparedStatement stmt= conn.prepareStatement("select state from ship_state where ship_name= ? ");//查询船状态
             stmt.setString(1,shipName);
             ResultSet rs=stmt.executeQuery();
             if (rs.next()){
                 boolean isSailing= rs.getString(1).equals(DatabaseMapping.getShipState(true));
-                stmt=conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");
+                stmt=conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");//查询船名字和公司名字
                 stmt.setString(1,shipName);
                 rs=stmt.executeQuery();
                 if (rs.next()){
@@ -96,13 +100,13 @@ public class SUSTCManager extends User {
         try{
             PreparedStatement stmt = conn.prepareStatement(
                     "select * from item_container a join item_state b on a.item_name=b.item_name"
-                            + " and a.container_code= ? and b.state in (?,?,?) ");
+                            + " and a.container_code= ? and b.state in (?,?,?) ");//查询该集装箱是否处于空闲状态
             stmt.setString(1, code);
             stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
             stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
             stmt.setString(4, DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
             ResultSet rs = stmt.executeQuery();
-            boolean isUsing=rs.next();
+            boolean isUsing=rs.next();//查得到则为true，否则false
 
             stmt=conn.prepareStatement("select * from container where code= ? ");
             stmt.setString(1,code);
@@ -125,7 +129,7 @@ public class SUSTCManager extends User {
     public StaffInfo getStaffInfo(String staffName) {
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");
+            PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");//查询员工id
             stmt.setString(1,staffName);
             ResultSet rs=stmt.executeQuery();
             if (rs.next()){

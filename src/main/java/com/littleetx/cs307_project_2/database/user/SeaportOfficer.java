@@ -22,13 +22,13 @@ public class SeaportOfficer extends User {
      */
     public String[] getAllItemsAtPort() {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ? ");
+            PreparedStatement stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ? ");//查询当前用户所在城市
             stmt.setInt(1, this.id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int staffCity = rs.getInt(1);
                 stmt = conn.prepareStatement("select count(*) from item_route a join item_state b on a.item_name=b.item_name " +
-                        "where a.city_id= ? and ((a.stage='EXPORT' and b.state= ? ) or (a.stage='IMPORT' and b.state= ? ))");
+                        "where a.city_id= ? and ((a.stage='EXPORT' and b.state= ? ) or (a.stage='IMPORT' and b.state= ? ))");//找出当前城市中处于进/出口状态的所有物品的数量
                 stmt.setInt(1, staffCity);
                 stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking));
                 stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
@@ -40,7 +40,7 @@ public class SeaportOfficer extends User {
                     stmt.setInt(1, staffCity);
                     stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking));
                     stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
-                    rs = stmt.executeQuery();
+                    rs = stmt.executeQuery();//找出当前城市中处于进/出口状态的所有物品
                     String[] ans = new String[length];
                     for (int i = 0; i < length; i++) {
                         rs.next();
@@ -61,12 +61,12 @@ public class SeaportOfficer extends User {
      */
     public boolean setItemCheckState(String itemName, boolean success) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select state from item_state where item_name= ? ");
+            PreparedStatement stmt = conn.prepareStatement("select state from item_state where item_name= ? ");//查询当前物品状态
             stmt.setString(1, itemName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String state = rs.getString(1);
-                if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking))) {
+                if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking))) {//更新物品状态
                     stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
                     if (success) {
                         stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.FromImportTransporting));
@@ -76,7 +76,7 @@ public class SeaportOfficer extends User {
                     stmt.setString(2, itemName);
                     stmt.execute();
                     return true;
-                } else if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking))) {
+                } else if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking))) {//更新物品状态
                     stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
                     if (success) {
                         stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));

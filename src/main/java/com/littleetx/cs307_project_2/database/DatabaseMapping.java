@@ -127,6 +127,7 @@ public class DatabaseMapping {
             case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
             case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
             case "REEFER" -> ContainerInfo.Type.Reefer;
+            default -> throw new IllegalArgumentException("Unknown type!");
         };
     }
 
