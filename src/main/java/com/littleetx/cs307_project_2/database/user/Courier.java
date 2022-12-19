@@ -4,6 +4,7 @@ import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import main.interfaces.ItemInfo;
 import main.interfaces.ItemState;
+import main.interfaces.StaffInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,6 +40,24 @@ public class Courier extends User {
         super(conn, id);
     }
 
+
+
+    public int GetCityID(String name){
+        try{
+        PreparedStatement stmt=conn.prepareStatement("select id from city where name = ? ");
+        stmt.setString(1,name);
+        ResultSet rs= stmt.executeQuery();
+        if (rs.next()){
+            return rs.getInt(1);
+        }
+        else{
+            return -1;
+        }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Add a new item that is currently being picked up. The item shall contain
      * all necessary information(basic info and four cities). Returns false if item
@@ -46,16 +65,21 @@ public class Courier extends User {
      */
     public boolean newItem(ItemInfo item) {
         try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement("select id from staff where name= ? ");
-            stmt.setString(1,item.retrieval().courier());
-            ResultSet rs=stmt.executeQuery();
-            if (rs.next()&&rs.getInt(1) == this.id){//如果负责该item的retrieval courier存在且是当前用户的话
-
-            stmt = conn.prepareStatement("select * from item where name= ? ");//看是否能查到该item
+            PreparedStatement stmt = conn.prepareStatement("select * from item where name= ? ");//看是否能查到该item
             stmt.setString(1, item.name());
-             rs = stmt.executeQuery();
-            if (!rs.next()) {//表中查不到该item说明item之前不存在，状态合法，开始插入
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next()) {//表中查不到该item说明item之前不存在，状态合法
+
+               stmt=conn.prepareStatement("select city_id from staff_city where staff_id = ? ");
+               stmt.setInt(1,id);
+               rs=stmt.executeQuery();
+               rs.next();
+               int cityId=rs.getInt(1);
+// &&(!item.$import().city().equals(item.export().city()))
+              if (GetCityID(item.retrieval().city())==cityId && item.state()==null &&item.name()!=null
+                      &&item.$import().city()!=null&&item.delivery().city()!=null&&item.export().city()!=null&&item.$class()!=null//非空
+              ){//判断item是否合法
+
                 stmt = conn.prepareStatement("insert into item values(?,?,?)");
                 stmt.setString(1, item.name());
                 stmt.setInt(2, (int) item.price());
@@ -64,16 +88,16 @@ public class Courier extends User {
 
                 stmt = conn.prepareStatement("insert into item_route values(?,?,?),(?,?,?),(?,?,?),(?,?,?)");
                 stmt.setString(1, item.name());
-                stmt.setInt(2, GlobalQuery.getCityID(item.retrieval().city()));
+                stmt.setInt(2, GetCityID(item.retrieval().city()));
                 stmt.setString(3, "RETRIEVAL");
                 stmt.setString(4, item.name());
-                stmt.setInt(5, GlobalQuery.getCityID(item.export().city()));
+                stmt.setInt(5, GetCityID(item.export().city()));
                 stmt.setString(6, "EXPORT");
                 stmt.setString(7, item.name());
-                stmt.setInt(8, GlobalQuery.getCityID(item.$import().city()));
+                stmt.setInt(8, GetCityID(item.$import().city()));
                 stmt.setString(9, "IMPORT");
                 stmt.setString(10, item.name());
-                stmt.setInt(11, GlobalQuery.getCityID(item.delivery().city()));
+                stmt.setInt(11, GetCityID(item.delivery().city()));
                 stmt.setString(12, "DELIVERY");
                 stmt.execute();
 

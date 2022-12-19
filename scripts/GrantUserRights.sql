@@ -9,6 +9,7 @@ grant select, update on company to company_manager;
 grant usage on schema public to courier;
 grant select, update, insert on item,item_route,item_state,item_type,staff_handle_item to courier;
 grant select, update on staff,staff_city to courier;
+grant select on city,tax_info to courier;
 
 grant usage on schema public to seaport_officer;
 grant select, update on item_state to seaport_officer;
