@@ -194,7 +194,7 @@ public class CompanyManager extends User {
             if (rs.next() &&
                     rs.getString(1).equals(DatabaseMapping.getStateDatabaseString(ItemState.Shipping))){//确认该物品状态合法
                 stmt= conn.prepareStatement("select a.ship_name from item_ship a join item_state b on a.item_name=b.item_name " +
-                        " where a.item_name = ? and b.item_state= ? ");//查询物品所在船
+                        " where a.item_name = ? and b.state= ? ");//查询物品所在船
                 stmt.setString(1,itemName);
                 stmt.setString(2,DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
                 rs=stmt.executeQuery();
