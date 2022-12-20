@@ -32,6 +32,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
     private final Verification verification;
     private static final String DDL_SQL = "scripts/DDl.sql";
     private static final String GRANT_SQL = "scripts/GrantUserRights.sql";
+    private static final String USER_SQL = "scripts/CreateUsers.sql";
     private static final int PACKET_SIZE = 1000;
 
     public DatabaseManipulation(String database, String root, String pass) {
@@ -49,7 +50,13 @@ public class DatabaseManipulation implements IDatabaseManipulation {
         if (initDatabase) {
             // Create tables
             SQLReader.runSQL(DDL_SQL, conn);
-
+            // Create users
+            try {
+                SQLReader.runSQL(USER_SQL, conn);
+            } catch (RuntimeException ignored) {
+                // Ignore the exception, the users may already exist
+                Debug.println("Warning: failed to create users, maybe they already exist");
+            }
             //grant user rights
             SQLReader.runSQL(GRANT_SQL, conn);
         }
@@ -378,17 +385,6 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         }
                     });
             Debug.println("Loaded data into ship");
-
-            insertData(rootConn.prepareStatement("insert into ship_state values (?, ?)"),
-                    ships.values(), (stmt, ship) -> {
-                        try {
-                            stmt.setString(1, ship.name());
-                            stmt.setString(2, getShipState(ship.sailing()));
-                        } catch (SQLException e) {
-                            throw new RuntimeException("Wrong parameter!", e);
-                        }
-                    });
-            Debug.println("Loaded data into ship_state");
 
             insertData(rootConn.prepareStatement("insert into container values (?, ?)"),
                     containers, (stmt, container) -> {

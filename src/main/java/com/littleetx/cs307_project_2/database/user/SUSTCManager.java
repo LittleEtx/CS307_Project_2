@@ -60,7 +60,7 @@ public class SUSTCManager extends User {
      * not exist, returns null.
      */
     public ItemInfo getItemInfo(String itemName) {
-        Map<String, ItemInfo> ans = getItems(String.format("where name= %s ", itemName));
+        Map<String, ItemInfo> ans = getItems(String.format("where name= '%s' ", itemName));
         if (ans.size() == 0) {
             return null;
         } else {
@@ -74,16 +74,16 @@ public class SUSTCManager extends User {
      */
     public ShipInfo getShipInfo(String shipName) {
         try{
-            PreparedStatement stmt= conn.prepareStatement("select state from ship_state where ship_name= ? ");//查询船状态
+            PreparedStatement stmt = conn.prepareStatement("select state from ship_state where ship_name= ? ");//查询船状态
             stmt.setString(1,shipName);
-            ResultSet rs=stmt.executeQuery();
-            if (rs.next()){
-                boolean isSailing= rs.getString(1).equals(DatabaseMapping.getShipState(true));
-                stmt=conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");//查询船名字和公司名字
-                stmt.setString(1,shipName);
-                rs=stmt.executeQuery();
-                if (rs.next()){
-                    return new ShipInfo(rs.getString(1),rs.getString(2),isSailing);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                boolean isSailing = rs.getString(1).equals(DatabaseMapping.getShipState(true));
+                stmt = conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");//查询船名字和公司名字
+                stmt.setString(1, shipName);
+                rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return new ShipInfo(rs.getString(1), rs.getString(2), isSailing);
                 }
             }
         }catch (SQLException e) {

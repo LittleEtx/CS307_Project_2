@@ -50,11 +50,6 @@ create table Ship
     company_id int references Company (id)
 );
 
-create table Ship_State(
-    ship_name varchar primary key references Ship (name),
-    state varchar
-);
-
 create table Container(
     code varchar primary key,
     type varchar

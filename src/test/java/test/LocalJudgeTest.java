@@ -18,11 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LocalJudgeTest {
 
-    private static String database;
+    private static final String database;
 
-    private static String root;
+    private static final String root;
 
-    private static String pass;
+    private static final String pass;
+    private static final String manipulationImplClassName = "main.DatabaseManipulation";
 
     static {
         DatabaseLoginInfo info = DatabaseLoginInfo.getLoginInfo();
@@ -31,15 +32,13 @@ public class LocalJudgeTest {
         pass = info.password();
     }
 
-    private static String recordsCSV = "records.csv";
+    private static final String recordsCSV = "records.csv";
 
-    private static String staffsCSV = "staffs.csv";
-
-    private static String manipulationImplClassName = "main.DatabaseManipulation";
+    private static final String staffsCSV = "staffs.csv";
 
     private static IDatabaseManipulation manipulation = null;
 
-    private static String answerDirectory = "src/test/localAnswerSerFiles/";
+    private static final String answerDirectory = "src/test/localAnswerSerFiles/";
 
     private static SUSTCDepartmentManagerUserTest sustcDepartmentManagerUserTest = null;
 
@@ -49,7 +48,7 @@ public class LocalJudgeTest {
 
     private static SeaportOfficerUserTest seaportOfficerUserTest = null;
 
-    private static LogInfo logInfo = new LogInfo("Hua Hang", LogInfo.StaffType.SustcManager, "500622842781782190");
+    private static final LogInfo logInfo = new LogInfo("Hua Hang", LogInfo.StaffType.SustcManager, "500622842781782190");
 
     @BeforeAll
     public static void clearDatabaseAndPrepareAnswer() {
@@ -59,7 +58,6 @@ public class LocalJudgeTest {
             System.err.println("Cannot find the Postgres driver. Check CLASSPATH.");
             System.exit(1);
         }
-        DatabaseLoginInfo info = DatabaseLoginInfo.getLoginInfo();
         String url = "jdbc:postgresql://" + database;
         Properties props = new Properties();
         props.setProperty("user", root);
@@ -256,7 +254,7 @@ public class LocalJudgeTest {
      */
     @Test
     @Order(11)
-    @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+    @Timeout(value = 3000, unit = TimeUnit.MILLISECONDS)
     public void newItem() {
         Set<Map.Entry<List<Object>, Boolean>> entries = courierUserTest.newItem.entrySet();
         Set<Map.Entry<List<Object>, Boolean>> treeSet = new TreeSet<>((o1, o2) -> {
@@ -289,7 +287,7 @@ public class LocalJudgeTest {
             assertEquals(entry.getValue(), manipulation.setItemState((LogInfo) params.get(0), (String) params.get(1), (ItemState) params.get(2)));
         }
 
-        ItemInfo itemInfo = manipulation.getItemInfo(logInfo, "peach-778ca");
+        ItemInfo itemInfo = manipulation.getItemInfo(logInfo, "newItem1");
         assertEquals(ItemState.ToExportTransporting, itemInfo.state());
     }
 

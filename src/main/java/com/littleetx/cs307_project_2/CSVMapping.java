@@ -54,7 +54,7 @@ public class CSVMapping {
             case "Waiting for Shipping" -> ItemState.WaitingForShipping;
             case "Shipping" -> ItemState.Shipping;
             case "Unpacking from Container" -> ItemState.UnpackingFromContainer;
-            case "Importing Checking" -> ItemState.ImportChecking;
+            case "Import Checking" -> ItemState.ImportChecking;
             case "Import Check Fail" -> ItemState.ImportCheckFailed;
             case "From-Import Transporting" -> ItemState.FromImportTransporting;
             case "Delivering" -> ItemState.Delivering;

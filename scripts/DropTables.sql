@@ -1,7 +1,6 @@
 drop table item_container;
 drop table item_ship;
 drop table item_state;
-drop table ship_state;
 drop table staff_city;
 drop table staff_company;
 drop table tax_info;
