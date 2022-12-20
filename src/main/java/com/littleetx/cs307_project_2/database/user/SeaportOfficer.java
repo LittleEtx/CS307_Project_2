@@ -60,40 +60,47 @@ public class SeaportOfficer extends User {
      * if item does not exist or is in illegal state
      */
     public boolean setItemCheckState(String itemName, boolean success) {
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select state from item_state where item_name= ? ");//查询当前物品状态
-            stmt.setString(1, itemName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String state = rs.getString(1);
-                if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking))) {//更新物品状态
-                    stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
-                    if (success) {
-                        stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.FromImportTransporting));
-                    } else {
-                        stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.ImportCheckFailed));
-                    }
-                    stmt.setString(2, itemName);
-                    stmt.execute();
-                    return true;
-                } else if (state.equals(DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking))) {//更新物品状态
-                    stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
-                    if (success) {
-                        stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
-                    } else {
-                        stmt.setString(1, DatabaseMapping.getStateDatabaseString(ItemState.ExportCheckFailed));
-                    }
-                    stmt.setString(2, itemName);
-                    stmt.execute();
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        ItemState state = getItemState(itemName);
+        if (state == null) {
+            return false;
+        }
+        if (state == ItemState.ImportChecking) {//更新物品状态
+            return checkItem(itemName, success, "IMPORT", ItemState.FromImportTransporting, ItemState.ImportCheckFailed);
+        } else if (state == ItemState.ExportChecking) {//更新物品状态
+            return checkItem(itemName, success, "EXPORT", ItemState.PackingToContainer, ItemState.ExportCheckFailed);
         }
         return false;
     }
+
+    private boolean checkItem(String itemName, boolean success, String stage, ItemState successState, ItemState failedState) {
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select city_id from item_route where stage = ? and item_name = ? ");
+            stmt.setString(1, stage);
+            stmt.setString(2, itemName);
+            ResultSet rs = stmt.executeQuery();
+            if (!rs.next() || rs.getInt(1) != getStaffCity()) {
+                return false;
+            }
+
+            stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
+            if (success) {
+                stmt.setString(1, DatabaseMapping.getStateDatabaseString(successState));
+            } else {
+                stmt.setString(1, DatabaseMapping.getStateDatabaseString(failedState));
+            }
+            stmt.setString(2, itemName);
+            stmt.execute();
+
+            stmt = conn.prepareStatement("insert into staff_handle_item values(?,?,?)");
+            stmt.setString(1, itemName);
+            stmt.setInt(2, this.id);
+            stmt.setString(3, stage);
+            stmt.execute();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+

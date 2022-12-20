@@ -1,5 +1,5 @@
 select *
-from (select name, price, class from item) as item
+from (select name, price, class from item where name = 'newItem1') as item
          left join (select item_name, state from item_state) as item_state on item.name = item_state.item_name
          left join (select item_name, city_id from item_route where stage = 'RETRIEVAL') as retrieval_city
                    on item.name = retrieval_city.item_name
@@ -27,10 +27,18 @@ select *
 from item
          left join item_route on item.name = item_route.item_name and item_route.stage = 'DELIVERY'
          left join item_state on item.name = item_state.item_name
+         left join staff_handle_item
+                   on item.name = staff_handle_item.item_name and staff_handle_item.stage = 'RETRIEVAL'
 where name in ((select item_name
                 from item_route
                 where stage = 'DELIVERY'
                   and city_id in (select city_id from staff_city where staff_id = 11203255))
+               intersect
+               select item_name
+               from staff_handle_item
+                        left join staff_company on staff_handle_item.staff_id = staff_company.staff_id
+               where stage = 'RETRIEVAL'
+                 and company_id in (select company_id from staff_company where staff_id = 11203255)
                intersect
                (select item_name
                 from item_state

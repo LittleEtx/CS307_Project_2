@@ -60,11 +60,18 @@ public class SUSTCManager extends User {
      * not exist, returns null.
      */
     public ItemInfo getItemInfo(String itemName) {
-        Map<String, ItemInfo> ans = getItems(String.format("where name= '%s' ", itemName));
-        if (ans.size() == 0) {
-            return null;
-        } else {
-            return ans.get(itemName);
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from item_fullinfo where name = ?");
+            stmt.setString(1, itemName);
+            Map<String, ItemInfo> ans = getItemsMapping(stmt.executeQuery());
+            if (ans.size() == 0) {
+                return null;
+            } else {
+                return ans.get(itemName);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

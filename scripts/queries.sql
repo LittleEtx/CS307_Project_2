@@ -14,3 +14,28 @@ FROM staff
 
 SELECT *
 FROM tax_info;
+
+select *
+from item_state s
+         left join item_container c on s.item_name = c.item_name
+         left join item_ship i on s.item_name = i.item_name
+where ship_name = 'f1d76a3a'
+  and container_code = '632b8f09';
+
+select *
+from item_state s
+         left join item_container c on s.item_name = c.item_name
+         left join item_ship i on s.item_name = i.item_name
+where container_code = '632b8f09';
+
+select *
+from item_state s
+         left join item_ship i on s.item_name = i.item_name
+         left join item_container c on s.item_name = c.item_name
+where ship_name = 'f1d76a3a';
+
+select company_id
+from staff_handle_item
+         left join staff_company sc on staff_handle_item.staff_id = sc.staff_id
+where stage = 'RETRIEVAL'
+  and item_name = 'coconut-39c7a';

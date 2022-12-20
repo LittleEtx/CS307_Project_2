@@ -1,6 +1,8 @@
 package test;
 
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
+import com.littleetx.cs307_project_2.database.GlobalQuery;
+import com.littleetx.cs307_project_2.file_reader.SQLReader;
 import main.interfaces.*;
 import org.junit.jupiter.api.*;
 import test.answers.CompanyManagerUserTest;
@@ -30,6 +32,7 @@ public class LocalJudgeTest {
         database = info.getDatabase();
         root = info.username();
         pass = info.password();
+        SQLReader.runSQL("scripts\\DropTables.sql", GlobalQuery.getRootConnection());
     }
 
     private static final String recordsCSV = "records.csv";

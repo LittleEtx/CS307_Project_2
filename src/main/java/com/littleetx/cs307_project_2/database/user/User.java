@@ -3,6 +3,7 @@ package com.littleetx.cs307_project_2.database.user;
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import main.interfaces.ItemInfo;
+import main.interfaces.ItemState;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,35 +36,9 @@ abstract public class User {
         return false;
     }
 
-    protected Map<String, ItemInfo> getItems(String condition) {
+    protected Map<String, ItemInfo> getItemsMapping(ResultSet rs) {
         Map<String, ItemInfo> items = new HashMap<>();
         try {
-            var stmt = conn.prepareStatement(
-                    "select *\n" +
-                            "from (select name, price, class from item " + condition + ") as item\n" +
-                            "         left join (select item_name, state from item_state) as item_state on item.name = item_state.item_name\n" +
-                            "         left join (select item_name, city_id retrieval_city_id from item_route where stage = 'RETRIEVAL') as retrieval_city\n" +
-                            "                   on item.name = retrieval_city.item_name\n" +
-                            "         left join (select item_name, city_id import_city_id from item_route where stage = 'IMPORT') as import_city\n" +
-                            "                   on item.name = import_city.item_name\n" +
-                            "         left join (select item_name, city_id export_city_id from item_route where stage = 'EXPORT') as export_city\n" +
-                            "                   on item.name = export_city.item_name\n" +
-                            "         left join (select item_name, city_id delivery_city_id from item_route where stage = 'DELIVERY') as delivery_city\n" +
-                            "                   on item.name = delivery_city.item_name\n" +
-                            "         left join (select item_name, staff_id from staff_handle_item where stage = 'RETRIEVAL') as retrieval\n" +
-                            "                   on item.name = retrieval.item_name\n" +
-                            "         left join (select id, name retrieval_staff from staff) as retrieval_staff on retrieval.staff_id = retrieval_staff.id\n" +
-                            "         left join (select item_name, staff_id from staff_handle_item where stage = 'IMPORT') as import\n" +
-                            "                   on item.name = import.item_name\n" +
-                            "         left join (select id, name import_staff from staff) as import_staff on import.staff_id = import_staff.id\n" +
-                            "         left join (select item_name, staff_id from staff_handle_item where stage = 'EXPORT') as export\n" +
-                            "                   on item.name = export.item_name\n" +
-                            "         left join (select id, name export_staff from staff) as export_staff on export.staff_id = export_staff.id\n" +
-                            "         left join (select item_name, staff_id from staff_handle_item where stage = 'DELIVERY') as delivery\n" +
-                            "                   on item.name = delivery.item_name\n" +
-                            "         left join (select id, name delivery_staff from staff) as delivery_staff on delivery.staff_id = delivery_staff.id;"
-            );
-            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 items.put(rs.getString("name"), new ItemInfo(
                         rs.getString("name"),
@@ -71,23 +46,23 @@ abstract public class User {
                         rs.getDouble("price"),
                         DatabaseMapping.getItemState(rs.getString("state")),
                         new ItemInfo.RetrievalDeliveryInfo(
-                                GlobalQuery.getCityName(rs.getInt("retrieval_city_id")),
+                                GlobalQuery.getCityName(rs.getInt("retrieval_city")),
                                 rs.getString("retrieval_staff")
                         ),
                         new ItemInfo.RetrievalDeliveryInfo(
-                                GlobalQuery.getCityName(rs.getInt("delivery_city_id")),
+                                GlobalQuery.getCityName(rs.getInt("delivery_city")),
                                 rs.getString("delivery_staff")
                         ),
                         new ItemInfo.ImportExportInfo(
-                                GlobalQuery.getCityName(rs.getInt("import_city_id")),
+                                GlobalQuery.getCityName(rs.getInt("import_city")),
                                 rs.getString("import_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city_id"),
+                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city"),
                                         rs.getString("class")).import_rate
                         ),
                         new ItemInfo.ImportExportInfo(
-                                GlobalQuery.getCityName(rs.getInt("export_city_id")),
+                                GlobalQuery.getCityName(rs.getInt("export_city")),
                                 rs.getString("export_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city_id"),
+                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city"),
                                         rs.getString("class")).export_rate
                         )
                 ));
@@ -96,5 +71,78 @@ abstract public class User {
             throw new RuntimeException(e);
         }
         return items;
+    }
+
+    protected ItemState getItemState(String itemName) {
+        try {
+            var stmt = conn.prepareStatement(
+                    "select state from item_state where item_name = ?"
+            );
+            stmt.setString(1, itemName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return DatabaseMapping.getItemState(rs.getString(1));
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected int getItemCompany(String itemName) {
+        try {
+            var stmt = conn.prepareStatement("select company_id from item_company where item_name = ?");
+            stmt.setString(1, itemName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    protected int getStaffCompany() {
+        try {
+            var stmt = conn.prepareStatement("select company_id from staff_company where staff_id = ?");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    protected int getStaffCity() {
+        try {
+            var stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ?");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    protected String getStaffName() {
+        try {
+            var stmt = conn.prepareStatement("select name from staff where id = ?");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }

@@ -138,6 +138,10 @@ public class GlobalQuery {
     }
 
     public static int getCityID(String name) {
+        if (name == null) {
+            return -1;
+        }
+
         for (Map.Entry<Integer, String> entry : CityGetter.cities.entrySet()) {
             if (entry.getValue().equals(name)) {
                 return entry.getKey();
@@ -146,8 +150,8 @@ public class GlobalQuery {
         return -1;
     }
 
-    public static TaxInfo.Value getCityTaxRate(int cityID, String item_type) {
-        return getCityTaxRate(new TaxInfo.Key(cityID, item_type));
+    public static TaxInfo.Value getCityTaxRate(int cityID, String itemType) {
+        return getCityTaxRate(new TaxInfo.Key(cityID, itemType));
     }
 
     public static TaxInfo.Value getCityTaxRate(TaxInfo.Key key) {

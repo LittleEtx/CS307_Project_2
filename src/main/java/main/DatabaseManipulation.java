@@ -33,6 +33,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
     private static final String DDL_SQL = "scripts/DDl.sql";
     private static final String GRANT_SQL = "scripts/GrantUserRights.sql";
     private static final String USER_SQL = "scripts/CreateUsers.sql";
+    private static final String VIEW_SQL = "scripts/Views.sql";
     private static final int PACKET_SIZE = 1000;
 
     public DatabaseManipulation(String database, String root, String pass) {
@@ -57,6 +58,8 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                 // Ignore the exception, the users may already exist
                 Debug.println("Warning: failed to create users, maybe they already exist");
             }
+            //create views
+            SQLReader.runSQL(VIEW_SQL, conn);
             //grant user rights
             SQLReader.runSQL(GRANT_SQL, conn);
         }
@@ -359,13 +362,13 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                         try {
                             stmt.setString(1, entry.getKey().item_type());
                             stmt.setInt(2, entry.getKey().cityId());
-                            if (entry.getValue().import_rate >= 0) {
-                                stmt.setDouble(3, entry.getValue().import_rate);
+                            if (entry.getValue().export_rate >= 0) {
+                                stmt.setDouble(3, entry.getValue().export_rate);
                             } else {
                                 stmt.setNull(3, Types.DOUBLE);
                             }
-                            if (entry.getValue().export_rate >= 0) {
-                                stmt.setDouble(4, entry.getValue().export_rate);
+                            if (entry.getValue().import_rate >= 0) {
+                                stmt.setDouble(4, entry.getValue().import_rate);
                             } else {
                                 stmt.setNull(4, Types.DOUBLE);
                             }

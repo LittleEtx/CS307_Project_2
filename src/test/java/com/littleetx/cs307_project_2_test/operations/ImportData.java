@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2_test.database;
+package com.littleetx.cs307_project_2_test.operations;
 
 import com.littleetx.cs307_project_2.Debug;
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
@@ -8,7 +8,7 @@ import java.io.File;
 
 import static com.littleetx.cs307_project_2.database.DatabaseLoginInfo.getLoginInfo;
 
-public class TestDataImport {
+public class ImportData {
     private static final boolean initDatabase = false;
 
     public static void main(String[] args) {
