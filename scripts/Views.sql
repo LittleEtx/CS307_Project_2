@@ -40,5 +40,34 @@ from (select name, price, class from item) as item
                    on item.name = d.item_name
          left join (select id, name from staff) as ds on d.staff_id = ds.id;
 
-select *
-from item_fullInfo;
+create or replace view staff_info as
+select id,
+       name,
+       authority,
+       password,
+       phone_number,
+       gender,
+       birth,
+       city_id    city,
+       company_id company
+from staff
+         join verification on staff.id = verification.staff_id
+         left join staff_company on staff.id = staff_company.staff_id
+         left join staff_city on staff.id = staff_city.staff_id;
+
+create or replace view ship_info as
+select ship.name       as name,
+       ship.company_id as company,
+       case a.shipping is not null
+           when true then 'SAILING'
+           else 'DOCKED'
+           end         as state
+from ship
+         left join
+     (select ship_name, count(item_ship.item_name) shipping
+      from item_state
+               left join item_ship
+                         on item_state.item_name = item_ship.item_name
+      where state = 'SHIPPING'
+      group by item_ship.ship_name) as a
+     on ship.name = a.ship_name;

@@ -5,21 +5,22 @@
 <?import javafx.scene.layout.*?>
 <VBox fx:id="rootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="600.0" prefWidth="800.0" spacing="20.0" xmlns="http://javafx.com/javafx/19"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.littleetx.cs307_project_2.client.CourierController">
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.littleetx.cs307_project_2.client.controllers.CourierController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
     <children>
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
             <tabs>
-                <Tab fx:id="newItemTab" onSelectionChanged="#refreshTable" text="New">
+                <Tab fx:id="newItemTab" onSelectionChanged="#onRefreshClick" text="New">
                     <content>
                         <HBox fx:id="newItemHBox">
                             <children>
                                 <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
                                       spacing="10.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#refreshTable" prefWidth="80.0"
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
                                                 text="Refresh" textAlignment="CENTER"/>
                                         <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
                                                 text="Add Item" textAlignment="CENTER"/>
@@ -34,14 +35,14 @@
                         </HBox>
                     </content>
                 </Tab>
-                <Tab fx:id="onGoingItemTab" onSelectionChanged="#refreshTable" text="On going">
+                <Tab fx:id="onGoingItemTab" onSelectionChanged="#onRefreshClick" text="On going">
                     <content>
                         <HBox fx:id="onGoingItemHBox">
                             <children>
                                 <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
                                       spacing="10.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#refreshTable" prefWidth="80.0"
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
                                                 text="Refresh" textAlignment="CENTER"/>
                                         <Button mnemonicParsing="false" prefWidth="80.0" text="Update Item State"
                                                 textAlignment="CENTER" wrapText="true"/>
@@ -54,13 +55,13 @@
                         </HBox>
                     </content>
                 </Tab>
-                <Tab fx:id="finishedItemTab" onSelectionChanged="#refreshTable" text="Finished">
+                <Tab fx:id="finishedItemTab" onSelectionChanged="#onRefreshClick" text="Finished">
                     <content>
                         <HBox fx:id="finishedItemHBox" prefHeight="100.0" prefWidth="200.0">
                             <children>
                                 <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#refreshTable" prefWidth="80.0"
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
                                                 text="Refresh" textAlignment="CENTER"/>
                                     </children>
                                     <padding>

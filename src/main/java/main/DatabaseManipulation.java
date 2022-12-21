@@ -23,9 +23,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 import static com.littleetx.cs307_project_2.CSVMapping.*;
-import static com.littleetx.cs307_project_2.database.DatabaseMapping.getContainerType;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getGender;
-import static com.littleetx.cs307_project_2.database.DatabaseMapping.*;
+import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStaffAuthorityDatabaseStr;
 
 public class DatabaseManipulation implements IDatabaseManipulation {
     private final Connection rootConn;
@@ -393,7 +392,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                     containers, (stmt, container) -> {
                         try {
                             stmt.setString(1, container.code());
-                            stmt.setString(2, getContainerType(container.type()));
+                            stmt.setString(2, DatabaseMapping.getContainerTypeDatabaseStr(container.type()));
                         } catch (SQLException e) {
                             throw new RuntimeException("Wrong parameter!", e);
                         }

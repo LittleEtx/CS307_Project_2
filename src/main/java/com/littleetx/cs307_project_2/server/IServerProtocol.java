@@ -1,8 +1,11 @@
 package com.littleetx.cs307_project_2.server;
 
+import com.littleetx.cs307_project_2.database.database_type.CityInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.Courier;
+import main.interfaces.ContainerInfo;
 import main.interfaces.ItemInfo;
+import main.interfaces.ShipInfo;
 import main.interfaces.StaffInfo;
 
 import java.rmi.Remote;
@@ -31,4 +34,16 @@ public interface IServerProtocol extends Remote {
 
     Map<String, ItemInfo> getCompanyItems(int id) throws RemoteException;
 
+    //SUSTC manager methods
+    Map<String, ItemInfo> getAllItems() throws RemoteException;
+
+    Map<Integer, StaffInfo> getAllStaffs() throws RemoteException;
+
+    Map<Integer, String> getAllCompanies() throws RemoteException;
+
+    Map<String, ShipInfo> getAllShips() throws RemoteException;
+
+    Map<Integer, CityInfo> getAllCities() throws RemoteException;
+
+    Map<String, ContainerInfo> getAllContainers() throws RemoteException;
 }

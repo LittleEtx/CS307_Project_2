@@ -3,9 +3,12 @@ package com.littleetx.cs307_project_2.server;
 import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import com.littleetx.cs307_project_2.database.Verification;
+import com.littleetx.cs307_project_2.database.database_type.CityInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.Courier;
+import main.interfaces.ContainerInfo;
 import main.interfaces.ItemInfo;
+import main.interfaces.ShipInfo;
 import main.interfaces.StaffInfo;
 
 import java.rmi.RemoteException;
@@ -62,6 +65,36 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
 
     @Override
     public Map<String, ItemInfo> getCompanyItems(int id) {
+        return null;
+    }
+
+    @Override
+    public Map<String, ItemInfo> getAllItems() throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, StaffInfo> getAllStaffs() throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, String> getAllCompanies() throws RemoteException {
+        return GlobalQuery.getCompanies();
+    }
+
+    @Override
+    public Map<String, ShipInfo> getAllShips() throws RemoteException {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, CityInfo> getAllCities() throws RemoteException {
+        return GlobalQuery.getCities();
+    }
+
+    @Override
+    public Map<String, ContainerInfo> getAllContainers() throws RemoteException {
         return null;
     }
 }

@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.client;
 
+import com.littleetx.cs307_project_2.client.controllers.GlobalManager_Client;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

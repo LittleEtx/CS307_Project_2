@@ -88,19 +88,8 @@ public class DatabaseMapping {
         };
     }
 
-    public static String getShipState(boolean sailing) {
-        return sailing ? "SAILING" : "DOCKED";
-    }
 
-    public static boolean getShipState(String state) {
-        return switch (state) {
-            case "SAILING" -> true;
-            case "DOCKED" -> false;
-            default -> throw new IllegalArgumentException("Unknown state!");
-        };
-    }
-
-    public static String getContainerType(ContainerInfo.Type type) {
+    public static String getContainerTypeDatabaseStr(ContainerInfo.Type type) {
         return switch (type) {
             case Dry -> "DRY";
             case FlatRack -> "FLAT_ROCK";
@@ -110,20 +99,20 @@ public class DatabaseMapping {
         };
     }
 
-    public static ContainerInfo.Type getContainer(String type) {
+    public static String getContainerTypeVisualStr(ContainerInfo.Type type) {
+        return switch (type) {
+            case Dry -> "Dry";
+            case FlatRack -> "Flat Rack";
+            case ISOTank -> "ISO Tank";
+            case OpenTop -> "Open Top";
+            case Reefer -> "Reefer";
+        };
+    }
+
+    public static ContainerInfo.Type getContainerType(String type) {
         return switch (type) {
             case "DRY" -> ContainerInfo.Type.Dry;
             case "FLAT_ROCK" -> ContainerInfo.Type.FlatRack;
-            case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
-            case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
-            case "REEFER" -> ContainerInfo.Type.Reefer;
-            default -> throw new IllegalArgumentException("Unknown type!");
-        };
-    }
-    public static ContainerInfo.Type getContainerInfoType(String type) {
-        return switch (type) {
-            case "DRY" -> ContainerInfo.Type.Dry;
-            case "FLAT_ROCK" -> ContainerInfo.Type.FlatRack ;
             case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
             case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
             case "REEFER" -> ContainerInfo.Type.Reefer;
@@ -137,5 +126,9 @@ public class DatabaseMapping {
 
     public static String getGender(boolean isFemale) {
         return isFemale ? "FEMALE" : "MALE";
+    }
+
+    public static boolean getIsSailing(String state) {
+        return "SAILING".equals(state);
     }
 }

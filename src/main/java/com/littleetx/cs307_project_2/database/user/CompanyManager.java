@@ -143,8 +143,7 @@ public class CompanyManager extends User {
         stmt = conn.prepareStatement("select company_id from ship where name = ?");
         stmt.setString(1, shipName);
         var result = stmt.executeQuery();
-        result.next();
-        return result.getInt(1);
+        return result.next() ? result.getInt(1) : -1;
     }
 
     /**

@@ -9,6 +9,7 @@ open module cs307_project {
     exports com.littleetx.cs307_project_2.client.tables;
     exports main.interfaces;
     exports main;
+    exports com.littleetx.cs307_project_2.client.controllers;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;

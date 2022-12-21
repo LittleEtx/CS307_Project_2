@@ -12,20 +12,9 @@ import java.util.Map;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateDatabaseString;
 import static com.littleetx.cs307_project_2.database.GlobalQuery.getCityID;
 import static com.littleetx.cs307_project_2.database.GlobalQuery.getCityTaxRate;
+import static com.littleetx.cs307_project_2.database.ViewMapping.getItemsMapping;
 
 public class Courier extends User {
-    private static String getList(ItemState[] states) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("'");
-        sb.append(getStateDatabaseString(states[0]));
-        sb.append("'");
-        for (int i = 1; i < states.length; i++) {
-            sb.append(", '");
-            sb.append(getStateDatabaseString(states[i]));
-            sb.append("'");
-        }
-        return sb.toString();
-    }
 
     public Courier(Connection conn, Integer id) {
         super(conn, id);

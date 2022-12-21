@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.client;
+package com.littleetx.cs307_project_2.client.controllers;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

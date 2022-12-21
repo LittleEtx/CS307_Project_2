@@ -1,14 +1,14 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import com.littleetx.cs307_project_2.database.GlobalQuery;
-import main.interfaces.ItemInfo;
+import com.littleetx.cs307_project_2.database.ViewMapping;
+import main.interfaces.ContainerInfo;
 import main.interfaces.ItemState;
+import main.interfaces.ShipInfo;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 
 abstract public class User {
@@ -34,43 +34,6 @@ abstract public class User {
     public boolean changePhoneNumber(String newPhoneNumber) {
         //TODO: (optional) change phone number
         return false;
-    }
-
-    protected Map<String, ItemInfo> getItemsMapping(ResultSet rs) {
-        Map<String, ItemInfo> items = new HashMap<>();
-        try {
-            while (rs.next()) {
-                items.put(rs.getString("name"), new ItemInfo(
-                        rs.getString("name"),
-                        rs.getString("class"),
-                        rs.getDouble("price"),
-                        DatabaseMapping.getItemState(rs.getString("state")),
-                        new ItemInfo.RetrievalDeliveryInfo(
-                                GlobalQuery.getCityName(rs.getInt("retrieval_city")),
-                                rs.getString("retrieval_staff")
-                        ),
-                        new ItemInfo.RetrievalDeliveryInfo(
-                                GlobalQuery.getCityName(rs.getInt("delivery_city")),
-                                rs.getString("delivery_staff")
-                        ),
-                        new ItemInfo.ImportExportInfo(
-                                GlobalQuery.getCityName(rs.getInt("import_city")),
-                                rs.getString("import_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city"),
-                                        rs.getString("class")).import_rate
-                        ),
-                        new ItemInfo.ImportExportInfo(
-                                GlobalQuery.getCityName(rs.getInt("export_city")),
-                                rs.getString("export_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city"),
-                                        rs.getString("class")).export_rate
-                        )
-                ));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return items;
     }
 
     protected ItemState getItemState(String itemName) {
@@ -143,6 +106,19 @@ abstract public class User {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return null;
+    }
+
+    public Map<String, ShipInfo> getAllShips() {
+        try {
+            var stmt = conn.prepareStatement("select * from ship_info");
+            return ViewMapping.getShipsMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Map<String, ContainerInfo> getAllContainers() {
         return null;
     }
 }

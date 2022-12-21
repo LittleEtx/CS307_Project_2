@@ -1,6 +1,6 @@
 package com.littleetx.cs307_project_2_test.client;
 
-import com.littleetx.cs307_project_2.client.GlobalManager_Client;
+import com.littleetx.cs307_project_2.client.controllers.GlobalManager_Client;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import javafx.application.Application;
 import javafx.stage.Stage;

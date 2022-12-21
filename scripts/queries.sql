@@ -39,3 +39,8 @@ from staff_handle_item
          left join staff_company sc on staff_handle_item.staff_id = sc.staff_id
 where stage = 'RETRIEVAL'
   and item_name = 'coconut-39c7a';
+
+SELECT id, name, max(export_rate) rate
+FROM city
+         left join tax_info on city.id = tax_info.city_id
+group by id;

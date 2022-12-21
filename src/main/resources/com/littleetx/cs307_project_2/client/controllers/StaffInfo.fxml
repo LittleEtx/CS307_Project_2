@@ -6,28 +6,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <VBox spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.littleetx.cs307_project_2.client.StaffInfoController">
-   <children>
-      <HBox alignment="BOTTOM_LEFT" prefWidth="200.0" spacing="10.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="SUSTC">
-               <font>
-                  <Font name="Arial Black" size="40.0"/>
-               </font>
-            </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dababase Management System">
-               <font>
-                  <Font name="Arial Black" size="20.0"/>
-               </font>
-               <HBox.margin>
-                  <Insets bottom="8.0"/>
-               </HBox.margin>
-            </Text>
-            <VBox HBox.hgrow="ALWAYS"/>
-            <ImageView fx:id="changePasswordButton" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
-                       preserveRatio="true">
-               <image>
-                  <Image url="@../assets/icons/password.png"/>
+      fx:controller="com.littleetx.cs307_project_2.client.controllers.StaffInfoController">
+    <children>
+        <HBox alignment="BOTTOM_LEFT" prefWidth="200.0" spacing="10.0">
+            <children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="SUSTC">
+                    <font>
+                        <Font name="Arial Black" size="40.0"/>
+                    </font>
+                </Text>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dababase Management System">
+                    <font>
+                        <Font name="Arial Black" size="20.0"/>
+                    </font>
+                    <HBox.margin>
+                        <Insets bottom="8.0"/>
+                    </HBox.margin>
+                </Text>
+                <VBox HBox.hgrow="ALWAYS"/>
+                <ImageView fx:id="changePasswordButton" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@../../assets/icons/password.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>
@@ -35,7 +35,7 @@
             </ImageView>
             <ImageView fx:id="logoutButton" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../assets/icons/exit.png"/>
+                   <Image url="@../../assets/icons/exit.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>
@@ -61,7 +61,7 @@
          <children>
             <ImageView fx:id="infoButton" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../assets/icons/staffInfo.png"/>
+                   <Image url="@../../assets/icons/staffInfo.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>

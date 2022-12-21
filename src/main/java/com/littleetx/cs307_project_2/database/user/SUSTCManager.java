@@ -1,7 +1,7 @@
 package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
-import com.littleetx.cs307_project_2.database.GlobalQuery;
+import com.littleetx.cs307_project_2.database.ViewMapping;
 import main.interfaces.*;
 
 import java.sql.Connection;
@@ -63,7 +63,7 @@ public class SUSTCManager extends User {
         try {
             PreparedStatement stmt = conn.prepareStatement("select * from item_fullinfo where name = ?");
             stmt.setString(1, itemName);
-            Map<String, ItemInfo> ans = getItemsMapping(stmt.executeQuery());
+            Map<String, ItemInfo> ans = ViewMapping.getItemsMapping(stmt.executeQuery());
             if (ans.size() == 0) {
                 return null;
             } else {
@@ -81,24 +81,14 @@ public class SUSTCManager extends User {
      */
     public ShipInfo getShipInfo(String shipName) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select * from item_ship a join item_state b on a.item_name=b.item_name " +
-                    " where a.ship_name= ? and b.state= ?");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from ship_info where name = ?");
             stmt.setString(1, shipName);
-            stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
-            ResultSet rs = stmt.executeQuery();
-            boolean isSailing;
-            isSailing = rs.next();
-            stmt = conn.prepareStatement("select a.name,b.name from ship a join company b on a.company_id=b.id where a.name= ? ");//查询船名字和公司名字
-            stmt.setString(1, shipName);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new ShipInfo(rs.getString(1), rs.getString(2), isSailing);
-            }
-
+            var result = ViewMapping.getShipsMapping(stmt.executeQuery());
+            return result.get(shipName);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -121,7 +111,7 @@ public class SUSTCManager extends User {
             stmt.setString(1, code);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                return new ContainerInfo(DatabaseMapping.getContainerInfoType(rs.getString(2)), rs.getString(1), isUsing);
+                return new ContainerInfo(DatabaseMapping.getContainerType(rs.getString(2)), rs.getString(1), isUsing);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -138,16 +128,23 @@ public class SUSTCManager extends User {
     public StaffInfo getStaffInfo(String staffName) {
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("select id from staff where name= ? ");//查询员工id
+            PreparedStatement stmt = conn.prepareStatement("select * from staff_info where name= ? ");//查询员工id
             stmt.setString(1, staffName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                return GlobalQuery.getStaffInfo(conn, id);
-            }
+            var result = ViewMapping.getStaffsMapping(stmt.executeQuery());
+            return result.isEmpty() ? null : result.values().iterator().next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<String, ItemInfo> getAllItems() {
+        //TODO
         return null;
     }
+
+    public Map<Integer, StaffInfo> getAllStaffs() {
+        //TODO
+        return null;
+    }
+
 }

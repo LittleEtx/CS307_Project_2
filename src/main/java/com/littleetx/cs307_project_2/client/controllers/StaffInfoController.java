@@ -1,4 +1,4 @@
-package com.littleetx.cs307_project_2.client;
+package com.littleetx.cs307_project_2.client.controllers;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import javafx.fxml.FXML;
