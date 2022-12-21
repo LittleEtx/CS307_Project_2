@@ -84,6 +84,15 @@ public class Verification {
     }
 
     public <T extends User> T getUser(int id, Class<T> userClass) {
+        User user = getUser(id);
+        if (userClass.isInstance(user)) {
+            return userClass.cast(user);
+        } else {
+            return null;
+        }
+    }
+
+    public User getUser(int id) {
         if (id < 0) {
             return null;
         }
@@ -91,16 +100,16 @@ public class Verification {
         assert info != null;
         switch (info.basicInfo().type()) {
             case SustcManager -> {
-                return (T) sustcManagers.getUser(id, userClass);
+                return sustcManagers.getUser(id);
             }
             case CompanyManager -> {
-                return (T) companyManagers.getUser(id, userClass);
+                return companyManagers.getUser(id);
             }
             case SeaportOfficer -> {
-                return (T) seaportOfficers.getUser(id, userClass);
+                return seaportOfficers.getUser(id);
             }
             case Courier -> {
-                return (T) couriers.getUser(id, userClass);
+                return couriers.getUser(id);
             }
             default -> {
                 return null;

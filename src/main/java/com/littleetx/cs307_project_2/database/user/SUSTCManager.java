@@ -127,13 +127,21 @@ public class SUSTCManager extends User {
     }
 
     public Map<String, ItemInfo> getAllItems() {
-        //TODO
-        return null;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from item_fullinfo");
+            return ViewMapping.getItemsMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<Integer, StaffInfo> getAllStaffs() {
-        //TODO
-        return null;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select * from staff_info");
+            return ViewMapping.getStaffsMapping(stmt.executeQuery(), false);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

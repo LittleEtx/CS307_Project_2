@@ -17,8 +17,8 @@ public class UserGetter<T extends User> {
     /**
      * @param id must be a valid id for the type
      */
-    public <E extends User> T getUser(int id, Class<E> userClass) {
-        if (id < 0 || !this.userClass.equals(userClass)) {
+    public T getUser(int id) {
+        if (id < 0) {
             return null;
         }
         T user;

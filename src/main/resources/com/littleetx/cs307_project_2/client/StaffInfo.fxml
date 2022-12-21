@@ -27,7 +27,7 @@
                 <ImageView fx:id="changePasswordButton" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
                            preserveRatio="true">
                     <image>
-                        <Image url="@../../assets/icons/password.png"/>
+                        <Image url="@../assets/icons/password.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>
@@ -35,7 +35,7 @@
             </ImageView>
             <ImageView fx:id="logoutButton" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                   <Image url="@../../assets/icons/exit.png"/>
+                   <Image url="@../assets/icons/exit.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>
@@ -61,7 +61,7 @@
          <children>
             <ImageView fx:id="infoButton" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                   <Image url="@../../assets/icons/staffInfo.png"/>
+                   <Image url="@../assets/icons/staffInfo.png"/>
                </image>
                <cursor>
                   <Cursor fx:constant="HAND"/>

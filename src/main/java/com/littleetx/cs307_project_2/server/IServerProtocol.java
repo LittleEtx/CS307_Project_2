@@ -35,15 +35,17 @@ public interface IServerProtocol extends Remote {
     Map<String, ItemInfo> getCompanyItems(int id) throws RemoteException;
 
     //SUSTC manager methods
-    Map<String, ItemInfo> getAllItems() throws RemoteException;
+    Map<String, ItemInfo> getAllItems(int id) throws RemoteException;
 
-    Map<Integer, StaffInfo> getAllStaffs() throws RemoteException;
+    Map<Integer, StaffInfo> getAllStaffs(int id) throws RemoteException;
+
+    //public methods
 
     Map<Integer, String> getAllCompanies() throws RemoteException;
 
-    Map<String, ShipInfo> getAllShips() throws RemoteException;
+    Map<String, ShipInfo> getAllShips(int id) throws RemoteException;
 
     Map<Integer, CityInfo> getAllCities() throws RemoteException;
 
-    Map<String, ContainerInfo> getAllContainers() throws RemoteException;
+    Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException;
 }

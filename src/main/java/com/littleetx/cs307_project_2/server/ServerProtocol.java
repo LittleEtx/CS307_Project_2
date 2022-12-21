@@ -6,6 +6,7 @@ import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.CityInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.Courier;
+import com.littleetx.cs307_project_2.database.user.SUSTCManager;
 import main.interfaces.ContainerInfo;
 import main.interfaces.ItemInfo;
 import main.interfaces.ShipInfo;
@@ -69,32 +70,38 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     }
 
     @Override
-    public Map<String, ItemInfo> getAllItems() throws RemoteException {
-        return null;
+    public Map<String, ItemInfo> getAllItems(int id) throws RemoteException {
+        ServerMessage.print("SUSTC manager " + id + " get all items");
+        return verification.getUser(id, SUSTCManager.class).getAllItems();
     }
 
     @Override
-    public Map<Integer, StaffInfo> getAllStaffs() throws RemoteException {
-        return null;
+    public Map<Integer, StaffInfo> getAllStaffs(int id) throws RemoteException {
+        ServerMessage.print("SUSTC manager " + id + " get all staffs");
+        return verification.getUser(id, SUSTCManager.class).getAllStaffs();
     }
 
     @Override
     public Map<Integer, String> getAllCompanies() throws RemoteException {
+        ServerMessage.print("user get all companies");
         return GlobalQuery.getCompanies();
     }
 
     @Override
-    public Map<String, ShipInfo> getAllShips() throws RemoteException {
-        return null;
+    public Map<String, ShipInfo> getAllShips(int id) throws RemoteException {
+        ServerMessage.print("user " + id + " get all ships");
+        return verification.getUser(id).getAllShips();
     }
 
     @Override
     public Map<Integer, CityInfo> getAllCities() throws RemoteException {
+        ServerMessage.print("user get all cities");
         return GlobalQuery.getCities();
     }
 
     @Override
-    public Map<String, ContainerInfo> getAllContainers() throws RemoteException {
-        return null;
+    public Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException {
+        ServerMessage.print("user " + id + " get all containers");
+        return verification.getUser(id).getAllContainers();
     }
 }

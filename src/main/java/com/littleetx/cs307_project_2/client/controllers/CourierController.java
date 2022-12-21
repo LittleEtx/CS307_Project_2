@@ -1,6 +1,7 @@
 package com.littleetx.cs307_project_2.client.controllers;
 
 import com.littleetx.cs307_project_2.client.ClientHelper;
+import com.littleetx.cs307_project_2.client.GlobalManager_Client;
 import com.littleetx.cs307_project_2.client.tables.CourierItemTableView;
 import com.littleetx.cs307_project_2.client.tables.ItemTableView;
 import com.littleetx.cs307_project_2.database.user.Courier;

@@ -119,6 +119,11 @@ abstract public class User {
     }
 
     public Map<String, ContainerInfo> getAllContainers() {
-        return null;
+        try {
+            var stmt = conn.prepareStatement("select * from container_info");
+            return ViewMapping.getContainersMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
