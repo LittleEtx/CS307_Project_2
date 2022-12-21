@@ -44,3 +44,17 @@ SELECT id, name, max(export_rate) rate
 FROM city
          left join tax_info on city.id = tax_info.city_id
 group by id;
+
+select *
+from item_company
+         right join
+     (select * from item_fullinfo where state = 'FROM_IMPORT_TRANSPORTING' and delivery_staff is null) as t
+     on item_company.item_name = t.name
+where company_id = 12;
+
+select *
+from item_fullinfo
+where name in (select item_name from item_company where company_id = 12)
+  and delivery_city = 28
+  and state = 'FROM_IMPORT_TRANSPORTING'
+  and delivery_staff is null

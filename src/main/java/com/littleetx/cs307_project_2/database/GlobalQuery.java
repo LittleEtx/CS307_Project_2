@@ -9,7 +9,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.littleetx.cs307_project_2.database.ViewMapping.getStaffsMapping;
 
@@ -115,6 +117,10 @@ public class GlobalQuery {
         return id > 0 ? CityGetter.cities.get(id).name() : null;
     }
 
+    public static CityInfo getCity(int id) {
+        return CityGetter.cities.get(id);
+    }
+
     public static int getCityID(String name) {
         if (name == null) {
             return -1;
@@ -158,4 +164,26 @@ public class GlobalQuery {
             }
         }
     }
+
+    private static class ItemTypeGetter {
+        private static final Set<String> itemTypes;
+
+        static {
+            try (PreparedStatement stmt = getRootConnection()
+                    .prepareStatement("SELECT * FROM item_type")) {
+                itemTypes = new HashSet<>();
+                var result = stmt.executeQuery();
+                while (result.next()) {
+                    itemTypes.add(result.getString(1));
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static Set<String> getItemTypes() {
+        return ItemTypeGetter.itemTypes;
+    }
+
 }

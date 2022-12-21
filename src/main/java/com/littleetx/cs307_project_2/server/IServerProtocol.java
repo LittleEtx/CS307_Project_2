@@ -11,6 +11,7 @@ import main.interfaces.StaffInfo;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.Set;
 
 public interface IServerProtocol extends Remote {
     int verify(String username, String password) throws RemoteException;
@@ -18,9 +19,14 @@ public interface IServerProtocol extends Remote {
     StaffInfo getStaffInfo(int id) throws RemoteException;
 
     //courier methods
-    void newItem(int id, ItemInfo item) throws RemoteException;
+    Set<String> getItemTypes() throws RemoteException;
 
-    void updateItemState(int id, String itemName) throws RemoteException;
+    boolean newItem(int id, String name, String type, int price,
+                    int delivery_city, int export_city, int import_city) throws RemoteException;
+
+    boolean updateItemState(int id, String itemName) throws RemoteException;
+
+    boolean takeItem(int id, String itemName) throws RemoteException;
 
     Map<String, ItemInfo> getCourierItems(int id, Courier.GetItemType type) throws RemoteException;
 
@@ -48,4 +54,6 @@ public interface IServerProtocol extends Remote {
     Map<Integer, CityInfo> getAllCities() throws RemoteException;
 
     Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException;
+
+
 }

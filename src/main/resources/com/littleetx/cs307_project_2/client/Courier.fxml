@@ -24,8 +24,8 @@
                                                 text="Refresh" textAlignment="CENTER"/>
                                         <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
                                                 text="Add Item" textAlignment="CENTER"/>
-                                        <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
-                                                text="Take Item" textAlignment="CENTER"/>
+                                        <Button fx:id="takeItemNode" mnemonicParsing="false" onAction="#onTakeItemCheck"
+                                                prefWidth="80.0" text="Take Item" textAlignment="CENTER"/>
                                     </children>
                                     <padding>
                                         <Insets top="20.0"/>
@@ -44,7 +44,8 @@
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
                                                 text="Refresh" textAlignment="CENTER"/>
-                                        <Button mnemonicParsing="false" prefWidth="80.0" text="Update Item State"
+                                        <Button fx:id="updateItemNode" mnemonicParsing="false"
+                                                onAction="#onUpdateItemCheck" prefWidth="80.0" text="Update Item State"
                                                 textAlignment="CENTER" wrapText="true"/>
                                     </children>
                                     <padding>

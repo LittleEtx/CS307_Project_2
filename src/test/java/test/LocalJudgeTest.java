@@ -349,7 +349,6 @@ public class LocalJudgeTest {
         Set<Map.Entry<List<Object>, Boolean>> entries = companyManagerUserTest.loadContainerToShip.entrySet();
         for (Map.Entry<List<Object>, Boolean> entry : entries) {
             List<Object> params = entry.getKey();
-            System.out.println(params);
             assertEquals(entry.getValue(), manipulation.loadContainerToShip((LogInfo) params.get(0), (String) params.get(1), (String) params.get(2)));
         }
 

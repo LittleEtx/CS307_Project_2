@@ -7,14 +7,12 @@ import com.littleetx.cs307_project_2.database.database_type.CityInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.database.user.SUSTCManager;
-import main.interfaces.ContainerInfo;
-import main.interfaces.ItemInfo;
-import main.interfaces.ShipInfo;
-import main.interfaces.StaffInfo;
+import main.interfaces.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerProtocol extends UnicastRemoteObject implements IServerProtocol {
     public ServerProtocol() throws RemoteException {
@@ -34,13 +32,28 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     }
 
     @Override
-    public void newItem(int id, ItemInfo item) throws RemoteException {
-
+    public boolean newItem(int id, String name, String type, int price,
+                           int delivery_city, int export_city, int import_city) throws RemoteException {
+        ServerMessage.print("courier " + id + " created new item: " + name);
+        return verification.getUser(id, Courier.class)
+                .newItem(name, type, price, delivery_city, export_city, import_city);
     }
 
     @Override
-    public void updateItemState(int id, String itemName) throws RemoteException {
+    public boolean takeItem(int id, String itemName) throws RemoteException {
+        return verification.getUser(id, Courier.class)
+                .setItemState(itemName, ItemState.FromImportTransporting);
+    }
 
+    @Override
+    public Set<String> getItemTypes() throws RemoteException {
+        return GlobalQuery.getItemTypes();
+    }
+
+    @Override
+    public boolean updateItemState(int id, String itemName) throws RemoteException {
+        ServerMessage.print("courier " + id + " updated item: " + itemName);
+        return verification.getUser(id, Courier.class).updateItemState(itemName);
     }
 
     @Override

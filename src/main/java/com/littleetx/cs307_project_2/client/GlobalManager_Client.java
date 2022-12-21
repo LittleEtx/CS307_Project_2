@@ -5,11 +5,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import main.interfaces.StaffInfo;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Stack;
+import java.util.function.Consumer;
 
 public class GlobalManager_Client {
     private static final String LOGIN_FXML = "Login.fxml";
@@ -56,8 +60,9 @@ public class GlobalManager_Client {
     }
 
     private static void changeScene(Parent node) {
-        Scene scene = new Scene(node);
+        Scene scene = new Scene(node, 800, 600);
         stage.close();
+        stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("SUSTC DMS, " +
                 DatabaseMapping.getStaffAuthorityVisualStr(staffInfo.basicInfo().type()) + " : " +
@@ -67,8 +72,30 @@ public class GlobalManager_Client {
         stage.show();
     }
 
+    private static final Stack<Stage> stageStack = new Stack<>();
+
+    public static void showWindow(String title, String contentPath, int minWidth, int minHeight) {
+        Stage dialog = new Stage();
+        dialog.setTitle(title);
+        dialog.setScene(new Scene(readXML(contentPath), minWidth, minHeight));
+        dialog.initStyle(StageStyle.UTILITY);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setMinWidth(minWidth);
+        dialog.setMinHeight(minHeight);
+        dialog.show();
+        stageStack.push(dialog);
+    }
+
+    public static void closeWindow() {
+        Stage dialog = stageStack.pop();
+        if (dialog != null) {
+            dialog.close();
+        }
+    }
+
     public static void enterLoginInterface() {
         stage.close();
+        stage = new Stage();
         Parent root = readXML(LOGIN_FXML);
         stage.setScene(new Scene(root, 600, 400));
         stage.setTitle("SUSTC Database Management System");
@@ -80,5 +107,16 @@ public class GlobalManager_Client {
     public static void lostConnection() {
         System.out.println("lostConnection!");
         enterLoginInterface();
+    }
+
+    public static void showAlert(String msg) {
+        //TODO
+        System.out.println("showAlert: " + msg);
+    }
+
+    public static void showConfirm(String msg, Consumer<Boolean> callback) {
+        //TODO
+        System.out.println("showConfirm: " + msg);
+        callback.accept(true);
     }
 }

@@ -6,18 +6,24 @@ import com.littleetx.cs307_project_2.client.tables.CourierItemTableView;
 import com.littleetx.cs307_project_2.client.tables.ItemTableView;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.server.IServerProtocol;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import main.interfaces.ItemInfo;
-import main.interfaces.ItemState;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import static com.littleetx.cs307_project_2.client.GlobalManager_Client.getStaffID;
+import static com.littleetx.cs307_project_2.client.GlobalManager_Client.showConfirm;
+
 public class CourierController extends ControllerBase {
+    public static final String NEW_ITEM_FXML = "NewItem.fxml";
     @FXML
     private VBox rootVBox;
     @FXML
@@ -32,6 +38,11 @@ public class CourierController extends ControllerBase {
     private Tab onGoingItemTab;
     @FXML
     private Tab finishedItemTab;
+
+    @FXML
+    private Node takeItemNode;
+    @FXML
+    private Node updateItemNode;
 
     private ItemTableView newItemTable;
     private ItemTableView onGoingItemTable;
@@ -51,7 +62,12 @@ public class CourierController extends ControllerBase {
         finishedItemTable = new CourierItemTableView(name);
         finishedItemHBox.getChildren().add(0, finishedItemTable);
         initialTable(finishedItemTable);
-
+        takeItemNode.setDisable(true);
+        updateItemNode.setDisable(true);
+        newItemTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> takeItemNode.setDisable(newValue == null));
+        onGoingItemTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> updateItemNode.setDisable(newValue == null));
         tabPane.getSelectionModel().select(onGoingItemTab);
     }
 
@@ -60,7 +76,7 @@ public class CourierController extends ControllerBase {
         refreshTable(() -> {
             try {
                 IServerProtocol server = ClientHelper.getConnection();
-                int id = GlobalManager_Client.getStaffID();
+                int id = getStaffID();
                 if (tabPane.getSelectionModel().getSelectedItem() == newItemTab) {
                     newItemTable.getItems().clear();
                     newItemTable.getItems().addAll(server.getCourierItems(id, Courier.GetItemType.New).values());
@@ -82,18 +98,58 @@ public class CourierController extends ControllerBase {
 
     @FXML
     protected void onAddItemCheck() {
-        //TODO: add logic here
-        onGoingItemTable.getItems().add(
-                new ItemInfo(
-                        "test",
-                        "test",
-                        1.0,
-                        ItemState.Shipping,
-                        new ItemInfo.RetrievalDeliveryInfo("c1", null),
-                        new ItemInfo.RetrievalDeliveryInfo("c2", null),
-                        new ItemInfo.ImportExportInfo("c3", null, 1.0),
-                        new ItemInfo.ImportExportInfo("c4", null, 1.0)
-                )
-        );
+        GlobalManager_Client.showWindow("New Item", NEW_ITEM_FXML, 600, 250);
+    }
+
+    @FXML
+    protected void onTakeItemCheck() {
+        ItemInfo item = newItemTable.getSelectionModel().getSelectedItem();
+        showConfirm("Are you sure to take item " + item.name() + "?", yes -> {
+            if (!yes) {
+                return;
+            }
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+            tabPane.setDisable(true);
+            pause.setOnFinished(event -> {
+                try {
+                    IServerProtocol server = ClientHelper.getConnection();
+                    if (!server.takeItem(getStaffID(), item.name())) {
+                        GlobalManager_Client.showAlert("Take Item Failed!");
+                        tabPane.setDisable(false);
+                    } else {
+                        onRefreshClick();
+                    }
+                } catch (MalformedURLException | NotBoundException | RemoteException e) {
+                    GlobalManager_Client.lostConnection();
+                }
+            });
+            pause.play();
+        });
+    }
+
+    @FXML
+    protected void onUpdateItemCheck() {
+        ItemInfo item = onGoingItemTable.getSelectionModel().getSelectedItem();
+        showConfirm("Are you sure to update item " + item.name() + "?", yes -> {
+            if (!yes) {
+                return;
+            }
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+            tabPane.setDisable(true);
+            pause.setOnFinished(event -> {
+                try {
+                    var server = ClientHelper.getConnection();
+                    if (!server.updateItemState(getStaffID(), item.name())) {
+                        GlobalManager_Client.showAlert("Update Failed!");
+                        tabPane.setDisable(false);
+                    } else {
+                        onRefreshClick();
+                    }
+                } catch (RemoteException | MalformedURLException | NotBoundException e) {
+                    GlobalManager_Client.lostConnection();
+                }
+            });
+            pause.play();
+        });
     }
 }

@@ -1,0 +1,13 @@
+.ok-button {
+    -fx-background-color: #86bfe5;
+    -fx-border-color: #4682b4;
+    -fx-border-radius: 3;
+}
+
+.ok-button:hover {
+    -fx-background-color: #87cefa;
+}
+
+.ok-button:pressed {
+    -fx-background-color: #4682b4;
+}
