@@ -1,12 +1,15 @@
 package com.littleetx.cs307_project_2.database.user;
 
-import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import main.interfaces.ItemState;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateDatabaseString;
 
 public class SeaportOfficer extends User {
 
@@ -22,37 +25,25 @@ public class SeaportOfficer extends User {
      */
     public String[] getAllItemsAtPort() {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ? ");//查询当前用户所在城市
-            stmt.setInt(1, this.id);
+            int cityId = getStaffCity();
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select name from item_fullinfo where " +
+                            "(import_city = ? and state = ? ) or " +
+                            "(export_city = ? and state = ? ) ");
+            stmt.setInt(1, cityId);
+            stmt.setString(2, getStateDatabaseString(ItemState.ImportChecking));
+            stmt.setInt(3, cityId);
+            stmt.setString(4, getStateDatabaseString(ItemState.ExportChecking));
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int staffCity = rs.getInt(1);
-                stmt = conn.prepareStatement("select count(*) from item_route a join item_state b on a.item_name=b.item_name " +
-                        "where a.city_id= ? and ((a.stage='EXPORT' and b.state= ? ) or (a.stage='IMPORT' and b.state= ? ))");//找出当前城市中处于进/出口状态的所有物品的数量
-                stmt.setInt(1, staffCity);
-                stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking));
-                stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
-                rs = stmt.executeQuery();
-                if (rs.next()) {
-                    int length = rs.getInt(1);
-                    stmt = conn.prepareStatement("select a.item_name from item_route a join item_state b on a.item_name=b.item_name " +
-                            "where a.city_id= ? and ((a.stage='EXPORT' and b.state= ? ) or (a.stage='IMPORT' and b.state= ? ))");
-                    stmt.setInt(1, staffCity);
-                    stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.ExportChecking));
-                    stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.ImportChecking));
-                    rs = stmt.executeQuery();//找出当前城市中处于进/出口状态的所有物品
-                    String[] ans = new String[length];
-                    for (int i = 0; i < length; i++) {
-                        rs.next();
-                        ans[i] = rs.getString(1);
-                    }
-                    return ans;
-                }
+            rs = stmt.executeQuery();//找出当前城市中处于进/出口状态的所有物品
+            List<String> ans = new ArrayList<>();
+            while (rs.next()) {
+                ans.add(rs.getString(1));
             }
+            return ans.toArray(new String[0]);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -85,9 +76,9 @@ public class SeaportOfficer extends User {
 
             stmt = conn.prepareStatement("update item_state set state= ? where item_name= ? ");
             if (success) {
-                stmt.setString(1, DatabaseMapping.getStateDatabaseString(successState));
+                stmt.setString(1, getStateDatabaseString(successState));
             } else {
-                stmt.setString(1, DatabaseMapping.getStateDatabaseString(failedState));
+                stmt.setString(1, getStateDatabaseString(failedState));
             }
             stmt.setString(2, itemName);
             stmt.execute();

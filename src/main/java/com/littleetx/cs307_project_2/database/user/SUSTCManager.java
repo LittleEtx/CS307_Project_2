@@ -61,7 +61,8 @@ public class SUSTCManager extends User {
      */
     public ItemInfo getItemInfo(String itemName) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select * from item_fullinfo where name = ?");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from item_fullinfo where name = ?");
             stmt.setString(1, itemName);
             Map<String, ItemInfo> ans = ViewMapping.getItemsMapping(stmt.executeQuery());
             if (ans.size() == 0) {
@@ -98,25 +99,13 @@ public class SUSTCManager extends User {
     public ContainerInfo getContainerInfo(String code) {
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "select * from item_container a join item_state b on a.item_name=b.item_name"
-                            + " and a.container_code= ? and b.state in (?,?,?) ");//查询该集装箱是否处于空闲状态
+                    "select * from container_info where code = ?");//查询该集装箱是否处于空闲状态
             stmt.setString(1, code);
-            stmt.setString(2, DatabaseMapping.getStateDatabaseString(ItemState.PackingToContainer));
-            stmt.setString(3, DatabaseMapping.getStateDatabaseString(ItemState.Shipping));
-            stmt.setString(4, DatabaseMapping.getStateDatabaseString(ItemState.WaitingForShipping));
-            ResultSet rs = stmt.executeQuery();
-            boolean isUsing = rs.next();//查得到则为true，否则false
-
-            stmt = conn.prepareStatement("select * from container where code= ? ");
-            stmt.setString(1, code);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new ContainerInfo(DatabaseMapping.getContainerType(rs.getString(2)), rs.getString(1), isUsing);
-            }
+            var result = ViewMapping.getContainersMapping(stmt.executeQuery());
+            return result.get(code);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -130,7 +119,7 @@ public class SUSTCManager extends User {
         try {
             PreparedStatement stmt = conn.prepareStatement("select * from staff_info where name= ? ");//查询员工id
             stmt.setString(1, staffName);
-            var result = ViewMapping.getStaffsMapping(stmt.executeQuery());
+            var result = ViewMapping.getStaffsMapping(stmt.executeQuery(), true);
             return result.isEmpty() ? null : result.values().iterator().next();
         } catch (SQLException e) {
             throw new RuntimeException(e);

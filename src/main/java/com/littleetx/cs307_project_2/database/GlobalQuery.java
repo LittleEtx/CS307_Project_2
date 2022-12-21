@@ -42,7 +42,7 @@ public class GlobalQuery {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT * FROM staff_info where id = ?");
             stmt.setInt(1, id);
-            var result = getStaffsMapping(stmt.executeQuery());
+            var result = getStaffsMapping(stmt.executeQuery(), true);
             return result.isEmpty() ? null : result.values().iterator().next();
         } catch (SQLException e) {
             throw new RuntimeException(e);

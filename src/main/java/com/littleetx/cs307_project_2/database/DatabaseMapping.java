@@ -131,4 +131,8 @@ public class DatabaseMapping {
     public static boolean getIsSailing(String state) {
         return "SAILING".equals(state);
     }
+
+    public static boolean getIsContainerUsing(String state) {
+        return "USING".equals(state);
+    }
 }

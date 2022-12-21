@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.littleetx.cs307_project_2.database.DatabaseMapping.getIsSailing;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateDatabaseString;
 
 public class CompanyManager extends User {
@@ -119,6 +120,14 @@ public class CompanyManager extends User {
                     return false;
                 }
 
+                //check ship state
+                stmt = conn.prepareStatement("select * from ship_info where name = ?");
+                stmt.setString(1, shipName);
+                rs = stmt.executeQuery();
+                if (!rs.next() || getIsSailing(rs.getString("state"))) {
+                    return false;
+                }
+
                 //load item to ship
                 stmt = conn.prepareStatement("insert into item_ship values(?,?)");
                 stmt.setString(1, item_name);
@@ -155,13 +164,11 @@ public class CompanyManager extends User {
             if (getShipCompany(shipName) != getStaffCompany()) {
                 return false;
             }
-
-            PreparedStatement stmt = conn.prepareStatement("select * from item_ship a join item_state b on a.item_name=b.item_name " +
-                    " where a.ship_name= ? and b.state= ?");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from ship_info where name= ? ");
             stmt.setString(1, shipName);
-            stmt.setString(2, getStateDatabaseString(ItemState.Shipping));
-            ResultSet rs = stmt.executeQuery();//查询是否船上有物品（是否船处于docked状态）
-            if (!rs.next()) {//如果是docked才能继续
+            ResultSet rs = stmt.executeQuery();//查询是否是否船处于docked状态
+            if (rs.next() && !getIsSailing(rs.getString("state"))) {//如果是docked才能继续
                 stmt = conn.prepareStatement("select a.item_name from item_ship a join item_state b on a.item_name=b.item_name " +
                         " where a.ship_name= ? and b.state= ? ");
                 stmt.setString(1, shipName);

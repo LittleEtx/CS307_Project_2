@@ -66,8 +66,24 @@ from ship
          left join
      (select ship_name, count(item_ship.item_name) shipping
       from item_state
-               left join item_ship
-                         on item_state.item_name = item_ship.item_name
+               right join item_ship
+                          on item_state.item_name = item_ship.item_name
       where state = 'SHIPPING'
       group by item_ship.ship_name) as a
      on ship.name = a.ship_name;
+
+create or replace view container_info as
+select code,
+       type,
+       case a.packing is not null
+           when true then 'USING'
+           else 'IDLE'
+           end as state
+from container
+         left join
+     (select container_code, item_state.item_name packing
+      from item_state
+               right join item_container
+                          on item_state.item_name = item_container.item_name
+      where state in ('PACKING_TO_CONTAINER', 'WAITING_FOR_SHIPPING', 'SHIPPING')) as a
+     on container.code = a.container_code;

@@ -2,6 +2,7 @@ drop view if exists item_company;
 drop view if exists item_fullinfo;
 drop view if exists staff_info;
 drop view if exists ship_info;
+drop view if exists container_info;
 
 drop table if exists item_container;
 drop table if exists item_ship;

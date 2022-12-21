@@ -1,9 +1,6 @@
 package com.littleetx.cs307_project_2.database;
 
-import main.interfaces.ItemInfo;
-import main.interfaces.LogInfo;
-import main.interfaces.ShipInfo;
-import main.interfaces.StaffInfo;
+import main.interfaces.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,6 +53,10 @@ public class ViewMapping {
     }
 
     public static Map<Integer, StaffInfo> getStaffsMapping(ResultSet rs) {
+        return getStaffsMapping(rs, false);
+    }
+
+    public static Map<Integer, StaffInfo> getStaffsMapping(ResultSet rs, boolean showPassword) {
         Map<Integer, StaffInfo> staffs = new HashMap<>();
         try {
             while (rs.next()) {
@@ -63,7 +64,7 @@ public class ViewMapping {
                         new LogInfo(
                                 rs.getString("name"),
                                 getStaffAuthority(rs.getString("authority")),
-                                rs.getString("password")
+                                showPassword ? rs.getString("password") : null
                         ),
                         getCompanyName(rs.getInt("company")),
                         getCityName(rs.getInt("city")),
@@ -93,5 +94,22 @@ public class ViewMapping {
             throw new RuntimeException(e);
         }
         return ships;
+    }
+
+    public static Map<String, ContainerInfo> getContainersMapping(ResultSet rs) {
+        Map<String, ContainerInfo> containers = new HashMap<>();
+        try {
+
+            while (rs.next()) {
+                containers.put(rs.getString("code"), new ContainerInfo(
+                        DatabaseMapping.getContainerType(rs.getString("type")),
+                        rs.getString("code"),
+                        DatabaseMapping.getIsContainerUsing(rs.getString("state"))
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return containers;
     }
 }
