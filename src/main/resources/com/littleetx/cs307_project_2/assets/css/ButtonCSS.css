@@ -11,3 +11,17 @@
 .ok-button:pressed {
     -fx-background-color: #4682b4;
 }
+
+.cancel-button {
+    -fx-background-color: #f08080;
+    -fx-border-color: #b22222;
+    -fx-border-radius: 3;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #ff7f50;
+}
+
+.cancel-button:pressed {
+    -fx-background-color: #b22222;
+}

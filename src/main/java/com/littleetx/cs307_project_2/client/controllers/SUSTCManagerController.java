@@ -136,34 +136,28 @@ public class SUSTCManagerController extends ControllerBase {
 
                 Tab selectedItem = tabPane.getSelectionModel().getSelectedItem();
                 if (selectedItem.equals(itemsTab)) {
-                    itemInfos.clear();
-                    itemInfos.addAll(server.getAllItems(getStaffID()).values());
+                    itemInfos.setAll(server.getAllItems(getStaffID()).values());
                     itemTableView.setItems(itemInfos
                             .filtered(item -> item.name().contains(searchItemName.getText())));
                 } else if (selectedItem.equals(staffsTab)) {
-                    staffInfos.clear();
-                    staffInfos.addAll(server.getAllStaffs(getStaffID()).entrySet());
+                    staffInfos.setAll(server.getAllStaffs(getStaffID()).entrySet());
                     staffTableView.setItems(staffInfos.filtered(staff ->
                             staff.getValue().basicInfo().name().contains(searchStaff.getText())
                                     || staff.getKey().toString().contains(searchStaff.toString())));
                 } else if (selectedItem.equals(shipsTab)) {
-                    shipInfos.clear();
-                    shipInfos.addAll(server.getAllShips(getStaffID()).values());
+                    shipInfos.setAll(server.getAllShips(getStaffID()).values());
                     shipTableView.setItems(
                             shipInfos.filtered(ship -> ship.name().contains(searchShipName.getText()))
                     );
                 } else if (selectedItem.equals(containersTab)) {
-                    containerInfos.clear();
-                    containerInfos.addAll(server.getAllContainers(GlobalManager_Client.getStaffID()).values());
+                    containerInfos.setAll(server.getAllContainers(GlobalManager_Client.getStaffID()).values());
                     containerTableView.setItems(
                             containerInfos.filtered(con -> con.code().contains(searchContainerCode.getText()))
                     );
                 } else if (selectedItem.equals(citiesTab)) {
-                    cityTableView.getItems().clear();
-                    cityTableView.getItems().addAll(server.getAllCities().entrySet());
+                    cityTableView.getItems().setAll(server.getAllCities().entrySet());
                 } else if (selectedItem.equals(companiesTab)) {
-                    companyTableView.getItems().clear();
-                    companyTableView.getItems().addAll(server.getAllCompanies().entrySet());
+                    companyTableView.getItems().setAll(server.getAllCompanies().entrySet());
                 }
 
             } catch (MalformedURLException | NotBoundException | RemoteException e) {

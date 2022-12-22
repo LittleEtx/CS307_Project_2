@@ -2,14 +2,14 @@ package com.littleetx.cs307_project_2.database.database_type;
 
 import java.io.Serializable;
 
-public class TaxInfo implements Serializable {
+public class TaxInfo {
     public record Key(
             int cityId,
-            String item_type
-    ) {
+            String itemType
+    ) implements Serializable {
     }
 
-    public static class Value {
+    public static class Value implements Serializable {
         public Double export_rate;
         public Double import_rate;
 

@@ -1,23 +1,25 @@
 ### 1. write ddl based on ER graph
 
 #### 1.1 Entity
+
 * **Staff**: `gender` can be _'MALE'_ or _'FEMALE'_
 * **City**
 * **Company**
 * **Ship**
 * **Item**
-* **Container**: `type` can be _'DRY'_, _'FLAT_RACK'_, _'REEFER'_, _'OPEN_TOP'_ or _'ISO_TANK'_
+* **Container**: `tableType` can be _'DRY'_, _'FLAT_RACK'_, _'REEFER'_, _'OPEN_TOP'_ or _'ISO_TANK'_
 
 #### 1.2 Weak Entity
-* **Tax_Info**: weak entity of `City`, contains import and export tax rate for each type of item
+
+* **Tax_Info**: weak entity of `City`, contains import and export tax rate for each tableType of item
 * **Verification**: weak entity of `Staff`, containing their login password and authority level.
-The attribute `Authority` could be _'COMPANY_MANAGER'_, _'COURIER'_, _'SEAPORT_OFFICER'_ or _'SUSTC_MANAGER'_
+  The attribute `Authority` could be _'COMPANY_MANAGER'_, _'COURIER'_, _'SEAPORT_OFFICER'_ or _'SUSTC_MANAGER'_
 * **Ship_State**: weak entity of `Ship`. `State` can be _'SAILING'_ or _'DOCKED'_
-* **Item_Type**: the type of `Item`. Only contains one column: `Type`
-* **Item_State**: the current state of the `Item`. `State` can be 
-_'PICKING_UP'_, _'TO_EXPORT_TRANSPORTING'_, _'EXPORT_CHECKING'_, _'EXPORT_CHECK_FAILED'_,
-_'PACKING_TO_CONTAINER'_, _'WAITING_FOR_SHIPPING'_, _'SHIPPING'_, _'UNPACKING_FROM_CONTAINER'_, 
-_'IMPORT_CHECKING'_, _'IMPORT_CHECK_FAILED'_, _'FROM_IMPORT_TRANSPORTING'_, _'DELIVERING'_, _'FINISH'_
+* **Item_Type**: the tableType of `Item`. Only contains one column: `Type`
+* **Item_State**: the current state of the `Item`. `State` can be
+  _'PICKING_UP'_, _'TO_EXPORT_TRANSPORTING'_, _'EXPORT_CHECKING'_, _'EXPORT_CHECK_FAILED'_,
+  _'PACKING_TO_CONTAINER'_, _'WAITING_FOR_SHIPPING'_, _'SHIPPING'_, _'UNPACKING_FROM_CONTAINER'_,
+  _'IMPORT_CHECKING'_, _'IMPORT_CHECK_FAILED'_, _'FROM_IMPORT_TRANSPORTING'_, _'DELIVERING'_, _'FINISH'_
 
 #### 1.3 Relationship
 * **Container_Ship**: what `Container` that `Ship` is transporting
@@ -71,8 +73,8 @@ Add the other information to `Transportation_Info`
   * Update 'Item_State':
     * _'PICKING_UP'_ : set to _'TO_EXPORT_TRANSPORTING'_
     * _'TO_EXPORT_TRANSPORTING'_ : set to _'EXPORT_CHECKING'_
-    * _'From_IMPORT_TRANSPORTING'_ : set to _'From_IMPORT_TRANSPORTING'_, 
-    and add the Courier to `Transportation_Info` of type _'DELIVERY'_
+    * _'From_IMPORT_TRANSPORTING'_ : set to _'From_IMPORT_TRANSPORTING'_,
+      and add the Courier to `Transportation_Info` of tableType _'DELIVERY'_
     * _'From_IMPORT_TRANSPORTING'_ : set to _'DELIVERING'_
     * _'DELIVERING'_ : set to _'FINISH'_
 

@@ -1,5 +1,7 @@
 package com.littleetx.cs307_project_2.client;
 
+import com.littleetx.cs307_project_2.client.dialogs.AlertDialog;
+import com.littleetx.cs307_project_2.client.dialogs.ConfirmDialog;
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -20,6 +22,7 @@ public class GlobalManager_Client {
     private static final String STAFF_INFO_FXML = "StaffInfo.fxml";
     private static final String COURIER_FXML = "Courier.fxml";
     private static final String SUSTC_MANAGER_FXML = "SUSTCManager.fxml";
+    private static final String SEAPORT_OFFICER_FXML = "SeaportOfficer.fxml";
     private static StaffInfo staffInfo;
     private static int staffID;
     private static Stage stage;
@@ -56,6 +59,7 @@ public class GlobalManager_Client {
         switch (staffInfo.basicInfo().type()) {
             case Courier -> changeScene(readXML(COURIER_FXML));
             case SustcManager -> changeScene(readXML(SUSTC_MANAGER_FXML));
+            case SeaportOfficer -> changeScene(readXML(SEAPORT_OFFICER_FXML));
         }
     }
 
@@ -66,7 +70,7 @@ public class GlobalManager_Client {
         stage.setScene(scene);
         stage.setTitle("SUSTC DMS, " +
                 DatabaseMapping.getStaffAuthorityVisualStr(staffInfo.basicInfo().type()) + " : " +
-                staffID + " " + staffInfo.basicInfo().name());
+                staffID + ", " + staffInfo.basicInfo().name());
         stage.setMinWidth(800);
         stage.setMinHeight(600);
         stage.show();
@@ -87,10 +91,19 @@ public class GlobalManager_Client {
     }
 
     public static void closeWindow() {
+        if (stageStack.isEmpty()) {
+            System.out.println("Warning: No window to close!");
+            return;
+        }
+
         Stage dialog = stageStack.pop();
         if (dialog != null) {
             dialog.close();
         }
+    }
+
+    public static void closeMainWindow() {
+        stage.close();
     }
 
     public static void enterLoginInterface() {
@@ -104,19 +117,48 @@ public class GlobalManager_Client {
         stage.show();
     }
 
+    private static boolean inLostConnectionShowing = false;
+
     public static void lostConnection() {
-        System.out.println("lostConnection!");
-        enterLoginInterface();
+        if (inLostConnectionShowing) {
+            return;
+        }
+        System.out.println("Lost connection!");
+        stage.setOpacity(0.8);
+        showAlert("lostConnection!", () -> {
+            inLostConnectionShowing = false;
+            enterLoginInterface();
+        });
+        inLostConnectionShowing = true;
+    }
+
+    public static void showAlert(String msg, Runnable callback) {
+        showDialog(new AlertDialog(msg, callback), "Warning", callback);
     }
 
     public static void showAlert(String msg) {
-        //TODO
-        System.out.println("showAlert: " + msg);
+        showDialog(new AlertDialog(msg, null), "Warning", null);
     }
 
     public static void showConfirm(String msg, Consumer<Boolean> callback) {
-        //TODO
-        System.out.println("showConfirm: " + msg);
-        callback.accept(true);
+        showDialog(new ConfirmDialog(msg, callback), "Confirm",
+                () -> callback.accept(false));
+    }
+
+    private static void showDialog(Parent node, String title, Runnable onClose) {
+        Stage dialog = new Stage();
+        dialog.setTitle(title);
+        dialog.setScene(new Scene(node));
+        dialog.initStyle(StageStyle.UTILITY);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setAlwaysOnTop(true);
+        dialog.setResizable(false);
+        dialog.setOnCloseRequest(event -> {
+            if (onClose != null) {
+                onClose.run();
+            }
+        });
+        dialog.show();
+        stageStack.push(dialog);
     }
 }

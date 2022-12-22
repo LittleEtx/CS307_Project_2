@@ -27,7 +27,7 @@ public class ItemTableView extends TableViewBase<ItemInfo> {
     public void addItemBasicInfo() {
         addColumn(NAME, ItemInfo::name);
         addColumn(TYPE, ItemInfo::$class);
-        addColumn(PRICE, itemInfo -> String.valueOf(itemInfo.price()));
+        addColumn(PRICE, itemInfo -> convertPrice((int) itemInfo.price()), true);
         addColumn(STATE, itemInfo -> DatabaseMapping.getStateVisualString(itemInfo.state()));
     }
 

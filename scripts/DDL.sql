@@ -1,11 +1,12 @@
 create table Item_Type(
-    type varchar primary key
+    tableType varchar primary key
 );
 
-create table Item(
-    name varchar primary key,
+create table Item
+(
+    name  varchar primary key,
     price int,
-    class varchar references Item_Type(type)
+    class varchar references Item_Type (tableType)
 );
 
 create table Item_State(
@@ -50,9 +51,10 @@ create table Ship
     company_id int references Company (id)
 );
 
-create table Container(
-    code varchar primary key,
-    type varchar
+create table Container
+(
+    code      varchar primary key,
+    tableType varchar
 );
 
 create table Item_Ship
@@ -69,7 +71,7 @@ create table Item_Container
 
 create table Tax_Info
 (
-    item_type   varchar references Item_Type (type),
+    item_type   varchar references Item_Type (tableType),
     city_id     int references City (id),
     primary key (item_type, city_id),
     export_rate decimal(30, 15),

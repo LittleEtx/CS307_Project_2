@@ -1,5 +1,7 @@
 package com.littleetx.cs307_project_2.database.user;
 
+import com.littleetx.cs307_project_2.database.ViewMapping;
+import main.interfaces.ItemInfo;
 import main.interfaces.ItemState;
 
 import java.sql.Connection;
@@ -8,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateDatabaseString;
 
@@ -41,6 +44,45 @@ public class SeaportOfficer extends User {
                 ans.add(rs.getString(1));
             }
             return ans.toArray(new String[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public enum GetItemType {
+        IMPORT, EXPORT, FINISHED
+    }
+
+    public Map<String, ItemInfo> getAllItemsAtPort(GetItemType type) {
+        try {
+            int cityId = getStaffCity();
+            String name = getStaffName();
+            PreparedStatement stmt;
+            switch (type) {
+                case IMPORT -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_fullinfo where " +
+                                    "import_city = ? and state = ? ");
+                    stmt.setInt(1, cityId);
+                    stmt.setString(2, getStateDatabaseString(ItemState.ImportChecking));
+                }
+                case EXPORT -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_fullinfo where " +
+                                    "export_city = ? and state = ? ");
+                    stmt.setInt(1, cityId);
+                    stmt.setString(2, getStateDatabaseString(ItemState.ExportChecking));
+                }
+                case FINISHED -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_fullinfo where " +
+                                    "import_staff = ? or export_staff = ? ");
+                    stmt.setString(1, name);
+                    stmt.setString(2, name);
+                }
+                default -> throw new RuntimeException("Unknown type");
+            }
+            return ViewMapping.getItemsMapping(stmt.executeQuery());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

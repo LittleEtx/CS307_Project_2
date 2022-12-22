@@ -130,26 +130,21 @@ public class CourierController extends ControllerBase {
     @FXML
     protected void onUpdateItemCheck() {
         ItemInfo item = onGoingItemTable.getSelectionModel().getSelectedItem();
-        showConfirm("Are you sure to update item " + item.name() + "?", yes -> {
-            if (!yes) {
-                return;
-            }
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
-            tabPane.setDisable(true);
-            pause.setOnFinished(event -> {
-                try {
-                    var server = ClientHelper.getConnection();
-                    if (!server.updateItemState(getStaffID(), item.name())) {
-                        GlobalManager_Client.showAlert("Update Failed!");
-                        tabPane.setDisable(false);
-                    } else {
-                        onRefreshClick();
-                    }
-                } catch (RemoteException | MalformedURLException | NotBoundException e) {
-                    GlobalManager_Client.lostConnection();
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+        tabPane.setDisable(true);
+        pause.setOnFinished(event -> {
+            try {
+                var server = ClientHelper.getConnection();
+                if (!server.updateItemState(getStaffID(), item.name())) {
+                    GlobalManager_Client.showAlert("Update Failed!");
+                    tabPane.setDisable(false);
+                } else {
+                    onRefreshClick();
                 }
-            });
-            pause.play();
+            } catch (RemoteException | MalformedURLException | NotBoundException e) {
+                GlobalManager_Client.lostConnection();
+            }
         });
+        pause.play();
     }
 }

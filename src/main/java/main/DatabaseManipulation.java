@@ -277,7 +277,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
                             throw new RuntimeException("Wrong parameter!", e);
                         }
                     });
-            Debug.println("Loaded data into item_type");
+            Debug.println("Loaded data into itemType");
 
             insertData(rootConn.prepareStatement("insert into item values (?, ?, ?)"),
                     items, (stmt, item) -> {
@@ -359,7 +359,7 @@ public class DatabaseManipulation implements IDatabaseManipulation {
             insertData(rootConn.prepareStatement("insert into tax_info values (?, ?, ?, ?)"),
                     taxes.entrySet(), (stmt, entry) -> {
                         try {
-                            stmt.setString(1, entry.getKey().item_type());
+                            stmt.setString(1, entry.getKey().itemType());
                             stmt.setInt(2, entry.getKey().cityId());
                             if (entry.getValue().export_rate >= 0) {
                                 stmt.setDouble(3, entry.getValue().export_rate);

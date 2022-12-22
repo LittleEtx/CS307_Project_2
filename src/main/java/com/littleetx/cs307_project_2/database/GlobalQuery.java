@@ -8,10 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.littleetx.cs307_project_2.database.ViewMapping.getStaffsMapping;
 
@@ -70,7 +67,7 @@ public class GlobalQuery {
     }
 
     public static Map<Integer, String> getCompanies() {
-        return CompaniesGetter.companies;
+        return Collections.unmodifiableMap(CompaniesGetter.companies);
     }
 
     public static String getCompanyName(int id) {
@@ -110,7 +107,7 @@ public class GlobalQuery {
     }
 
     public static Map<Integer, CityInfo> getCities() {
-        return CityGetter.cities;
+        return Collections.unmodifiableMap(CityGetter.cities);
     }
 
     public static String getCityName(int id) {
@@ -140,6 +137,10 @@ public class GlobalQuery {
 
     public static TaxInfo.Value getCityTaxRate(TaxInfo.Key key) {
         return TaxRateGetter.taxRates.get(key);
+    }
+
+    public static Map<TaxInfo.Key, TaxInfo.Value> getCityTaxRates() {
+        return Collections.unmodifiableMap(TaxRateGetter.taxRates);
     }
 
     private static class TaxRateGetter {
