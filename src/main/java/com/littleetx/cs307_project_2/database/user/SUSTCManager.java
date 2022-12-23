@@ -2,6 +2,7 @@ package com.littleetx.cs307_project_2.database.user;
 
 import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.ViewMapping;
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
 import main.interfaces.*;
 
 import java.sql.Connection;
@@ -126,10 +127,10 @@ public class SUSTCManager extends User {
         }
     }
 
-    public Map<String, ItemInfo> getAllItems() {
+    public Map<String, ItemFullInfo> getAllItems() {
         try {
-            PreparedStatement stmt = conn.prepareStatement("select * from item_fullinfo");
-            return ViewMapping.getItemsMapping(stmt.executeQuery());
+            PreparedStatement stmt = conn.prepareStatement("select * from item_info_extra");
+            return ViewMapping.getItemFullInfoMapping(stmt.executeQuery());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

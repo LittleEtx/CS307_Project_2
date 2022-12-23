@@ -43,15 +43,15 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     public boolean newItem(int id, String name, String type, int price,
                            int delivery_city, int export_city, int import_city) throws RemoteException {
         ServerMessage.print("courier " + id + " created new item: " + name);
-        return verification.getUser(id, Courier.class)
-                .newItem(name, type, price, delivery_city, export_city, import_city);
+        var user = verification.getUser(id, Courier.class);
+        return user != null && user.newItem(name, type, price, delivery_city, export_city, import_city);
     }
 
     @Override
     public boolean takeItem(int id, String itemName) throws RemoteException {
         ServerMessage.print("courier " + id + " took item: " + itemName);
-        return verification.getUser(id, Courier.class)
-                .setItemState(itemName, ItemState.FromImportTransporting);
+        var user = verification.getUser(id, Courier.class);
+        return user != null && user.setItemState(itemName, ItemState.FromImportTransporting);
     }
 
     @Override
@@ -63,26 +63,30 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public boolean updateItemState(int id, String itemName) throws RemoteException {
         ServerMessage.print("courier " + id + " updated item: " + itemName);
-        return verification.getUser(id, Courier.class).updateItemState(itemName);
+        var user = verification.getUser(id, Courier.class);
+        return user != null && user.updateItemState(itemName);
     }
 
     @Override
     public Map<String, ItemInfo> getCourierItems(int id, Courier.GetItemType type) throws RemoteException {
         ServerMessage.print("courier " + id + " get items: " + type);
-        return verification.getUser(id, Courier.class).getAllItems(type);
+        var user = verification.getUser(id, Courier.class);
+        return user != null ? user.getAllItems(type) : null;
     }
 
     @Override
     public Map<String, ItemInfo> getItemsInPort(int id, SeaportOfficer.GetItemType type) throws RemoteException {
         ServerMessage.print("seaport officer " + id + " get items: " + type);
-        return verification.getUser(id, SeaportOfficer.class).getAllItemsAtPort(type);
+        var user = verification.getUser(id, SeaportOfficer.class);
+        return user != null ? user.getAllItemsAtPort(type) : null;
     }
 
     @Override
-    public void checkItem(int id, String itemName, boolean isSuccess) throws RemoteException {
+    public boolean checkItem(int id, String itemName, boolean isSuccess) throws RemoteException {
         ServerMessage.print("seaport officer " + id + " check item " + itemName
                 + " to " + (isSuccess ? "pass" : "fail"));
-        verification.getUser(id, SeaportOfficer.class).setItemCheckState(itemName, isSuccess);
+        var user = verification.getUser(id, SeaportOfficer.class);
+        return user != null && user.setItemCheckState(itemName, isSuccess);
     }
 
     @Override
@@ -107,37 +111,78 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public Map<String, ItemFullInfo> getCompanyItems(int id, CompanyManager.GetItemType type) {
         ServerMessage.print("company manager " + id + " get items: " + type);
-        return verification.getUser(id, CompanyManager.class).getItems(type);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null ? user.getItems(type) : null;
     }
 
     @Override
     public Map<Integer, StaffInfo> getCompanyCouriers(int id) throws RemoteException {
         ServerMessage.print("company manager " + id + " get couriers");
-        return verification.getUser(id, CompanyManager.class).getCompanyCouriers();
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null ? user.getCompanyCouriers() : null;
     }
 
     @Override
     public Map<String, ShipInfo> getCompanyShips(int id, CompanyManager.GetShipType type) throws RemoteException {
         ServerMessage.print("company manager " + id + " get ships: " + type);
-        return verification.getUser(id, CompanyManager.class).getShips(type);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null ? user.getShips(type) : null;
+    }
+
+    @Override
+    public boolean loadItemToContainer(int id, String itemName, String containerCode) throws RemoteException {
+        ServerMessage.print("company manager load item " + itemName + " to container " + containerCode);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null && user.loadItemToContainer(itemName, containerCode);
+    }
+
+    @Override
+    public boolean loadContainerToShip(int id, String shipName, String containerCode) throws RemoteException {
+        ServerMessage.print("company manager load container " + containerCode + " to ship " + shipName);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null && user.loadContainerToShip(shipName, containerCode);
+    }
+
+    @Override
+    public boolean shipStartSailing(int id, String shipName) throws RemoteException {
+        ServerMessage.print("company manager start sailing ship " + shipName);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null && user.shipStartSailing(shipName);
+    }
+
+    @Override
+    public boolean unloadItem(int id, String itemName) throws RemoteException {
+        ServerMessage.print("company manager unload item " + itemName);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null && user.unloadItem(itemName);
+    }
+
+    @Override
+    public boolean itemWaitForChecking(int id, String itemName) throws RemoteException {
+        ServerMessage.print("company manager item " + itemName + " wait for checking");
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null && user.itemWaitForChecking(itemName);
     }
 
     @Override
     public Map<String, ContainerInfo> getContainers(int id, CompanyManager.GetContainerType type) throws RemoteException {
         ServerMessage.print("company manager " + id + " get containers: " + type);
-        return verification.getUser(id, CompanyManager.class).getContainers(type);
+        var user = verification.getUser(id, CompanyManager.class);
+        return user != null ? user.getContainers(type) : null;
     }
 
     @Override
-    public Map<String, ItemInfo> getAllItems(int id) throws RemoteException {
+    public Map<String, ItemFullInfo> getAllItems(int id) throws RemoteException {
         ServerMessage.print("SUSTC manager " + id + " get all items");
-        return verification.getUser(id, SUSTCManager.class).getAllItems();
+        var user = verification.getUser(id, SUSTCManager.class);
+        return user != null ? user.getAllItems() : null;
     }
 
     @Override
     public Map<Integer, StaffInfo> getAllStaffs(int id) throws RemoteException {
         ServerMessage.print("SUSTC manager " + id + " get all staffs");
-        return verification.getUser(id, SUSTCManager.class).getAllStaffs();
+        var user = verification.getUser(id, SUSTCManager.class);
+        return user != null ? user.getAllStaffs() : null;
     }
 
     @Override
@@ -149,7 +194,8 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public Map<String, ShipInfo> getAllShips(int id) throws RemoteException {
         ServerMessage.print("user " + id + " get all ships");
-        return verification.getUser(id, SUSTCManager.class).getAllShips();
+        var user = verification.getUser(id, SUSTCManager.class);
+        return user != null ? user.getAllShips() : null;
     }
 
     @Override
@@ -161,6 +207,7 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException {
         ServerMessage.print("user " + id + " get all containers");
-        return verification.getUser(id, SUSTCManager.class).getAllContainers();
+        var user = verification.getUser(id, SUSTCManager.class);
+        return user != null ? user.getAllContainers() : null;
     }
 }

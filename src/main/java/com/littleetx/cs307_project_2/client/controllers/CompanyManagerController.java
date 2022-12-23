@@ -2,10 +2,11 @@ package com.littleetx.cs307_project_2.client.controllers;
 
 import com.littleetx.cs307_project_2.client.ClientHelper;
 import com.littleetx.cs307_project_2.client.GlobalManager_Client;
-import com.littleetx.cs307_project_2.client.tables.CompanyManagerItemTableView;
+import com.littleetx.cs307_project_2.client.tables.FullItemTableView;
 import com.littleetx.cs307_project_2.client.tables.ShipTableView;
 import com.littleetx.cs307_project_2.client.tables.StaffTableView;
 import com.littleetx.cs307_project_2.client.tables.TaxInfoTableView;
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
 import com.littleetx.cs307_project_2.database.user.CompanyManager;
 import com.littleetx.cs307_project_2.server.IServerProtocol;
 import javafx.fxml.FXML;
@@ -13,12 +14,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import main.interfaces.ItemState;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import static com.littleetx.cs307_project_2.client.GlobalManager_Client.getStaffID;
+import static com.littleetx.cs307_project_2.client.GlobalManager_Client.showConfirm;
 
 public class CompanyManagerController extends ControllerBase {
 
@@ -75,33 +78,37 @@ public class CompanyManagerController extends ControllerBase {
     @FXML
     private Node sendToCheckBtn;
 
-    private CompanyManagerItemTableView exportTableView;
-    private CompanyManagerItemTableView onShipTableView;
-    private CompanyManagerItemTableView importTableView;
-    private CompanyManagerItemTableView allItemTableView;
+    private FullItemTableView exportTableView;
+    private FullItemTableView onShipTableView;
+    private FullItemTableView importTableView;
+    private FullItemTableView allItemTableView;
     private StaffTableView courierTableView;
     private ShipTableView shipTableView;
     private TaxInfoTableView taxInfoTableView;
 
+    public static ItemFullInfo selectedItem;
+    public static final String PACK_TO_CONTAINER_FXML = "ChooseContainer.fxml";
+    public static final String LOAD_TO_SHIP_FXML = "ChooseShip.fxml";
+
     @FXML
     protected void initialize() {
         super.initialize();
-        exportTableView = new CompanyManagerItemTableView();
-        exportTableView.showColumn(CompanyManagerItemTableView.ShowType.EXPORT);
+        exportTableView = new FullItemTableView();
+        exportTableView.showColumn(FullItemTableView.ShowType.EXPORT);
         exportHBox.getChildren().add(0, exportTableView);
         initialTable(exportTableView);
 
-        onShipTableView = new CompanyManagerItemTableView();
-        onShipTableView.showColumn(CompanyManagerItemTableView.ShowType.ON_SHIP);
+        onShipTableView = new FullItemTableView();
+        onShipTableView.showColumn(FullItemTableView.ShowType.ON_SHIP);
         onShipHBox.getChildren().add(0, onShipTableView);
         initialTable(onShipTableView);
 
-        importTableView = new CompanyManagerItemTableView();
-        importTableView.showColumn(CompanyManagerItemTableView.ShowType.IMPORT);
+        importTableView = new FullItemTableView();
+        importTableView.showColumn(FullItemTableView.ShowType.IMPORT);
         importHBox.getChildren().add(0, importTableView);
-        initialTable(onShipTableView);
+        initialTable(importTableView);
 
-        allItemTableView = new CompanyManagerItemTableView();
+        allItemTableView = new FullItemTableView();
         allItemsHBox.getChildren().add(0, allItemTableView);
         initialTable(allItemTableView);
 
@@ -127,6 +134,31 @@ public class CompanyManagerController extends ControllerBase {
         allItemTableView.setFilter(searchAllItems.textProperty());
         courierTableView.setFilter(searchCouriers.textProperty());
         shipTableView.setFilter(searchShips.textProperty());
+
+        packToContainerBtn.setDisable(true);
+        loadToShipBtn.setDisable(true);
+        startSailingBtn.setDisable(true);
+        unloadFromShipBtn.setDisable(true);
+        sendToCheckBtn.setDisable(true);
+
+        exportTableView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    packToContainerBtn.setDisable(newValue == null);
+                    loadToShipBtn.setDisable(newValue == null ||
+                            newValue.containerCode() == null);
+                    selectedItem = newValue;
+                });
+
+        onShipTableView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    startSailingBtn.setDisable(newValue == null ||
+                            newValue.itemInfo().state() != ItemState.WaitingForShipping);
+                    unloadFromShipBtn.setDisable(newValue == null ||
+                            newValue.itemInfo().state() != ItemState.Shipping);
+                });
+
+        importTableView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> sendToCheckBtn.setDisable(newValue == null));
     }
 
 
@@ -165,26 +197,79 @@ public class CompanyManagerController extends ControllerBase {
 
     @FXML
     private void onPackToContainerCheck() {
-        //TODO
+        ItemFullInfo item = exportTableView.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            return;
+        }
+        GlobalManager_Client.showWindow("Pack To Container",
+                PACK_TO_CONTAINER_FXML, 600, 500, this::onRefreshClick);
     }
+
 
     @FXML
     private void onLoadToShipCheck() {
-        //TODO
+        ItemFullInfo item = exportTableView.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            return;
+        }
+        GlobalManager_Client.showWindow("Load To Ship",
+                LOAD_TO_SHIP_FXML, 600, 500, this::onRefreshClick);
     }
 
     @FXML
     private void onStartSailingCheck() {
-        //TODO
+        ItemFullInfo item = onShipTableView.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            return;
+        }
+        showConfirm("Are you sure to start sailing "
+                + item.shipName() + "?", yes -> {
+            if (yes) {
+                try {
+                    IServerProtocol server = ClientHelper.getConnection();
+                    if (!server.shipStartSailing(GlobalManager_Client.getStaffID(), item.shipName())) {
+                        GlobalManager_Client.showAlert("Error: Cannot start sailing");
+                    }
+                    onRefreshClick();
+                } catch (MalformedURLException | NotBoundException | RemoteException e) {
+                    GlobalManager_Client.lostConnection();
+                }
+            }
+        });
+
     }
 
     @FXML
     private void onUnloadItemCheck() {
-        //TODO
+        ItemFullInfo item = onShipTableView.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            return;
+        }
+        try {
+            IServerProtocol server = ClientHelper.getConnection();
+            if (!server.unloadItem(GlobalManager_Client.getStaffID(), item.itemInfo().name())) {
+                GlobalManager_Client.showAlert("Error: Cannot unload item");
+            }
+            onRefreshClick();
+        } catch (MalformedURLException | NotBoundException | RemoteException e) {
+            GlobalManager_Client.lostConnection();
+        }
     }
 
     @FXML
     private void onSendToCheckCheck() {
-        //TODO
+        ItemFullInfo item = importTableView.getSelectionModel().getSelectedItem();
+        if (item == null) {
+            return;
+        }
+        try {
+            IServerProtocol server = ClientHelper.getConnection();
+            if (!server.itemWaitForChecking(GlobalManager_Client.getStaffID(), item.itemInfo().name())) {
+                GlobalManager_Client.showAlert("Error: Cannot send item to check");
+            }
+            onRefreshClick();
+        } catch (MalformedURLException | NotBoundException | RemoteException e) {
+            GlobalManager_Client.lostConnection();
+        }
     }
 }

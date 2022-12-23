@@ -36,7 +36,7 @@ public interface IServerProtocol extends Remote {
     //seaport officer methods
     Map<String, ItemInfo> getItemsInPort(int id, SeaportOfficer.GetItemType type) throws RemoteException;
 
-    void checkItem(int id, String itemName, boolean isSuccess) throws RemoteException;
+    boolean checkItem(int id, String itemName, boolean isSuccess) throws RemoteException;
 
     Map<TaxInfo.Key, TaxInfo.Value> getTaxRates(String city) throws RemoteException;
 
@@ -51,8 +51,18 @@ public interface IServerProtocol extends Remote {
 
     Map<String, ContainerInfo> getContainers(int id, CompanyManager.GetContainerType type) throws RemoteException;
 
+    boolean loadItemToContainer(int id, String itemName, String containerCode) throws RemoteException;
+
+    boolean loadContainerToShip(int id, String shipName, String containerCode) throws RemoteException;
+
+    boolean shipStartSailing(int id, String shipName) throws RemoteException;
+
+    boolean unloadItem(int id, String itemName) throws RemoteException;
+
+    boolean itemWaitForChecking(int id, String itemName) throws RemoteException;
+
     //SUSTC manager methods
-    Map<String, ItemInfo> getAllItems(int id) throws RemoteException;
+    Map<String, ItemFullInfo> getAllItems(int id) throws RemoteException;
 
     Map<Integer, StaffInfo> getAllStaffs(int id) throws RemoteException;
 

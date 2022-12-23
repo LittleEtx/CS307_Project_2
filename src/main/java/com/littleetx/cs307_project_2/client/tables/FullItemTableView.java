@@ -9,9 +9,9 @@ import static com.littleetx.cs307_project_2.client.tables.ShipTableView.SHIP_NAM
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getContainerTypeVisualStr;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateVisualString;
 
-public class CompanyManagerItemTableView extends TableViewBase<ItemFullInfo> {
+public class FullItemTableView extends TableViewBase<ItemFullInfo> {
 
-    public CompanyManagerItemTableView() {
+    public FullItemTableView() {
         super();
         addColumn(ITEM_NAME, info -> info.itemInfo().name());
         addColumn(ITEM_TYPE, info -> info.itemInfo().$class());

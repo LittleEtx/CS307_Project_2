@@ -82,6 +82,10 @@ public class GlobalManager_Client {
     private static final Stack<Stage> stageStack = new Stack<>();
 
     public static void showWindow(String title, String contentPath, int minWidth, int minHeight) {
+        showWindow(title, contentPath, minWidth, minHeight, null);
+    }
+
+    public static void showWindow(String title, String contentPath, int minWidth, int minHeight, Runnable callback) {
         Stage dialog = new Stage();
         dialog.setTitle(title);
         dialog.setScene(new Scene(readXML(contentPath), minWidth, minHeight));
@@ -91,6 +95,9 @@ public class GlobalManager_Client {
         dialog.setMinHeight(minHeight);
         dialog.show();
         stageStack.push(dialog);
+        if (callback != null) {
+            dialog.setOnCloseRequest(event -> callback.run());
+        }
     }
 
     public static void closeWindow() {
@@ -101,6 +108,7 @@ public class GlobalManager_Client {
 
         Stage dialog = stageStack.pop();
         if (dialog != null) {
+            dialog.getOnCloseRequest().handle(null);
             dialog.close();
         }
     }

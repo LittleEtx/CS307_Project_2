@@ -55,7 +55,7 @@ public class SUSTCManagerController extends ControllerBase {
     @FXML
     private TextField searchContainerCode;
 
-    private ItemTableView itemTableView;
+    private FullItemTableView itemTableView;
     private StaffTableView staffTableView;
     private ShipTableView shipTableView;
     private ContainerTableView containerTableView;
@@ -65,10 +65,7 @@ public class SUSTCManagerController extends ControllerBase {
     @FXML
     protected void initialize() {
         super.initialize();
-        itemTableView = new ItemTableView();
-        itemTableView.addItemBasicInfo();
-        itemTableView.addRouteInfo();
-        itemTableView.addStaffInfo();
+        itemTableView = new FullItemTableView();
         itemsHBox.getChildren().add(0, itemTableView);
         staffTableView = new StaffTableView();
         staffsHBox.getChildren().add(0, staffTableView);
