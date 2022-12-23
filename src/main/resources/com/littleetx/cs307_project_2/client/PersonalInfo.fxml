@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="80.0" prefWidth="270.0" spacing="10.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.littleetx.cs307_project_2.client.controllers.PersonalInfoController">
+   <children>
+      <HBox alignment="CENTER" spacing="20.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Text fill="#7e7e7e" strokeType="OUTSIDE" strokeWidth="0.0" text="Age:"/>
+                  <Text fx:id="age" strokeType="OUTSIDE" strokeWidth="0.0" text="#Age#"/>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Text fill="#7e7e7e" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender:"/>
+                  <Text fx:id="gender" strokeType="OUTSIDE" strokeWidth="0.0" text="#Gender#"/>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <HBox fx:id="phoneBox" alignment="CENTER" spacing="10.0">
+         <children>
+            <Text fill="#7e7e7e" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone Number:"/>
+            <Text fx:id="phone" strokeType="OUTSIDE" strokeWidth="0.0" text="123456789AB"/>
+            <ImageView fx:id="changePhoneButton" fitHeight="20.0" fitWidth="20.0" onMouseClicked="#changePhone"
+                       pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assets/icons/edit.png"/>
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+   </children>
+</VBox>

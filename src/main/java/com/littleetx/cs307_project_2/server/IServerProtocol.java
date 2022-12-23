@@ -76,7 +76,7 @@ public interface IServerProtocol extends Remote {
 
     Map<Integer, CityInfo> getAllCities() throws RemoteException;
 
+    boolean changePassword(int id, String newPassword) throws RemoteException;
 
-
-
+    boolean changePhoneNumber(int id, String newPhoneNumber) throws RemoteException;
 }

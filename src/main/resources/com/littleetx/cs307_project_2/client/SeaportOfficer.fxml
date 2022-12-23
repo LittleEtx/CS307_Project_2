@@ -32,7 +32,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchImport" promptText="name"/>
+                                        <TextField fx:id="searchImport" promptText="search"/>
                                         <Button fx:id="importPassBtn" mnemonicParsing="false"
                                                 onAction="#onPassImportItemCheck" prefWidth="80.0"
                                                 styleClass="ok-button" stylesheets="@../assets/css/ButtonCSS.css"
@@ -68,7 +68,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchExport" promptText="name"/>
+                                        <TextField fx:id="searchExport" promptText="search"/>
                                         <Button fx:id="exportPassBtn" mnemonicParsing="false"
                                                 onAction="#onPassExportItemCheck" prefWidth="80.0"
                                                 styleClass="ok-button" stylesheets="@../assets/css/ButtonCSS.css"
@@ -103,7 +103,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchFinished" promptText="name"/>
+                                        <TextField fx:id="searchFinished" promptText="search"/>
                                     </children>
                                     <padding>
                                         <Insets left="10.0" right="10.0" top="20.0"/>

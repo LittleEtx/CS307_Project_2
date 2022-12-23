@@ -19,4 +19,5 @@ open module cs307_project {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires javafx.fxml;
+    requires org.controlsfx.controls;
 }

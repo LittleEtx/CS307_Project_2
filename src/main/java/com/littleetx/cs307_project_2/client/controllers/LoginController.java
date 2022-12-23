@@ -68,10 +68,8 @@ public class LoginController {
             });
             pause.play();
 
-        } catch (MalformedURLException | NotBoundException e) {
+        } catch (MalformedURLException | NotBoundException | RemoteException e) {
             showMessage("Unable to connect to the server!");
-        } catch (RemoteException e) {
-            GlobalManager_Client.lostConnection();
         }
     }
 

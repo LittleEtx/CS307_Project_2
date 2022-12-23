@@ -32,7 +32,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchExport" promptText="name/code"/>
+                                        <TextField fx:id="searchExport" promptText="search"/>
                                         <Button fx:id="packToContainerBtn" mnemonicParsing="false"
                                                 onAction="#onPackToContainerCheck" prefWidth="80.0"
                                                 text="Pack to Container" textAlignment="CENTER" wrapText="true"/>
@@ -69,7 +69,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchOnShip" promptText="name/ship"/>
+                                        <TextField fx:id="searchOnShip" promptText="search"/>
                                         <Button fx:id="startSailingBtn" mnemonicParsing="false"
                                                 onAction="#onStartSailingCheck" prefWidth="80.0" text="Start Sailing"
                                                 textAlignment="CENTER" wrapText="true"/>
@@ -102,7 +102,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchImport" promptText="name"/>
+                                        <TextField fx:id="searchImport" promptText="search"/>
                                         <Button fx:id="sendToCheckBtn" mnemonicParsing="false"
                                                 onAction="#onSendToCheckCheck" prefWidth="80.0" text="Send to Check"
                                                 textAlignment="CENTER" wrapText="true"/>
@@ -132,7 +132,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchAllItems" promptText="name"/>
+                                        <TextField fx:id="searchAllItems" promptText="search"/>
                                     </children>
                                     <padding>
                                         <Insets left="10.0" right="10.0" top="20.0"/>
@@ -159,7 +159,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchCouriers" promptText="name"/>
+                                        <TextField fx:id="searchCouriers" promptText="search"/>
                                     </children>
                                     <padding>
                                         <Insets left="10.0" right="10.0" top="20.0"/>
@@ -186,7 +186,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchShips" promptText="ship"/>
+                                        <TextField fx:id="searchShips" promptText="search"/>
                                     </children>
                                     <padding>
                                         <Insets left="10.0" right="10.0" top="20.0"/>
@@ -213,7 +213,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
-                                        <TextField fx:id="searchImport51" promptText="type/city"/>
+                                        <TextField fx:id="searchImport51" promptText="search"/>
                                     </children>
                                     <padding>
                                         <Insets left="10.0" right="10.0" top="20.0"/>

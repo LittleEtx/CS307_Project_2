@@ -11,7 +11,7 @@ public class CompanyManagerTest extends Application {
     private static final int id = 10503279;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         GlobalManager_Client.setStage(primaryStage);
         GlobalManager_Client.enterUserInterface(id,
                 Objects.requireNonNull(GlobalQuery.getStaffInfo(id)));

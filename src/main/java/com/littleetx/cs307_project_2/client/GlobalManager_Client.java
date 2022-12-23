@@ -40,7 +40,7 @@ public class GlobalManager_Client {
         return staffID;
     }
 
-    private static Parent readXML(String fxml) {
+    public static Parent readXML(String fxml) {
         try {
             return FXMLLoader.load(Objects.requireNonNull(
                     GlobalManager_Client.class.getResource(fxml)));
@@ -108,7 +108,9 @@ public class GlobalManager_Client {
 
         Stage dialog = stageStack.pop();
         if (dialog != null) {
-            dialog.getOnCloseRequest().handle(null);
+            if (dialog.getOnCloseRequest() != null) {
+                dialog.getOnCloseRequest().handle(null);
+            }
             dialog.close();
         }
     }
@@ -119,6 +121,8 @@ public class GlobalManager_Client {
 
     public static void enterLoginInterface() {
         stage.close();
+        staffID = -1;
+        staffInfo = null;
         stage = new Stage();
         Parent root = readXML(LOGIN_FXML);
         stage.setScene(new Scene(root, 600, 400));
@@ -171,5 +175,16 @@ public class GlobalManager_Client {
         });
         dialog.show();
         stageStack.push(dialog);
+    }
+
+    public static void setStaffPhoneNumber(String phone) {
+        staffInfo = new StaffInfo(
+                staffInfo.basicInfo(),
+                staffInfo.company(),
+                staffInfo.city(),
+                staffInfo.isFemale(),
+                staffInfo.age(),
+                phone
+        );
     }
 }

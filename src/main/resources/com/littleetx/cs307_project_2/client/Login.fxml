@@ -73,8 +73,8 @@
          <children>
             <Text fx:id="loginMessage" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0"
                   text="Invalid user name/ID or password!"/>
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="30.0"
-                    prefWidth="158.0" text="Login">
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="40.0"
+                    prefWidth="158.0" styleClass="ok-button" stylesheets="@../assets/css/ButtonCSS.css" text="Login">
                <VBox.margin>
                   <Insets/>
                </VBox.margin>

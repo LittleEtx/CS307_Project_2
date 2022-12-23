@@ -6,6 +6,7 @@ import main.interfaces.ContainerInfo;
 import main.interfaces.ItemState;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -26,13 +27,54 @@ abstract public class User {
     }
 
     public boolean changePassword(String newPassword) {
-        //TODO: (optional) change password
-        return false;
+        try {
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(
+                    "select password from verification where staff_id = ?");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            String oldPassword = rs.getString(1);
+            //at least 6 characters
+            if (newPassword.equals(oldPassword) || newPassword.length() < 6) {
+                return false;
+            }
+            stmt = conn.prepareStatement(
+                    "update verification set password = ? where staff_id = ?");
+            stmt.setString(1, newPassword);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean changePhoneNumber(String newPhoneNumber) {
-        //TODO: (optional) change phone number
-        return false;
+        //get the old phone number
+        try {
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(
+                    "select phone_number from staff where id = ?");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            String oldPhoneNumber = rs.getString(1);
+            //check if the phone number is valid
+            if (newPhoneNumber.equals(oldPhoneNumber) ||
+                    !newPhoneNumber.matches("\\d{11}")) {
+                return false;
+            }
+
+            stmt = conn.prepareStatement(
+                    "update staff set phone_number = ? where id = ?");
+            stmt.setString(1, newPhoneNumber);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected ItemState getItemState(String itemName) {

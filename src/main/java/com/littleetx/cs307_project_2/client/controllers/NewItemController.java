@@ -8,6 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
@@ -41,6 +44,13 @@ public class NewItemController {
 
     @FXML
     private void initialize() {
+        submitButton.sceneProperty().addListener(observable -> {
+            if (submitButton.getScene() != null) {
+                submitButton.getScene().getStylesheets().add(
+                        "com/littleetx/cs307_project_2/assets/css/validation.css");
+            }
+        });
+
         try {
             var server = ClientHelper.getConnection();
             Map<Integer, CityInfo> cityMap = server.getAllCities();
@@ -99,7 +109,24 @@ public class NewItemController {
                 }
             });
 
-            setSubmitButton();
+            ValidationSupport validationSupport = new ValidationSupport();
+            validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
+            validationSupport.registerValidator(itemName, false,
+                    Validator.createEmptyValidator("Item name is required"));
+            validationSupport.registerValidator(itemPrice, false,
+                    Validator.createEmptyValidator("Item price is required"));
+            validationSupport.registerValidator(itemType, false,
+                    Validator.createEmptyValidator("Item type is required"));
+            validationSupport.registerValidator(retrievalCity, false,
+                    Validator.createEmptyValidator("Retrieval city is required"));
+            validationSupport.registerValidator(deliveryCity, false,
+                    Validator.createEmptyValidator("Delivery city is required"));
+            validationSupport.registerValidator(exportCity, false,
+                    Validator.createEmptyValidator("Export city is required"));
+            validationSupport.registerValidator(importCity, false,
+                    Validator.createEmptyValidator("Import city is required"));
+
+            submitButton.disableProperty().bind(validationSupport.invalidProperty());
         } catch (MalformedURLException | NotBoundException | RemoteException e) {
             GlobalManager_Client.lostConnection();
         }
@@ -115,20 +142,7 @@ public class NewItemController {
             }
             toModify.getItems().sort((s1, s2) ->
                     portCities.get(s1).compareTo(portCities.get(s2)));
-            setSubmitButton();
         });
-    }
-
-    private void setSubmitButton() {
-        submitButton.setDisable(
-                itemName.getText().isEmpty() ||
-                        itemPrice.getText().isEmpty() ||
-                        itemType.getSelectionModel().isEmpty() ||
-                        retrievalCity.getSelectionModel().isEmpty() ||
-                        deliveryCity.getSelectionModel().isEmpty() ||
-                        exportCity.getSelectionModel().isEmpty() ||
-                        importCity.getSelectionModel().isEmpty()
-        );
     }
 
     @FXML

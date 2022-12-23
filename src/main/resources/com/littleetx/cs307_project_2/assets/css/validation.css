@@ -1,0 +1,11 @@
+.error {
+    -fx-effect: dropshadow(three-pass-box, #b64d4d, 7, 0, 0, 0);
+}
+
+.warning {
+    -fx-effect: dropshadow(three-pass-box, gold, 14, 0, 0, 0);
+}
+
+.info {
+    -fx-effect: dropshadow(three-pass-box, #82ee6e, 14, 0, 0, 0);
+}

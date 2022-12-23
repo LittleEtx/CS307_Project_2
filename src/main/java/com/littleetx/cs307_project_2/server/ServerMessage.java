@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 public class ServerMessage {
     public static void print(String str) {
         LocalDateTime time = LocalDateTime.now();
-        System.out.println("[" + time.toLocalDate() + " " + time.getHour() + ":" + time.getMinute()
-                + ":" + time.getSecond() + "]" + str);
+        System.out.println("[" + time.toLocalDate() + " " + String.format("%02d", time.getHour())
+                + ":" + String.format("%02d", time.getMinute())
+                + ":" + String.format("%02d", time.getSecond()) + "]" + str);
     }
 }

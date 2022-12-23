@@ -84,6 +84,7 @@ public class Courier extends User {
             stmt.setString(1, name);
             stmt.setInt(2, delivery_city);
             stmt.setString(3, "DELIVERY");
+            stmt.addBatch();
             stmt.executeBatch();
 
             stmt = conn.prepareStatement("insert into item_state values(?,?)");

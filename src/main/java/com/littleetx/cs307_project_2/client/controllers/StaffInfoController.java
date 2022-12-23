@@ -7,8 +7,11 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import main.interfaces.StaffInfo;
+import org.controlsfx.control.PopOver;
 
 public class StaffInfoController {
+    public static final String CHANGE_PASSWORD_FXML = "ChangePassword.fxml";
+    public static final String PERSONAL_INFO_FXML = "PersonalInfo.fxml";
     @FXML
     protected Text authorization;
 
@@ -16,6 +19,8 @@ public class StaffInfoController {
     protected Text name;
     @FXML
     protected Text ID;
+    @FXML
+    protected HBox infoHbox;
     @FXML
     protected HBox cityBox;
     @FXML
@@ -42,15 +47,13 @@ public class StaffInfoController {
         ID.setText(Integer.toString(GlobalManager_Client.getStaffID()));
         if (staffInfo.city() != null) {
             city.setText(staffInfo.city());
-            cityBox.setVisible(true);
         } else {
-            cityBox.setVisible(false);
+            infoHbox.getChildren().remove(cityBox);
         }
         if (staffInfo.company() != null) {
             company.setText(staffInfo.company());
-            companyBox.setVisible(true);
         } else {
-            companyBox.setVisible(false);
+            infoHbox.getChildren().remove(companyBox);
         }
 
         logoutButton.setOnMouseEntered(event -> logoutButton.setOpacity(0.2));
@@ -59,5 +62,30 @@ public class StaffInfoController {
         changePasswordButton.setOnMouseExited(event -> changePasswordButton.setOpacity(1));
         infoButton.setOnMouseEntered(event -> infoButton.setOpacity(0.2));
         infoButton.setOnMouseExited(event -> infoButton.setOpacity(1));
+    }
+
+    @FXML
+    private void onLogout() {
+        GlobalManager_Client.showConfirm("Are you sure to logout?", result -> {
+            if (result) {
+                GlobalManager_Client.enterLoginInterface();
+            }
+        });
+    }
+
+    @FXML
+    private void onChangePassword() {
+        GlobalManager_Client.showWindow("ChangePassword",
+                CHANGE_PASSWORD_FXML, 400, 300);
+    }
+
+    @FXML
+    private void onInfo() {
+        PopOver popOver = new PopOver();
+        popOver.setTitle("Personal Info");
+        popOver.setCloseButtonEnabled(false);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.setContentNode(GlobalManager_Client.readXML(PERSONAL_INFO_FXML));
+        popOver.show(infoButton);
     }
 }

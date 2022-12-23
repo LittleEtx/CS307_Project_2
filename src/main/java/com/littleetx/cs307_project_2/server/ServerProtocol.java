@@ -210,4 +210,18 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
         var user = verification.getUser(id, SUSTCManager.class);
         return user != null ? user.getAllContainers() : null;
     }
+
+    @Override
+    public boolean changePassword(int id, String newPassword) throws RemoteException {
+        ServerMessage.print("user " + id + " change password to " + newPassword);
+        var user = verification.getUser(id);
+        return user != null && user.changePassword(newPassword);
+    }
+
+    @Override
+    public boolean changePhoneNumber(int id, String newPhoneNumber) throws RemoteException {
+        ServerMessage.print("user " + id + " change phone number to " + newPhoneNumber);
+        var user = verification.getUser(id);
+        return user != null && user.changePhoneNumber(newPhoneNumber);
+    }
 }

@@ -111,7 +111,6 @@ public class SeaportOfficerController extends ControllerBase {
 
             tabPane.getSelectionModel().select(importTab);
         } catch (MalformedURLException | NotBoundException | RemoteException e) {
-            e.printStackTrace();
             GlobalManager_Client.lostConnection();
         }
     }
@@ -166,7 +165,7 @@ public class SeaportOfficerController extends ControllerBase {
                 importTableView.getSelectionModel().getSelectedItem() :
                 exportTableView.getSelectionModel().getSelectedItem();
         GlobalManager_Client.showConfirm(
-                "Are you sure to pass " + (isImport ? "import" : "export" + " item: ") + item.name() + "?",
+                "Are you sure to pass " + (isImport ? "import" : "export") + " item: " + item.name() + "?",
                 yes -> {
                     if (yes) {
                         try {

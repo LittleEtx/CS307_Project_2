@@ -32,13 +32,14 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
+                                        <TextField fx:id="searchNewItem" promptText="search"/>
                                         <Button mnemonicParsing="false" onAction="#onAddItemCheck" prefWidth="80.0"
                                                 text="Add Item" textAlignment="CENTER"/>
                                         <Button fx:id="takeItemNode" mnemonicParsing="false" onAction="#onTakeItemCheck"
                                                 prefWidth="80.0" text="Take Item" textAlignment="CENTER"/>
                                     </children>
                                     <padding>
-                                        <Insets top="20.0"/>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
                                     </padding>
                                 </VBox>
                             </children>
@@ -63,12 +64,13 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
+                                        <TextField fx:id="searchOnGoingItem" promptText="search"/>
                                         <Button fx:id="updateItemNode" mnemonicParsing="false"
                                                 onAction="#onUpdateItemCheck" prefWidth="80.0" text="Update Item State"
                                                 textAlignment="CENTER" wrapText="true"/>
                                     </children>
                                     <padding>
-                                        <Insets top="20.0"/>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
                                     </padding>
                                 </VBox>
                             </children>
@@ -92,9 +94,10 @@
                                                 </ImageView>
                                             </graphic>
                                         </Button>
+                                        <TextField fx:id="searchFinishedItem" promptText="search"/>
                                     </children>
                                     <padding>
-                                        <Insets top="20.0"/>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
                                     </padding>
                                 </VBox>
                             </children>

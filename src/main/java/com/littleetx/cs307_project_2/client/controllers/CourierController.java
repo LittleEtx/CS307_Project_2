@@ -10,6 +10,7 @@ import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import main.interfaces.ItemInfo;
@@ -41,6 +42,13 @@ public class CourierController extends ControllerBase {
     @FXML
     private Node updateItemNode;
 
+    @FXML
+    private TextField searchNewItem;
+    @FXML
+    private TextField searchOnGoingItem;
+    @FXML
+    private TextField searchFinishedItem;
+
     private ItemTableView newItemTable;
     private ItemTableView onGoingItemTable;
     private ItemTableView finishedItemTable;
@@ -64,6 +72,11 @@ public class CourierController extends ControllerBase {
                 (observable, oldValue, newValue) -> takeItemNode.setDisable(newValue == null));
         onGoingItemTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> updateItemNode.setDisable(newValue == null));
+
+        newItemTable.setFilter(searchNewItem.textProperty());
+        onGoingItemTable.setFilter(searchOnGoingItem.textProperty());
+        finishedItemTable.setFilter(searchFinishedItem.textProperty());
+
         tabPane.getSelectionModel().select(onGoingItemTab);
     }
 
@@ -74,17 +87,11 @@ public class CourierController extends ControllerBase {
                 IServerProtocol server = ClientHelper.getConnection();
                 int id = getStaffID();
                 if (tabPane.getSelectionModel().getSelectedItem() == newItemTab) {
-                    newItemTable.getItems().clear();
-                    newItemTable.getItems().addAll(server.getCourierItems(id, Courier.GetItemType.New).values());
-                    newItemTable.refresh();
+                    newItemTable.updateData(server.getCourierItems(id, Courier.GetItemType.New).values());
                 } else if (tabPane.getSelectionModel().getSelectedItem() == onGoingItemTab) {
-                    onGoingItemTable.getItems().clear();
-                    onGoingItemTable.getItems().addAll(server.getCourierItems(id, Courier.GetItemType.OnGoing).values());
-                    onGoingItemTable.refresh();
+                    onGoingItemTable.updateData(server.getCourierItems(id, Courier.GetItemType.OnGoing).values());
                 } else if (tabPane.getSelectionModel().getSelectedItem() == finishedItemTab) {
-                    finishedItemTable.getItems().clear();
-                    finishedItemTable.getItems().addAll(server.getCourierItems(id, Courier.GetItemType.Finished).values());
-                    finishedItemTable.refresh();
+                    finishedItemTable.updateData(server.getCourierItems(id, Courier.GetItemType.Finished).values());
                 }
             } catch (MalformedURLException | NotBoundException | RemoteException e) {
                 GlobalManager_Client.lostConnection();
