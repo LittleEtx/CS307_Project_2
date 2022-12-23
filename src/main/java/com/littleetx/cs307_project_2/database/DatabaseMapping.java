@@ -100,6 +100,9 @@ public class DatabaseMapping {
     }
 
     public static String getContainerTypeVisualStr(ContainerInfo.Type type) {
+        if (type == null) {
+            return null;
+        }
         return switch (type) {
             case Dry -> "Dry";
             case FlatRack -> "Flat Rack";
@@ -110,13 +113,17 @@ public class DatabaseMapping {
     }
 
     public static ContainerInfo.Type getContainerType(String type) {
+        if (type == null) {
+            return null;
+        }
+
         return switch (type) {
             case "DRY" -> ContainerInfo.Type.Dry;
             case "FLAT_ROCK" -> ContainerInfo.Type.FlatRack;
             case "ISO_TANK" -> ContainerInfo.Type.ISOTank;
             case "OPEN_TOP" -> ContainerInfo.Type.OpenTop;
             case "REEFER" -> ContainerInfo.Type.Reefer;
-            default -> throw new IllegalArgumentException("Unknown type!");
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
         };
     }
 
@@ -132,7 +139,15 @@ public class DatabaseMapping {
         return "SAILING".equals(state);
     }
 
+    public static String getIsSailing(boolean isSailing) {
+        return isSailing ? "SAILING" : "DOCKED";
+    }
+
     public static boolean getIsContainerUsing(String state) {
         return "USING".equals(state);
+    }
+
+    public static String getIsContainerUsing(boolean isUsing) {
+        return isUsing ? "USING" : "IDLE";
     }
 }

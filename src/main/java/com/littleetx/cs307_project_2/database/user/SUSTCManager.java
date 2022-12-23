@@ -144,4 +144,17 @@ public class SUSTCManager extends User {
         }
     }
 
+    public Map<String, ShipInfo> getAllShips() {
+        try {
+            var stmt = conn.prepareStatement("select * from ship_info");
+            return ViewMapping.getShipsMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Map<String, ContainerInfo> getAllContainers() {
+        return super.getAllContainers();
+    }
+
 }

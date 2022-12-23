@@ -53,8 +53,8 @@ create table Ship
 
 create table Container
 (
-    code      varchar primary key,
-    tableType varchar
+    code varchar primary key,
+    type varchar
 );
 
 create table Item_Ship

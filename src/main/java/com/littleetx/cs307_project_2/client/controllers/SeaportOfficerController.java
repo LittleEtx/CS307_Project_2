@@ -3,33 +3,25 @@ package com.littleetx.cs307_project_2.client.controllers;
 import com.littleetx.cs307_project_2.client.ClientHelper;
 import com.littleetx.cs307_project_2.client.GlobalManager_Client;
 import com.littleetx.cs307_project_2.client.tables.ItemTableView;
-import com.littleetx.cs307_project_2.client.tables.SeaportOfficerTableView;
+import com.littleetx.cs307_project_2.client.tables.SeaportOfficerItemTableView;
 import com.littleetx.cs307_project_2.client.tables.TaxInfoTableView;
-import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
 import com.littleetx.cs307_project_2.server.IServerProtocol;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import main.interfaces.ItemInfo;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.littleetx.cs307_project_2.client.tables.SeaportOfficerTableView.TableType.*;
+import static com.littleetx.cs307_project_2.client.tables.SeaportOfficerItemTableView.TableType.*;
 
 public class SeaportOfficerController extends ControllerBase {
-    @FXML
-    private VBox rootVBox;
-
     @FXML
     private HBox importHBox;
     @FXML
@@ -72,31 +64,22 @@ public class SeaportOfficerController extends ControllerBase {
     private ItemTableView exportTableView;
     private ItemTableView finishedTableView;
     private TaxInfoTableView taxTableView;
-    private Map<String, TaxInfo.Value> taxInfo;
-
-    private ObservableList<ItemInfo> importList;
-    private ObservableList<ItemInfo> exportList;
-    private ObservableList<ItemInfo> finishedList;
 
     @FXML
-    private void initialize() {
-        rootVBox.getChildren().add(
-                0, GlobalManager_Client.getStaffInfoPanel());
+    protected void initialize() {
+        super.initialize();
         try {
-            taxInfo = new HashMap<>();
             IServerProtocol server = ClientHelper.getConnection();
-            var taxInfoMap = server.getTaxRates(GlobalManager_Client.getStaffInfo().city());
-            updateTaxInfo(taxInfoMap);
 
-            importTableView = new SeaportOfficerTableView(IMPORT, taxInfo);
+            importTableView = new SeaportOfficerItemTableView(IMPORT);
             importHBox.getChildren().add(0, importTableView);
             initialTable(importTableView);
 
-            exportTableView = new SeaportOfficerTableView(EXPORT, taxInfo);
+            exportTableView = new SeaportOfficerItemTableView(EXPORT);
             exportHBox.getChildren().add(0, exportTableView);
             initialTable(exportTableView);
 
-            finishedTableView = new SeaportOfficerTableView(FINISHED, taxInfo);
+            finishedTableView = new SeaportOfficerItemTableView(FINISHED);
             finishedHBox.getChildren().add(0, finishedTableView);
             initialTable(finishedTableView);
 
@@ -120,45 +103,16 @@ public class SeaportOfficerController extends ControllerBase {
                         importPassBtn.setDisable(newValue == null);
                         importRejectBtn.setDisable(newValue == null);
                     });
-            importList = importTableView.getItems();
-            exportList = exportTableView.getItems();
-            finishedList = finishedTableView.getItems();
 
-            searchImport.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    importTableView.setItems(importList);
-                } else {
-                    importTableView.setItems(importList.filtered(item -> item.name().contains(newValue)));
-                }
-            });
 
-            searchExport.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    exportTableView.setItems(exportList);
-                } else {
-                    exportTableView.setItems(exportList.filtered(item -> item.name().contains(newValue)));
-                }
-            });
-
-            searchFinished.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    finishedTableView.setItems(finishedList);
-                } else {
-                    finishedTableView.setItems(finishedList.filtered(item -> item.name().contains(newValue)));
-                }
-            });
+            importTableView.setFilter(searchImport.textProperty());
+            exportTableView.setFilter(searchExport.textProperty());
+            finishedTableView.setFilter(searchFinished.textProperty());
 
             tabPane.getSelectionModel().select(importTab);
         } catch (MalformedURLException | NotBoundException | RemoteException e) {
             e.printStackTrace();
             GlobalManager_Client.lostConnection();
-        }
-    }
-
-    private void updateTaxInfo(Map<TaxInfo.Key, TaxInfo.Value> taxInfoMap) {
-        taxInfo.clear();
-        for (var entry : taxInfoMap.entrySet()) {
-            taxInfo.put(entry.getKey().itemType(), entry.getValue());
         }
     }
 
@@ -169,21 +123,17 @@ public class SeaportOfficerController extends ControllerBase {
                 IServerProtocol server = ClientHelper.getConnection();
                 var selected = tabPane.getSelectionModel().getSelectedItem();
                 if (selected == importTab) {
-                    importList.setAll(server.getItemsInPort(
+                    importTableView.updateData(server.getItemsInPort(
                             GlobalManager_Client.getStaffID(), SeaportOfficer.GetItemType.IMPORT).values());
-                    importTableView.setItems(importList.filtered(item -> item.name().contains(searchImport.getText())));
                 } else if (selected == exportTab) {
-                    exportList.setAll(server.getItemsInPort(
+                    exportTableView.updateData(server.getItemsInPort(
                             GlobalManager_Client.getStaffID(), SeaportOfficer.GetItemType.EXPORT).values());
-                    exportTableView.setItems(exportList.filtered(item -> item.name().contains(searchExport.getText())));
                 } else if (selected == finishedTab) {
-                    finishedList.setAll(server.getItemsInPort(
+                    finishedTableView.updateData(server.getItemsInPort(
                             GlobalManager_Client.getStaffID(), SeaportOfficer.GetItemType.FINISHED).values());
-                    finishedTableView.setItems(finishedList.filtered(item -> item.name().contains(searchFinished.getText())));
                 } else if (selected == taxTab) {
                     var taxInfoMap = server.getTaxRates(GlobalManager_Client.getStaffInfo().city());
-                    taxTableView.getItems().setAll(taxInfoMap.entrySet());
-                    updateTaxInfo(taxInfoMap);
+                    taxTableView.updateData(taxInfoMap.entrySet());
                 }
             } catch (MalformedURLException | NotBoundException | RemoteException e) {
                 GlobalManager_Client.lostConnection();

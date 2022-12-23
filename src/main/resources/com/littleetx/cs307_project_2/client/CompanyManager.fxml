@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<VBox fx:id="rootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="800.0" spacing="20.0" xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.littleetx.cs307_project_2.client.controllers.CompanyManagerController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <children>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+            <tabs>
+                <Tab fx:id="exportTab" onSelectionChanged="#onRefreshClick" text="Exporting">
+                    <content>
+                        <HBox fx:id="exportHBox">
+                            <children>
+                                <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
+                                      spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchExport" promptText="name/code"/>
+                                        <Button fx:id="packToContainerBtn" mnemonicParsing="false"
+                                                onAction="#onPackToContainerCheck" prefWidth="80.0"
+                                                text="Pack to Container" textAlignment="CENTER" wrapText="true"/>
+                                        <Button fx:id="loadToShipBtn" mnemonicParsing="false"
+                                                onAction="#onLoadToShipCheck" prefWidth="80.0" text="Load to Ship"
+                                                textAlignment="CENTER" wrapText="true"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="onShipTab" onSelectionChanged="#onRefreshClick" text="On Ship">
+                    <content>
+                        <HBox fx:id="onShipHBox">
+                            <children>
+                                <VBox alignment="TOP_CENTER" minWidth="100.0" prefHeight="200.0" prefWidth="100.0"
+                                      spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchOnShip" promptText="name/ship"/>
+                                        <Button fx:id="startSailingBtn" mnemonicParsing="false"
+                                                onAction="#onStartSailingCheck" prefWidth="80.0" text="Start Sailing"
+                                                textAlignment="CENTER" wrapText="true"/>
+                                        <Button fx:id="unloadFromShipBtn" mnemonicParsing="false"
+                                                onAction="#onUnloadItemCheck" prefWidth="80.0" text="Unload Item"
+                                                textAlignment="CENTER" wrapText="true"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="importTab" onSelectionChanged="#onRefreshClick" text="Importing">
+                    <content>
+                        <HBox fx:id="importHBox" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchImport" promptText="name"/>
+                                        <Button fx:id="sendToCheckBtn" mnemonicParsing="false"
+                                                onAction="#onSendToCheckCheck" prefWidth="80.0" text="Send to Check"
+                                                textAlignment="CENTER" wrapText="true"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="allItemsTab" onSelectionChanged="#onRefreshClick" text="All Items">
+                    <content>
+                        <HBox fx:id="allItemsHBox" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchAllItems" promptText="name"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="couriersTab" onSelectionChanged="#onRefreshClick" text="Couriers">
+                    <content>
+                        <HBox fx:id="couriersHBox" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchCouriers" promptText="name"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="shipsTab" onSelectionChanged="#onRefreshClick" text="Ships">
+                    <content>
+                        <HBox fx:id="shipsHBox" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchShips" promptText="ship"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+                <Tab fx:id="taxTab" onSelectionChanged="#onRefreshClick" text="Tax Info">
+                    <content>
+                        <HBox fx:id="taxHBox" prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onRefreshClick" prefWidth="80.0"
+                                                textAlignment="CENTER">
+                                            <graphic>
+                                                <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons/refresh.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </Button>
+                                        <TextField fx:id="searchImport51" promptText="type/city"/>
+                                    </children>
+                                    <padding>
+                                        <Insets left="10.0" right="10.0" top="20.0"/>
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</VBox>

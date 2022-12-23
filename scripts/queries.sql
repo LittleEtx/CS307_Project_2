@@ -57,4 +57,12 @@ from item_fullinfo
 where name in (select item_name from item_company where company_id = 12)
   and delivery_city = 28
   and state = 'FROM_IMPORT_TRANSPORTING'
-  and delivery_staff is null
+  and delivery_staff is null;
+
+select *
+from item_fullinfo
+         left join item_container on item_fullinfo.name = item_container.item_name
+         left join container_info on item_container.container_code = container_info.code
+         left join item_ship on item_fullinfo.name = item_ship.item_name
+         left join ship_info on item_ship.ship_name = ship_info.name
+

@@ -1,3 +1,4 @@
+drop view if exists item_info_extra;
 drop view if exists item_company;
 drop view if exists item_fullinfo;
 drop view if exists staff_info;

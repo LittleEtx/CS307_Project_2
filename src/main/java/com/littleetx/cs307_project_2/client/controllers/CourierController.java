@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import main.interfaces.ItemInfo;
 
@@ -24,8 +23,6 @@ import static com.littleetx.cs307_project_2.client.GlobalManager_Client.showConf
 
 public class CourierController extends ControllerBase {
     public static final String NEW_ITEM_FXML = "NewItem.fxml";
-    @FXML
-    private VBox rootVBox;
     @FXML
     private HBox newItemHBox;
     @FXML
@@ -50,8 +47,7 @@ public class CourierController extends ControllerBase {
 
     @FXML
     protected void initialize() {
-        rootVBox.getChildren().add(
-                0, GlobalManager_Client.getStaffInfoPanel());
+        super.initialize();
         newItemTable = new CourierItemTableView(null);
         newItemHBox.getChildren().add(0, newItemTable);
         initialTable(newItemTable);

@@ -87,3 +87,26 @@ from container
                           on item_state.item_name = item_container.item_name
       where state in ('PACKING_TO_CONTAINER', 'WAITING_FOR_SHIPPING', 'SHIPPING')) as a
      on container.code = a.container_code;
+
+create or replace view item_info_extra as
+select item.name               as name,
+       item.class              as class,
+       item.price              as price,
+       item.state              as state,
+       item_company.company_id as company,
+       item.export_staff       as export_staff,
+       item.import_staff       as import_staff,
+       item.delivery_staff     as delivery_staff,
+       item.retrieval_staff    as retrieval_staff,
+       item.import_city        as import_city,
+       item.export_city        as export_city,
+       item.retrieval_city     as retrieval_city,
+       item.delivery_city      as delivery_city,
+       container.code          as container_code,
+       container.type          as container_type,
+       item_ship.ship_name     as ship_name
+from item_fullinfo item
+         left join item_container on item.name = item_container.item_name
+         left join container_info container on item_container.container_code = container.code
+         left join item_ship on item.name = item_ship.item_name
+         left join item_company on item.name = item_company.item_name

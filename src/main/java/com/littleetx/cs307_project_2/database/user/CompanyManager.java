@@ -1,12 +1,16 @@
 package com.littleetx.cs307_project_2.database.user;
 
+import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
-import main.interfaces.ItemState;
+import com.littleetx.cs307_project_2.database.ViewMapping;
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
+import main.interfaces.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getIsSailing;
 import static com.littleetx.cs307_project_2.database.DatabaseMapping.getStateDatabaseString;
@@ -243,5 +247,108 @@ public class CompanyManager extends User {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public enum GetItemType {
+        IMPORT, ON_SHIP, EXPORT, ALL
+    }
+
+    public Map<String, ItemFullInfo> getItems(GetItemType type) {
+        try {
+            PreparedStatement stmt;
+            switch (type) {
+                case IMPORT -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_info_extra where company = ? and state = ? ");
+                    stmt.setInt(1, getStaffCompany());
+                    stmt.setString(2, getStateDatabaseString(ItemState.UnpackingFromContainer));
+                }
+                case ON_SHIP -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_info_extra where company = ? and state in (?, ?) ");
+                    stmt.setInt(1, getStaffCompany());
+                    stmt.setString(2, getStateDatabaseString(ItemState.WaitingForShipping));
+                    stmt.setString(3, getStateDatabaseString(ItemState.Shipping));
+                }
+                case EXPORT -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_info_extra where company = ? and state = ? ");
+                    stmt.setInt(1, getStaffCompany());
+                    stmt.setString(2, getStateDatabaseString(ItemState.PackingToContainer));
+                }
+                case ALL -> {
+                    stmt = conn.prepareStatement(
+                            "select * from item_info_extra where company = ? ");
+                    stmt.setInt(1, getStaffCompany());
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + type);
+            }
+            return ViewMapping.getItemFullInfoMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public enum GetShipType {
+        DOCKED, ALL
+    }
+
+    public Map<String, ShipInfo> getShips(GetShipType type) {
+        try {
+            PreparedStatement stmt;
+            switch (type) {
+                case DOCKED -> {
+                    stmt = conn.prepareStatement(
+                            "select * from ship_info where company = ? and state = ? ");
+                    stmt.setInt(1, getStaffCompany());
+                    stmt.setString(2, DatabaseMapping.getIsSailing(false));
+                }
+                case ALL -> {
+                    stmt = conn.prepareStatement(
+                            "select * from ship_info where company = ? ");
+                    stmt.setInt(1, getStaffCompany());
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + type);
+            }
+            return ViewMapping.getShipsMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public enum GetContainerType {
+        IDLE, ALL
+    }
+
+    public Map<String, ContainerInfo> getContainers(GetContainerType type) {
+        switch (type) {
+            case IDLE -> {
+                try {
+                    PreparedStatement stmt = conn.prepareStatement(
+                            "select * from container_info where state = ? ");
+                    stmt.setString(1, DatabaseMapping.getIsContainerUsing(false));
+                    return ViewMapping.getContainersMapping(stmt.executeQuery());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case ALL -> {
+                return super.getAllContainers();
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    public Map<Integer, StaffInfo> getCompanyCouriers() {
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "select * from staff_info where company = ? and authority = ? ");
+            stmt.setInt(1, getStaffCompany());
+            stmt.setString(2, DatabaseMapping
+                    .getStaffAuthorityDatabaseStr(LogInfo.StaffType.Courier));
+            return ViewMapping.getStaffsMapping(stmt.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -4,7 +4,9 @@ import com.littleetx.cs307_project_2.database.DatabaseLoginInfo;
 import com.littleetx.cs307_project_2.database.GlobalQuery;
 import com.littleetx.cs307_project_2.database.Verification;
 import com.littleetx.cs307_project_2.database.database_type.CityInfo;
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
+import com.littleetx.cs307_project_2.database.user.CompanyManager;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.database.user.SUSTCManager;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
@@ -103,8 +105,27 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     }
 
     @Override
-    public Map<String, ItemInfo> getCompanyItems(int id) {
-        return null;
+    public Map<String, ItemFullInfo> getCompanyItems(int id, CompanyManager.GetItemType type) {
+        ServerMessage.print("company manager " + id + " get items: " + type);
+        return verification.getUser(id, CompanyManager.class).getItems(type);
+    }
+
+    @Override
+    public Map<Integer, StaffInfo> getCompanyCouriers(int id) throws RemoteException {
+        ServerMessage.print("company manager " + id + " get couriers");
+        return verification.getUser(id, CompanyManager.class).getCompanyCouriers();
+    }
+
+    @Override
+    public Map<String, ShipInfo> getCompanyShips(int id, CompanyManager.GetShipType type) throws RemoteException {
+        ServerMessage.print("company manager " + id + " get ships: " + type);
+        return verification.getUser(id, CompanyManager.class).getShips(type);
+    }
+
+    @Override
+    public Map<String, ContainerInfo> getContainers(int id, CompanyManager.GetContainerType type) throws RemoteException {
+        ServerMessage.print("company manager " + id + " get containers: " + type);
+        return verification.getUser(id, CompanyManager.class).getContainers(type);
     }
 
     @Override
@@ -128,7 +149,7 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public Map<String, ShipInfo> getAllShips(int id) throws RemoteException {
         ServerMessage.print("user " + id + " get all ships");
-        return verification.getUser(id).getAllShips();
+        return verification.getUser(id, SUSTCManager.class).getAllShips();
     }
 
     @Override
@@ -140,6 +161,6 @@ public class ServerProtocol extends UnicastRemoteObject implements IServerProtoc
     @Override
     public Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException {
         ServerMessage.print("user " + id + " get all containers");
-        return verification.getUser(id).getAllContainers();
+        return verification.getUser(id, SUSTCManager.class).getAllContainers();
     }
 }

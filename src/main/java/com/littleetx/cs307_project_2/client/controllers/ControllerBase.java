@@ -1,16 +1,27 @@
 package com.littleetx.cs307_project_2.client.controllers;
 
+import com.littleetx.cs307_project_2.client.GlobalManager_Client;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class ControllerBase {
     @FXML
     protected TabPane tabPane;
+
+    @FXML
+    protected VBox rootVBox;
+
+    @FXML
+    protected void initialize() {
+        rootVBox.getChildren().add(
+                0, GlobalManager_Client.getStaffInfoPanel());
+    }
 
     protected void initialTable(TableView<?> table) {
         HBox.setHgrow(table, javafx.scene.layout.Priority.ALWAYS);

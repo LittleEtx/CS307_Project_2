@@ -4,7 +4,6 @@ import com.littleetx.cs307_project_2.database.DatabaseMapping;
 import com.littleetx.cs307_project_2.database.ViewMapping;
 import main.interfaces.ContainerInfo;
 import main.interfaces.ItemState;
-import main.interfaces.ShipInfo;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,58 +66,61 @@ abstract public class User {
         return -1;
     }
 
+    private int staffCompany = -1;
+
     protected int getStaffCompany() {
-        try {
-            var stmt = conn.prepareStatement("select company_id from staff_company where staff_id = ?");
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+        if (staffCompany < 0) {
+            try {
+                var stmt = conn.prepareStatement("select company_id from staff_company where staff_id = ?");
+                stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    staffCompany = rs.getInt(1);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-        return -1;
+        return staffCompany;
     }
 
+    private int staffCity = -1;
     protected int getStaffCity() {
-        try {
-            var stmt = conn.prepareStatement("select city_id from staff_city where staff_id = ?");
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+        if (staffCity < 0) {
+            try {
+                var stmt = conn.prepareStatement(
+                        "select city_id from staff_city where staff_id = ?");
+                stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    staffCity = rs.getInt(1);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-        return -1;
+        return staffCity;
     }
 
+    private String staffName;
     protected String getStaffName() {
-        try {
-            var stmt = conn.prepareStatement("select name from staff where id = ?");
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString(1);
+        if (staffName == null) {
+            try {
+                var stmt = conn.prepareStatement(
+                        "select name from staff where id = ?");
+                stmt.setInt(1, id);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    staffName = rs.getString(1);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-        return null;
+        return staffName;
     }
 
-    public Map<String, ShipInfo> getAllShips() {
-        try {
-            var stmt = conn.prepareStatement("select * from ship_info");
-            return ViewMapping.getShipsMapping(stmt.executeQuery());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Map<String, ContainerInfo> getAllContainers() {
+    protected Map<String, ContainerInfo> getAllContainers() {
         try {
             var stmt = conn.prepareStatement("select * from container_info");
             return ViewMapping.getContainersMapping(stmt.executeQuery());

@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.client.tables;
 
+import javafx.beans.property.StringProperty;
 import main.interfaces.StaffInfo;
 
 import java.util.Map;
@@ -27,5 +28,19 @@ public class StaffTableView extends TableViewBase<Map.Entry<Integer, StaffInfo>>
         addColumn(GENDER, info -> info.getValue().isFemale() ? "Female" : "Male");
         addColumn(AGE, info -> String.valueOf(info.getValue().age()));
         addColumn(PHONE, info -> info.getValue().phoneNumber());
+    }
+
+    @Override
+    public void setFilter(StringProperty filterText) {
+        setFilterText(filterText, info ->
+                filter(info.getKey().toString(), filterText.getValue())
+                        || filter(info.getValue().basicInfo().name(), filterText.getValue())
+                        || filter(getStaffAuthorityVisualStr(info.getValue().basicInfo().type()), filterText.getValue())
+                        || filter(info.getValue().company(), filterText.getValue())
+                        || filter(info.getValue().city(), filterText.getValue())
+                        || filter(info.getValue().isFemale() ? "Female" : "Male", filterText.getValue())
+                        || filter(String.valueOf(info.getValue().age()), filterText.getValue())
+                        || filter(info.getValue().phoneNumber(), filterText.getValue())
+        );
     }
 }

@@ -4,28 +4,19 @@ import com.littleetx.cs307_project_2.client.ClientHelper;
 import com.littleetx.cs307_project_2.client.GlobalManager_Client;
 import com.littleetx.cs307_project_2.client.tables.*;
 import com.littleetx.cs307_project_2.server.IServerProtocol;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import main.interfaces.ContainerInfo;
-import main.interfaces.ItemInfo;
-import main.interfaces.ShipInfo;
-import main.interfaces.StaffInfo;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 import static com.littleetx.cs307_project_2.client.GlobalManager_Client.getStaffID;
 
 public class SUSTCManagerController extends ControllerBase {
-    @FXML
-    private VBox rootVBox;
     @FXML
     private HBox itemsHBox;
     @FXML
@@ -71,16 +62,9 @@ public class SUSTCManagerController extends ControllerBase {
     private CityTableView cityTableView;
     private CompanyTableView companyTableView;
 
-    private ObservableList<ItemInfo> itemInfos;
-    private ObservableList<Map.Entry<Integer, StaffInfo>> staffInfos;
-    private ObservableList<ShipInfo> shipInfos;
-    private ObservableList<ContainerInfo> containerInfos;
-
     @FXML
-    private void initialize() {
-        rootVBox.getChildren().add(
-                0, GlobalManager_Client.getStaffInfoPanel());
-
+    protected void initialize() {
+        super.initialize();
         itemTableView = new ItemTableView();
         itemTableView.addItemBasicInfo();
         itemTableView.addRouteInfo();
@@ -104,26 +88,10 @@ public class SUSTCManagerController extends ControllerBase {
         initialTable(cityTableView);
         initialTable(companyTableView);
 
-        itemInfos = itemTableView.getItems();
-        staffInfos = staffTableView.getItems();
-        shipInfos = shipTableView.getItems();
-        containerInfos = containerTableView.getItems();
-
-        searchItemName.textProperty().addListener((observable, oldValue, newValue) ->
-                itemTableView.setItems(itemInfos.filtered(item -> item.name().contains(newValue))));
-        searchStaff.textProperty().addListener((observable, oldValue, newValue) ->
-                staffTableView.setItems(staffInfos
-                        .filtered(staff -> staff.getValue().basicInfo().name().contains(newValue)
-                                || staff.getKey().toString().contains(newValue))));
-        searchShipName.textProperty().addListener((observable, oldValue, newValue) ->
-                shipTableView.setItems(
-                        shipInfos.filtered(ship -> ship.name().contains(newValue))
-                ));
-
-        searchContainerCode.textProperty().addListener((observable, oldValue, newValue) ->
-                containerTableView.setItems(
-                        containerInfos.filtered(con -> con.code().contains(newValue))
-                ));
+        itemTableView.setFilter(searchItemName.textProperty());
+        staffTableView.setFilter(searchStaff.textProperty());
+        shipTableView.setFilter(searchShipName.textProperty());
+        containerTableView.setFilter(searchContainerCode.textProperty());
 
         tabPane.getSelectionModel().select(itemsTab);
     }
@@ -136,32 +104,21 @@ public class SUSTCManagerController extends ControllerBase {
 
                 Tab selectedItem = tabPane.getSelectionModel().getSelectedItem();
                 if (selectedItem.equals(itemsTab)) {
-                    itemInfos.setAll(server.getAllItems(getStaffID()).values());
-                    itemTableView.setItems(itemInfos
-                            .filtered(item -> item.name().contains(searchItemName.getText())));
+                    itemTableView.updateData(server.getAllItems(getStaffID()).values());
                 } else if (selectedItem.equals(staffsTab)) {
-                    staffInfos.setAll(server.getAllStaffs(getStaffID()).entrySet());
-                    staffTableView.setItems(staffInfos.filtered(staff ->
-                            staff.getValue().basicInfo().name().contains(searchStaff.getText())
-                                    || staff.getKey().toString().contains(searchStaff.toString())));
+                    staffTableView.updateData(server.getAllStaffs(getStaffID()).entrySet());
                 } else if (selectedItem.equals(shipsTab)) {
-                    shipInfos.setAll(server.getAllShips(getStaffID()).values());
-                    shipTableView.setItems(
-                            shipInfos.filtered(ship -> ship.name().contains(searchShipName.getText()))
-                    );
+                    shipTableView.updateData(server.getAllShips(getStaffID()).values());
                 } else if (selectedItem.equals(containersTab)) {
-                    containerInfos.setAll(server.getAllContainers(GlobalManager_Client.getStaffID()).values());
-                    containerTableView.setItems(
-                            containerInfos.filtered(con -> con.code().contains(searchContainerCode.getText()))
-                    );
+                    containerTableView.updateData(server.getAllContainers(GlobalManager_Client.getStaffID()).values());
                 } else if (selectedItem.equals(citiesTab)) {
-                    cityTableView.getItems().setAll(server.getAllCities().entrySet());
+                    cityTableView.updateData(server.getAllCities().entrySet());
                 } else if (selectedItem.equals(companiesTab)) {
-                    companyTableView.getItems().setAll(server.getAllCompanies().entrySet());
+                    companyTableView.updateData(server.getAllCompanies().entrySet());
                 }
 
             } catch (MalformedURLException | NotBoundException | RemoteException e) {
-                throw new RuntimeException(e);
+                GlobalManager_Client.lostConnection();
             }
         });
     }

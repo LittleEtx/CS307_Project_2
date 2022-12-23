@@ -4,7 +4,8 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO sustc_manager;
 grant usage on schema public to company_manager;
 grant select, update, insert on staff_company,staff_handle_item,container,item_container,
     item_state,item_type,item_route,ship,item_ship,tax_info to company_manager;
-grant select on company, staff_handle_item, item_company, item_fullinfo, staff_info, ship_info to company_manager;
+grant select on company, staff_handle_item, item_company, item_info_extra,
+    item_fullinfo, staff_info, ship_info to company_manager;
 
 grant usage on schema public to courier;
 grant select, update, insert on item_state to courier;

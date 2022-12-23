@@ -1,7 +1,9 @@
 package com.littleetx.cs307_project_2.server;
 
 import com.littleetx.cs307_project_2.database.database_type.CityInfo;
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
 import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
+import com.littleetx.cs307_project_2.database.user.CompanyManager;
 import com.littleetx.cs307_project_2.database.user.Courier;
 import com.littleetx.cs307_project_2.database.user.SeaportOfficer;
 import main.interfaces.ContainerInfo;
@@ -41,22 +43,30 @@ public interface IServerProtocol extends Remote {
     //company manager methods
     Map<TaxInfo.Key, TaxInfo.Value> getTaxRates() throws RemoteException;
 
-    Map<String, ItemInfo> getCompanyItems(int id) throws RemoteException;
+    Map<String, ItemFullInfo> getCompanyItems(int id, CompanyManager.GetItemType type) throws RemoteException;
+
+    Map<Integer, StaffInfo> getCompanyCouriers(int id) throws RemoteException;
+
+    Map<String, ShipInfo> getCompanyShips(int id, CompanyManager.GetShipType type) throws RemoteException;
+
+    Map<String, ContainerInfo> getContainers(int id, CompanyManager.GetContainerType type) throws RemoteException;
 
     //SUSTC manager methods
     Map<String, ItemInfo> getAllItems(int id) throws RemoteException;
 
     Map<Integer, StaffInfo> getAllStaffs(int id) throws RemoteException;
 
+    Map<String, ShipInfo> getAllShips(int id) throws RemoteException;
+
+    Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException;
+
     //public methods
 
     Map<Integer, String> getAllCompanies() throws RemoteException;
 
-    Map<String, ShipInfo> getAllShips(int id) throws RemoteException;
-
     Map<Integer, CityInfo> getAllCities() throws RemoteException;
 
-    Map<String, ContainerInfo> getAllContainers(int id) throws RemoteException;
+
 
 
 }

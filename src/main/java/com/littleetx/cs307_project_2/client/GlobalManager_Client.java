@@ -23,6 +23,7 @@ public class GlobalManager_Client {
     private static final String COURIER_FXML = "Courier.fxml";
     private static final String SUSTC_MANAGER_FXML = "SUSTCManager.fxml";
     private static final String SEAPORT_OFFICER_FXML = "SeaportOfficer.fxml";
+    private static final String COMPANY_MANAGER_FXML = "CompanyManager.fxml";
     private static StaffInfo staffInfo;
     private static int staffID;
     private static Stage stage;
@@ -60,6 +61,8 @@ public class GlobalManager_Client {
             case Courier -> changeScene(readXML(COURIER_FXML));
             case SustcManager -> changeScene(readXML(SUSTC_MANAGER_FXML));
             case SeaportOfficer -> changeScene(readXML(SEAPORT_OFFICER_FXML));
+            case CompanyManager -> changeScene(readXML(COMPANY_MANAGER_FXML));
+            default -> throw new RuntimeException("Unknown staff type");
         }
     }
 
@@ -125,7 +128,7 @@ public class GlobalManager_Client {
         }
         System.out.println("Lost connection!");
         stage.setOpacity(0.8);
-        showAlert("lostConnection!", () -> {
+        showAlert("Lost connection!", () -> {
             inLostConnectionShowing = false;
             enterLoginInterface();
         });

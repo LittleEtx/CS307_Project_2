@@ -1,5 +1,6 @@
 package com.littleetx.cs307_project_2.database;
 
+import com.littleetx.cs307_project_2.database.database_type.ItemFullInfo;
 import main.interfaces.*;
 
 import java.sql.ResultSet;
@@ -19,32 +20,52 @@ public class ViewMapping {
         Map<String, ItemInfo> items = new HashMap<>();
         try {
             while (rs.next()) {
-                items.put(rs.getString("name"), new ItemInfo(
-                        rs.getString("name"),
-                        rs.getString("class"),
-                        rs.getDouble("price"),
-                        DatabaseMapping.getItemState(rs.getString("state")),
-                        new ItemInfo.RetrievalDeliveryInfo(
-                                getCityName(rs.getInt("retrieval_city")),
-                                rs.getString("retrieval_staff")
-                        ),
-                        new ItemInfo.RetrievalDeliveryInfo(
-                                getCityName(rs.getInt("delivery_city")),
-                                rs.getString("delivery_staff")
-                        ),
-                        new ItemInfo.ImportExportInfo(
-                                getCityName(rs.getInt("import_city")),
-                                rs.getString("import_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city"),
-                                        rs.getString("class")).import_rate
-                        ),
-                        new ItemInfo.ImportExportInfo(
-                                getCityName(rs.getInt("export_city")),
-                                rs.getString("export_staff"),
-                                rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city"),
-                                        rs.getString("class")).export_rate
-                        )
-                ));
+                items.put(rs.getString("name"), getItemInfo(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return items;
+    }
+
+    private static ItemInfo getItemInfo(ResultSet rs) throws SQLException {
+        return new ItemInfo(
+                rs.getString("name"),
+                rs.getString("class"),
+                rs.getDouble("price"),
+                DatabaseMapping.getItemState(rs.getString("state")),
+                new ItemInfo.RetrievalDeliveryInfo(
+                        getCityName(rs.getInt("retrieval_city")),
+                        rs.getString("retrieval_staff")
+                ),
+                new ItemInfo.RetrievalDeliveryInfo(
+                        getCityName(rs.getInt("delivery_city")),
+                        rs.getString("delivery_staff")
+                ),
+                new ItemInfo.ImportExportInfo(
+                        getCityName(rs.getInt("import_city")),
+                        rs.getString("import_staff"),
+                        rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("import_city"),
+                                rs.getString("class")).import_rate
+                ),
+                new ItemInfo.ImportExportInfo(
+                        getCityName(rs.getInt("export_city")),
+                        rs.getString("export_staff"),
+                        rs.getDouble("price") * GlobalQuery.getCityTaxRate(rs.getInt("export_city"),
+                                rs.getString("class")).export_rate
+                )
+        );
+    }
+
+    public static Map<String, ItemFullInfo> getItemFullInfoMapping(ResultSet rs) {
+        Map<String, ItemFullInfo> items = new HashMap<>();
+        try {
+            while (rs.next()) {
+                items.put(rs.getString("name"), new ItemFullInfo(
+                        getItemInfo(rs),
+                        rs.getString("ship_name"),
+                        rs.getString("container_code"),
+                        DatabaseMapping.getContainerType(rs.getString("container_type"))));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

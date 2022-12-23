@@ -1,14 +1,10 @@
 package com.littleetx.cs307_project_2.client.tables;
 
 import com.littleetx.cs307_project_2.client.GlobalManager_Client;
-import com.littleetx.cs307_project_2.database.database_type.TaxInfo;
 
-import java.util.Map;
 import java.util.Objects;
 
-public class SeaportOfficerTableView extends ItemTableView {
-    public static String IMPORT_TAX = "Import Tax";
-    public static String EXPORT_TAX = "Export Tax";
+public class SeaportOfficerItemTableView extends ItemTableView {
     public static String HANDLE_TYPE = "Handle Type";
     public static String TAX = "Tax";
 
@@ -16,18 +12,16 @@ public class SeaportOfficerTableView extends ItemTableView {
         IMPORT, EXPORT, FINISHED
     }
 
-    public SeaportOfficerTableView(TableType tableType, Map<String, TaxInfo.Value> taxInfo) {
+    public SeaportOfficerItemTableView(TableType tableType) {
         super();
         addItemBasicInfo();
         addRouteInfo();
 
         switch (tableType) {
-            case IMPORT -> addColumn(IMPORT_TAX, itemInfo -> convertPrice(taxInfo
-                    .get(itemInfo.$class()).import_rate * itemInfo.price()), true);
-            case EXPORT -> {
-                addColumn(EXPORT_TAX, itemInfo -> convertPrice(taxInfo
-                        .get(itemInfo.$class()).export_rate * itemInfo.price()), true);
-            }
+            case IMPORT -> addColumn(IMPORT_TAX, itemInfo ->
+                    convertPrice(itemInfo.$import().tax()), true);
+            case EXPORT -> addColumn(EXPORT_TAX, itemInfo ->
+                    convertPrice(itemInfo.export().tax()), true);
             case FINISHED -> {
                 addColumn(HANDLE_TYPE, info -> {
                     if (Objects.equals(info.$import().officer(),
@@ -43,12 +37,10 @@ public class SeaportOfficerTableView extends ItemTableView {
                 addColumn(TAX, info -> {
                     if (Objects.equals(info.$import().officer(),
                             GlobalManager_Client.getStaffInfo().basicInfo().name())) {
-                        return convertPrice(taxInfo
-                                .get(info.$class()).import_rate * info.price());
+                        return convertPrice(info.$import().tax());
                     } else if (Objects.equals(info.export().officer(),
                             GlobalManager_Client.getStaffInfo().basicInfo().name())) {
-                        return convertPrice(taxInfo
-                                .get(info.$class()).export_rate * info.price());
+                        return convertPrice(info.export().tax());
                     } else {
                         return "Unknown";
                     }
