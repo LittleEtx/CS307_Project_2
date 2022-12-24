@@ -85,16 +85,26 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>SUSTCLogger_GUI</mainClass>
-                            <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
-                            <jlinkImageName>app</jlinkImageName>
+                            <mainClass>com.littleetx.cs307_project_2.client.SUSTC_ClientApplication</mainClass>
+                            <launcher>SUSTC</launcher>
+                            <jlinkZipName>SUSTCzip</jlinkZipName>
+                            <jlinkImageName>SUSTC</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <mainClass>com.littleetx.cs307_project_2.client.SUSTC_ClientApplication</mainClass>
+                    <compress>2</compress>
+                    <launcher>SUSTC</launcher>
+                    <jlinkZipName>SUSTCzip</jlinkZipName>
+                    <jlinkImageName>SUSTC</jlinkImageName>
+                    <noManPages>true</noManPages>
+                    <stripDebug>true</stripDebug>
+                    <noHeaderFiles>true</noHeaderFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>

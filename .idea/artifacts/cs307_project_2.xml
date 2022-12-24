@@ -1,0 +1,35 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="cs307_project_2">
+    <output-path>$PROJECT_DIR$/out/artifacts/cs307_project_2</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="com.littleetx.cs307_project_2.client.SUSTC_ClientApplication" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="cs307_project_2.jar">
+        <element id="module-output" name="cs307_project_2" />
+      </element>
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:win:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:win:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:win:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:19" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:win:19" />
+      <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:11.1.2" />
+      <element id="library" level="project" name="Maven: org.postgresql:postgresql:42.5.1" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.14.0" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.14.0" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.14.0" />
+      <element id="library" level="project" name="Maven: org.checkerframework:checker-qual:3.5.0" />
+    </root>
+  </artifact>
+</component>
