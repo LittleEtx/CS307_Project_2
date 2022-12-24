@@ -165,7 +165,7 @@ public class CompanyManager extends User {
      */
     public boolean shipStartSailing(String shipName) {
         try {
-            if (getShipCompany(shipName) != getStaffCompany()) {
+            if (getShipCompany(shipName) != getStaffCompany()) {//判断船公司与用户公司是否相同
                 return false;
             }
             PreparedStatement stmt = conn.prepareStatement(
