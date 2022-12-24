@@ -132,16 +132,20 @@ public class Courier extends User {
                 rs = stmt.executeQuery();//查询物品所在城市
                 rs.next();
                 int itemCity = rs.getInt(1);
-                if (itemCity == getStaffCity()) {//城市相同则合法
-                    stmt = conn.prepareStatement("insert into staff_handle_item values(?,?,?)");//新增员工负责物品信息
-                    stmt.setString(1, itemName);
-                    stmt.setInt(2, this.id);
-                    stmt.setString(3, "DELIVERY");
-                    stmt.execute();
-                    return true;//此情况无需更新物品状态，维持原状态
-                } else {
+                if (itemCity != getStaffCity()) {//城市不同
                     return false;
                 }
+
+                if (getItemCompany(itemName) != getStaffCompany()) {//公司不同
+                    return false;
+                }
+
+                stmt = conn.prepareStatement("insert into staff_handle_item values(?,?,?)");//新增员工负责物品信息
+                stmt.setString(1, itemName);
+                stmt.setInt(2, this.id);
+                stmt.setString(3, "DELIVERY");
+                stmt.execute();
+                return true;//此情况无需更新物品状态，维持原状态
             }
 
             //get to the next stage

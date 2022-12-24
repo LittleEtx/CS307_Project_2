@@ -82,7 +82,7 @@ public class StaffInfoController {
     @FXML
     private void onInfo() {
         PopOver popOver = new PopOver();
-        popOver.setTitle("Personal Info");
+        popOver.setTitle("Personal Information");
         popOver.setCloseButtonEnabled(false);
         popOver.setHeaderAlwaysVisible(true);
         popOver.setContentNode(GlobalManager_Client.readXML(PERSONAL_INFO_FXML));

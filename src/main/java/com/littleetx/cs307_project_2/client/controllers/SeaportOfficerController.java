@@ -165,7 +165,7 @@ public class SeaportOfficerController extends ControllerBase {
                 importTableView.getSelectionModel().getSelectedItem() :
                 exportTableView.getSelectionModel().getSelectedItem();
         GlobalManager_Client.showConfirm(
-                "Are you sure to pass " + (isImport ? "import" : "export") + " item: " + item.name() + "?",
+                "Are you sure to " + (isPass ? "pass " : "reject ") + (isImport ? "import" : "export") + " item: " + item.name() + "?",
                 yes -> {
                     if (yes) {
                         try {
