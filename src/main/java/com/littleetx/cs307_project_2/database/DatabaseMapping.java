@@ -51,24 +51,6 @@ public class DatabaseMapping {
         };
     }
 
-    public static String getStateVisualString(ItemState state) {
-        return switch (state) {
-            case PickingUp -> "Picking Up";
-            case ToExportTransporting -> "To-Export Transporting";
-            case ExportChecking -> "Export Checking";
-            case ExportCheckFailed -> "Export Check Fail";
-            case PackingToContainer -> "Packing to Container";
-            case WaitingForShipping -> "Waiting for Shipping";
-            case Shipping -> "Shipping";
-            case UnpackingFromContainer -> "Unpacking from Container";
-            case ImportChecking -> "Import Checking";
-            case ImportCheckFailed -> "Import Check Fail";
-            case FromImportTransporting -> "From-Import Transporting";
-            case Delivering -> "Delivering";
-            case Finish -> "Finish";
-        };
-    }
-
     public static ItemState getItemState(String state) {
         return switch (state) {
             case "PICKING_UP" -> ItemState.PickingUp;
@@ -85,6 +67,24 @@ public class DatabaseMapping {
             case "DELIVERING" -> ItemState.Delivering;
             case "FINISH" -> ItemState.Finish;
             default -> throw new IllegalArgumentException("Unknown state!");
+        };
+    }
+
+    public static String getStateVisualString(ItemState state) {
+        return switch (state) {
+            case PickingUp -> "Picking Up";
+            case ToExportTransporting -> "To-Export Transporting";
+            case ExportChecking -> "Export Checking";
+            case ExportCheckFailed -> "Export Check Fail";
+            case PackingToContainer -> "Packing to Container";
+            case WaitingForShipping -> "Waiting for Shipping";
+            case Shipping -> "Shipping";
+            case UnpackingFromContainer -> "Unpacking from Container";
+            case ImportChecking -> "Import Checking";
+            case ImportCheckFailed -> "Import Check Fail";
+            case FromImportTransporting -> "From-Import Transporting";
+            case Delivering -> "Delivering";
+            case Finish -> "Finish";
         };
     }
 
